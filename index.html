@@ -141,27 +141,30 @@
         </div>
 
         <!-- Boutons d'actions -->
-        <h3 class="mb-md text-center">Actions Rapides</h3>
-        <div class="action-grid">
+        <h3 class="mb-md text-center">Scoring</h3>
+        <div class="action-grid scoring-grid">
           <!-- Points -->
-          <button class="action-btn points-1" data-action="freethrow">
+          <button class="action-btn points-1 btn-xl" data-action="freethrow">
             <span class="action-icon">1️⃣</span>
-            <span class="action-label">Lancer Franc</span>
+            <span class="action-label">Lancer</span>
             <span class="action-count" data-stat="points1">0</span>
           </button>
 
-          <button class="action-btn points-2" data-action="2points">
+          <button class="action-btn points-2 btn-xl" data-action="2points">
             <span class="action-icon">2️⃣</span>
-            <span class="action-label">2 Points</span>
+            <span class="action-label">2 Pts</span>
             <span class="action-count" data-stat="points2">0</span>
           </button>
 
-          <button class="action-btn points-3" data-action="3points">
+          <button class="action-btn points-3 btn-xl" data-action="3points">
             <span class="action-icon">3️⃣</span>
-            <span class="action-label">3 Points</span>
+            <span class="action-label">3 Pts</span>
             <span class="action-count" data-stat="points3">0</span>
           </button>
+        </div>
 
+        <h3 class="mb-md text-center">Défense & Jeu</h3>
+        <div class="action-grid">
           <!-- Autres stats -->
           <button class="action-btn rebound" data-action="rebound">
             <span class="action-icon">🔄</span>
@@ -177,7 +180,7 @@
 
           <button class="action-btn steal" data-action="steal">
             <span class="action-icon">🤚</span>
-            <span class="action-label">Interception</span>
+            <span class="action-label">Intercept.</span>
             <span class="action-count" data-stat="steals">0</span>
           </button>
 
@@ -189,7 +192,7 @@
 
           <button class="action-btn turnover" data-action="turnover">
             <span class="action-icon">❌</span>
-            <span class="action-label">Balle Perdue</span>
+            <span class="action-label">Perte</span>
             <span class="action-count" data-stat="turnovers">0</span>
           </button>
 
@@ -256,7 +259,7 @@
           <div class="card-header">
             <h3 class="card-title">📈 Évolution des Points</h3>
           </div>
-          <div style="position: relative; height: 250px;">
+          <div style="position: relative; height: 250px; width: 100%;">
             <canvas id="points-chart"></canvas>
           </div>
         </div>
@@ -268,7 +271,7 @@
             <div class="card-header">
               <h3 class="card-title" style="font-size: 1rem;">🥧 Répartition</h3>
             </div>
-            <div style="position: relative; height: 220px;">
+            <div style="position: relative; height: 220px; width: 100%;">
               <canvas id="points-distribution-chart"></canvas>
             </div>
           </div>
@@ -278,7 +281,7 @@
             <div class="card-header">
               <h3 class="card-title" style="font-size: 1rem;">📊 Comparaison</h3>
             </div>
-            <div style="position: relative; height: 220px;">
+            <div style="position: relative; height: 220px; width: 100%;">
               <canvas id="stats-comparison-chart"></canvas>
             </div>
           </div>
