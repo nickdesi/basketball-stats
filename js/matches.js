@@ -5,6 +5,8 @@
 const MatchesModule = {
     currentMatch: null,
     actionsHistory: [],
+    longPressTimer: null,
+    longPressAction: null,
 
     // Récupérer tous les matchs
     getAllMatches() {
@@ -54,6 +56,11 @@ const MatchesModule = {
     // Ajouter une action
     addAction(actionType) {
         if (!this.currentMatch) return;
+
+        // Retour haptique medium
+        if (window.HapticModule) {
+            HapticModule.medium();
+        }
 
         const action = {
             type: actionType,
@@ -216,6 +223,16 @@ const MatchesModule = {
         this.currentMatch = null;
         this.actionsHistory = [];
 
+        // Vibration de confirmation
+        if (window.HapticModule) {
+            HapticModule.confirm();
+        }
+
+        // Confetti si bon match (> 10 points)
+        if (this.currentMatch.stats.totalPoints >= 10 && window.ConfettiModule) {
+            ConfettiModule.explode(150);
+        }
+
         alert('Match terminé et sauvegardé ! 🎉');
 
         // Retourner à l'accueil
@@ -280,14 +297,18 @@ const MatchesModule = {
                 year: 'numeric'
             });
 
+            const isMVP = match.stats.totalPoints >= 20;
+            const mvpBadge = isMVP ? '<span class="badge badge-gold" style="margin-right: 5px;">🏆 MVP</span>' : '';
+
             return `
-        <div class="card mb-md">
+        <div class="card mb-md" ${isMVP ? 'style="border: 1px solid #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);"' : ''}>
           <div class="card-header">
             <div>
               <h4 style="margin: 0;">${match.playerName}</h4>
               <p class="text-muted" style="margin: 0;">vs ${match.opponent}</p>
             </div>
             <div class="text-right">
+              ${mvpBadge}
               <div class="badge badge-primary">${matchDate}</div>
               <button class="btn btn-danger mt-sm" onclick="MatchesModule.deleteMatchAndRefresh('${match.id}')">🗑️</button>
             </div>

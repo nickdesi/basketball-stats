@@ -688,6 +688,28 @@ p {
   font-size: 0.85rem;
 }
 
+/* Indicateur visuel pour appui long */
+.action-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 3px solid var(--primary-orange);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.action-btn.long-pressing::after {
+  width: 90%;
+  height: 90%;
+  opacity: 1;
+}
+
 /* ============================================
    ANIMATIONS & EFFECTS
    ============================================ */

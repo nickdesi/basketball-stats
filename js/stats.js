@@ -9,17 +9,19 @@ const StatsModule = {
         comparisonChart: null
     },
 
-    // Initialiser les graphiques
+    // Initialiser ou mettre à jour les graphiques
     initCharts() {
-        // Détruire les graphiques existants
-        Object.values(this.charts).forEach(chart => {
-            if (chart) chart.destroy();
-        });
-
-        // Créer les nouveaux graphiques
-        this.createPointsEvolutionChart();
-        this.createPointsDistributionChart();
-        this.createStatsComparisonChart();
+        // Si les graphiques existent déjà, on met juste à jour les données
+        if (this.charts.pointsChart) {
+            this.updatePointsEvolutionChart();
+            this.updatePointsDistributionChart();
+            this.updateStatsComparisonChart();
+        } else {
+            // Sinon on les crée
+            this.createPointsEvolutionChart();
+            this.createPointsDistributionChart();
+            this.createStatsComparisonChart();
+        }
     },
 
     // Graphique d'évolution des points
@@ -85,6 +87,24 @@ const StatsModule = {
         });
     },
 
+    // Mettre à jour le graphique d'évolution
+    updatePointsEvolutionChart() {
+        if (!this.charts.pointsChart) return;
+
+        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+
+        let matches = this.getFilteredMatches(playerFilter, periodFilter);
+        matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const labels = matches.map((m, i) => `Match ${i + 1}`);
+        const data = matches.map(m => m.stats.totalPoints);
+
+        this.charts.pointsChart.data.labels = labels;
+        this.charts.pointsChart.data.datasets[0].data = data;
+        this.charts.pointsChart.update();
+    },
+
     // Graphique de répartition des points
     createPointsDistributionChart() {
         const ctx = document.getElementById('points-distribution-chart');
@@ -136,6 +156,26 @@ const StatsModule = {
                 }
             }
         });
+    },
+
+    // Mettre à jour le graphique de répartition
+    updatePointsDistributionChart() {
+        if (!this.charts.distributionChart) return;
+
+        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+
+        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+
+        let total1 = 0, total2 = 0, total3 = 0;
+        matches.forEach(m => {
+            total1 += m.stats.points1 || 0;
+            total2 += (m.stats.points2 || 0) * 2;
+            total3 += (m.stats.points3 || 0) * 3;
+        });
+
+        this.charts.distributionChart.data.datasets[0].data = [total1, total2, total3];
+        this.charts.distributionChart.update();
     },
 
     // Graphique de comparaison des stats
@@ -219,6 +259,46 @@ const StatsModule = {
                 }
             }
         });
+    },
+
+    // Mettre à jour le graphique de comparaison
+    updateStatsComparisonChart() {
+        if (!this.charts.comparisonChart) return;
+
+        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+
+        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+
+        if (matches.length === 0) {
+            this.charts.comparisonChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
+            this.charts.comparisonChart.update();
+            return;
+        }
+
+        const totals = {
+            rebounds: 0,
+            assists: 0,
+            steals: 0,
+            blocks: 0,
+            turnovers: 0,
+            fouls: 0
+        };
+
+        matches.forEach(m => {
+            totals.rebounds += m.stats.rebounds || 0;
+            totals.assists += m.stats.assists || 0;
+            totals.steals += m.stats.steals || 0;
+            totals.blocks += m.stats.blocks || 0;
+            totals.turnovers += m.stats.turnovers || 0;
+            totals.fouls += m.stats.fouls || 0;
+        });
+
+        const avgMatches = matches.length;
+        const averages = Object.keys(totals).map(key => (totals[key] / avgMatches).toFixed(1));
+
+        this.charts.comparisonChart.data.datasets[0].data = averages;
+        this.charts.comparisonChart.update();
     },
 
     // Filtrer les matchs

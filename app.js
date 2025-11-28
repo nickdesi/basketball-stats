@@ -94,6 +94,7 @@ const AppModule = {
                 const position = document.getElementById('player-position-input').value;
 
                 if (!name.trim()) {
+                    HapticModule.error();
                     alert('Veuillez entrer un nom de joueur !');
                     return;
                 }
@@ -109,7 +110,8 @@ const AppModule = {
                 PlayersModule.renderPlayersList();
                 this.updatePlayerSelects();
 
-                // Feedback visuel
+                // Feedback visuel et haptique
+                HapticModule.success();
                 addPlayerBtn.classList.add('success-feedback');
                 setTimeout(() => addPlayerBtn.classList.remove('success-feedback'), 500);
             });
@@ -124,11 +126,13 @@ const AppModule = {
                 const matchDate = document.getElementById('match-date').value;
 
                 if (!playerId) {
+                    HapticModule.error();
                     alert('Veuillez sélectionner un joueur !');
                     return;
                 }
 
                 if (MatchesModule.startMatch(playerId, opponent, matchDate)) {
+                    HapticModule.success();
                     // Aller à la vue match en direct
                     this.showView('live-match');
                     this.initializeLiveMatch();
@@ -139,16 +143,67 @@ const AppModule = {
         // === PAGE MATCH EN DIRECT - Boutons d'actions ===
         const actionButtons = document.querySelectorAll('.action-btn');
         actionButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = btn.getAttribute('data-action');
-                if (action && MatchesModule.getCurrentMatch()) {
-                    MatchesModule.addAction(action);
+            let longPressTimer;
+            let longPressTriggered = false;
 
-                    // Feedback visuel
-                    btn.classList.add('success-feedback');
-                    setTimeout(() => btn.classList.remove('success-feedback'), 500);
+            // Touch start / Mouse down
+            const startPress = (e) => {
+                longPressTriggered = false;
+                const action = btn.getAttribute('data-action');
+
+                // Ajouter classe visuelle
+                btn.classList.add('long-pressing');
+
+                longPressTimer = setTimeout(() => {
+                    // Appui long = annuler la dernière action de CE type
+                    longPressTriggered = true;
+                    if (MatchesModule.getCurrentMatch()) {
+                        // Trouver et annuler la dernière action de ce type
+                        const lastIndex = MatchesModule.actionsHistory.map(a => a.type).lastIndexOf(action);
+                        if (lastIndex !== -1) {
+                            MatchesModule.actionsHistory.splice(lastIndex, 1);
+                            MatchesModule.undoLastAction();
+                            HapticModule.heavy();
+                            btn.style.transform = 'scale(0.9)';
+                            setTimeout(() => btn.style.transform = '', 200);
+                        }
+                    }
+                }, 500); // 500ms pour activer l'appui long
+            };
+
+            // Touch end / Mouse up
+            const endPress = (e) => {
+                clearTimeout(longPressTimer);
+                btn.classList.remove('long-pressing');
+
+                if (!longPressTriggered) {
+                    // Appui court = ajouter l'action
+                    const action = btn.getAttribute('data-action');
+                    if (action && MatchesModule.getCurrentMatch()) {
+                        MatchesModule.addAction(action);
+
+                        // Feedback visuel
+                        btn.classList.add('success-feedback');
+                        setTimeout(() => btn.classList.remove('success-feedback'), 500);
+                    }
                 }
-            });
+            };
+
+            // Annuler si on quitte le bouton
+            const cancelPress = () => {
+                clearTimeout(longPressTimer);
+                btn.classList.remove('long-pressing');
+            };
+
+            // Evénements touch (mobile)
+            btn.addEventListener('touchstart', startPress);
+            btn.addEventListener('touchend', endPress);
+            btn.addEventListener('touchcancel', cancelPress);
+
+            // Événements mouse (desktop)
+            btn.addEventListener('mousedown', startPress);
+            btn.addEventListener('mouseup', endPress);
+            btn.addEventListener('mouseleave', cancelPress);
         });
 
         // Bouton Annuler (Undo)
@@ -156,6 +211,7 @@ const AppModule = {
         if (undoBtn) {
             undoBtn.addEventListener('click', () => {
                 MatchesModule.undoLastAction();
+                HapticModule.heavy();
             });
         }
 
