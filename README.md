@@ -81,10 +81,11 @@ L'application peut être installée sur votre smartphone :
 ## 📊 Captures d'Écran
 
 ### Interface Desktop
-![Desktop View](screenshot-desktop.png)
+### Interface Desktop
+![Desktop View](assets/screenshot-desktop.png)
 
 ### Interface Mobile
-![Mobile View](screenshot-mobile.png)
+![Mobile View](assets/screenshot-mobile.png)
 
 ## 🗂️ Structure du Projet
 
