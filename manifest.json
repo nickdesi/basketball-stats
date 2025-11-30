@@ -1,6 +1,7 @@
 {
   "name": "Basketball Stats Pro",
   "short_name": "BasketStats",
+  "version": "1.0.0",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0A0E1A",
