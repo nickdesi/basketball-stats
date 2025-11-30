@@ -29,7 +29,7 @@ Application web moderne pour le suivi des statistiques de basketball en temps r�
 
 ## 🚀 Démo en Ligne
 
-Accédez à l'application : **[Basketball Stats Pro](https://votre-username.github.io/basketball-stats/)**
+Accédez à l'application : **[Basketball Stats Pro](https://nickdesi.github.io/basketball-stats/)**
 
 ## 💻 Technologies
 
