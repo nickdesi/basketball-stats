@@ -158,15 +158,10 @@ const AppModule = {
                     // Appui long = annuler la dernière action de CE type
                     longPressTriggered = true;
                     if (MatchesModule.getCurrentMatch()) {
-                        // Trouver et annuler la dernière action de ce type
-                        const lastIndex = MatchesModule.actionsHistory.map(a => a.type).lastIndexOf(action);
-                        if (lastIndex !== -1) {
-                            MatchesModule.actionsHistory.splice(lastIndex, 1);
-                            MatchesModule.undoLastAction();
-                            HapticModule.heavy();
-                            btn.style.transform = 'scale(0.9)';
-                            setTimeout(() => btn.style.transform = '', 200);
-                        }
+                        MatchesModule.undoSpecificAction(action);
+                        HapticModule.heavy();
+                        btn.style.transform = 'scale(0.9)';
+                        setTimeout(() => btn.style.transform = '', 200);
                     }
                 }, 500); // 500ms pour activer l'appui long
             };

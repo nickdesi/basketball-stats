@@ -99,7 +99,22 @@ const MatchesModule = {
                 this.currentMatch.stats.turnovers++;
                 break;
             case 'foul':
+                if (this.currentMatch.stats.fouls >= 5) {
+                    alert('⚠️ Maximum de 5 fautes atteint ! Le joueur est exclu.');
+                    return; // Ne pas ajouter plus de 5 fautes
+                }
                 this.currentMatch.stats.fouls++;
+
+                // Vérifier si on a atteint 5 fautes
+                if (this.currentMatch.stats.fouls === 5) {
+                    this.updateLiveStats(); // Mettre à jour l'affichage avant l'alerte
+                    setTimeout(() => {
+                        if (window.HapticModule) HapticModule.error();
+                        if (confirm('🚫 5 Fautes atteintes ! Le joueur est exclu.\nVoulez-vous terminer le match maintenant ?')) {
+                            this.endMatch();
+                        }
+                    }, 100);
+                }
                 break;
         }
 
@@ -111,42 +126,67 @@ const MatchesModule = {
         if (!this.currentMatch || this.actionsHistory.length === 0) return;
 
         const lastAction = this.actionsHistory.pop();
+        this.decrementStats(lastAction.type);
+        this.updateLiveStats();
+    },
 
-        // Inverser la stat
-        switch (lastAction.type) {
-            case 'freethrow':
-                this.currentMatch.stats.points1--;
-                this.currentMatch.stats.totalPoints -= 1;
+    // Annuler une action spécifique (pour l'appui long)
+    undoSpecificAction(actionType) {
+        if (!this.currentMatch) return;
+
+        // Trouver la dernière occurrence de ce type d'action
+        let index = -1;
+        for (let i = this.actionsHistory.length - 1; i >= 0; i--) {
+            if (this.actionsHistory[i].type === actionType) {
+                index = i;
                 break;
-            case '2points':
-                this.currentMatch.stats.points2--;
-                this.currentMatch.stats.totalPoints -= 2;
-                break;
-            case '3points':
-                this.currentMatch.stats.points3--;
-                this.currentMatch.stats.totalPoints -= 3;
-                break;
-            case 'rebound':
-                this.currentMatch.stats.rebounds--;
-                break;
-            case 'assist':
-                this.currentMatch.stats.assists--;
-                break;
-            case 'steal':
-                this.currentMatch.stats.steals--;
-                break;
-            case 'block':
-                this.currentMatch.stats.blocks--;
-                break;
-            case 'turnover':
-                this.currentMatch.stats.turnovers--;
-                break;
-            case 'foul':
-                this.currentMatch.stats.fouls--;
-                break;
+            }
         }
 
+        if (index === -1) return; // Pas d'action de ce type trouvée
+
+        // Supprimer de l'historique
+        this.actionsHistory.splice(index, 1);
+
+        // Décrémenter les stats
+        this.decrementStats(actionType);
         this.updateLiveStats();
+    },
+
+    // Helper pour décrémenter les stats
+    decrementStats(actionType) {
+        switch (actionType) {
+            case 'freethrow':
+                this.currentMatch.stats.points1 = Math.max(0, this.currentMatch.stats.points1 - 1);
+                this.currentMatch.stats.totalPoints = Math.max(0, this.currentMatch.stats.totalPoints - 1);
+                break;
+            case '2points':
+                this.currentMatch.stats.points2 = Math.max(0, this.currentMatch.stats.points2 - 1);
+                this.currentMatch.stats.totalPoints = Math.max(0, this.currentMatch.stats.totalPoints - 2);
+                break;
+            case '3points':
+                this.currentMatch.stats.points3 = Math.max(0, this.currentMatch.stats.points3 - 1);
+                this.currentMatch.stats.totalPoints = Math.max(0, this.currentMatch.stats.totalPoints - 3);
+                break;
+            case 'rebound':
+                this.currentMatch.stats.rebounds = Math.max(0, this.currentMatch.stats.rebounds - 1);
+                break;
+            case 'assist':
+                this.currentMatch.stats.assists = Math.max(0, this.currentMatch.stats.assists - 1);
+                break;
+            case 'steal':
+                this.currentMatch.stats.steals = Math.max(0, this.currentMatch.stats.steals - 1);
+                break;
+            case 'block':
+                this.currentMatch.stats.blocks = Math.max(0, this.currentMatch.stats.blocks - 1);
+                break;
+            case 'turnover':
+                this.currentMatch.stats.turnovers = Math.max(0, this.currentMatch.stats.turnovers - 1);
+                break;
+            case 'foul':
+                this.currentMatch.stats.fouls = Math.max(0, this.currentMatch.stats.fouls - 1);
+                break;
+        }
     },
 
     // Mettre à jour l'affichage des stats en direct
