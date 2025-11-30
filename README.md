@@ -8,6 +8,8 @@ Application web moderne pour le suivi des statistiques de basketball en temps r�
 ## ✨ Fonctionnalités
 
 - 📊 **Suivi en temps réel** : Enregistrez toutes les actions pendant un match
+- ↩️ **Annulation Rapide** : Appui long sur n'importe quelle touche pour annuler la dernière action
+- 🚫 **Gestion des Fautes** : Alerte automatique et proposition de fin de match à 5 fautes
 - 📈 **Graphiques interactifs** : Visualisez vos performances avec Chart.js
 - 👥 **Multi-joueurs** : Gérez plusieurs joueurs et leurs statistiques
 - 📱 **Responsive** : Optimisé pour smartphone, tablette et desktop
@@ -23,7 +25,7 @@ Application web moderne pour le suivi des statistiques de basketball en temps r�
 - Interceptions
 - Contres
 - Balles perdues
-- Fautes
+- Fautes (Max 5)
 
 ## 🚀 Démo en Ligne
 
@@ -68,8 +70,9 @@ L'application peut être installée sur votre smartphone :
 3. Cliquez sur **"Démarrer le Match"**
 
 ### Pendant le Match
-- Cliquez sur les boutons d'actions pour enregistrer les stats
-- Utilisez **"Annuler"** pour corriger une erreur
+- **Ajout** : Cliquez sur les boutons d'actions pour enregistrer les stats
+- **Annulation** : Faites un **appui long** (>0.5s) sur une touche pour annuler sa dernière action
+- **Fautes** : À 5 fautes, l'app vous proposera de terminer le match (joueur exclu)
 - Les stats se mettent à jour en temps réel
 - Terminez avec **"Terminer"**
 
