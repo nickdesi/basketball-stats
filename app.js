@@ -148,6 +148,12 @@ const AppModule = {
 
             // Touch start / Mouse down
             const startPress = (e) => {
+                // Empêcher le comportement par défaut pour le touch (scroll, zoom, etc.)
+                // et pour éviter la propagation vers les événements souris
+                if (e.type === 'touchstart') {
+                    e.preventDefault();
+                }
+
                 longPressTriggered = false;
                 const action = btn.getAttribute('data-action');
 
@@ -168,6 +174,10 @@ const AppModule = {
 
             // Touch end / Mouse up
             const endPress = (e) => {
+                if (e.type === 'touchend') {
+                    e.preventDefault();
+                }
+
                 clearTimeout(longPressTimer);
                 btn.classList.remove('long-pressing');
 
@@ -185,13 +195,17 @@ const AppModule = {
             };
 
             // Annuler si on quitte le bouton
-            const cancelPress = () => {
+            const cancelPress = (e) => {
+                if (e.type === 'touchcancel') {
+                    e.preventDefault();
+                }
                 clearTimeout(longPressTimer);
                 btn.classList.remove('long-pressing');
             };
 
             // Evénements touch (mobile)
-            btn.addEventListener('touchstart', startPress);
+            // Utiliser { passive: false } pour pouvoir utiliser preventDefault
+            btn.addEventListener('touchstart', startPress, { passive: false });
             btn.addEventListener('touchend', endPress);
             btn.addEventListener('touchcancel', cancelPress);
 
