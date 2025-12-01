@@ -17,6 +17,7 @@ Application web moderne pour le suivi des statistiques de basketball en temps r�
 - 🎨 **Design moderne** : Interface ultra moderne avec glassmorphism
 - ⚡ **Haute Performance** : Architecture optimisée pour une réactivité instantanée
 - 📱 **Support Tactile Amélioré** : Gestion intelligente des événements tactiles (anti-ghost clicks)
+- 📤 **Partage Social** : Générez et partagez des cartes de stats visuelles sur vos réseaux
 - 🇫🇷 **100% Français** : Interface entièrement en français
 
 ## 🎯 Statistiques Suivies
