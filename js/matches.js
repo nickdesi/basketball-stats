@@ -301,6 +301,8 @@ const MatchesModule = {
         // Mettre à jour les stats du joueur
         PlayersModule.updatePlayerStats(this.currentMatch.playerId, this.currentMatch.stats);
 
+        const finishedMatch = this.currentMatch; // Garder une référence pour le partage
+
         // Réinitialiser
         this.currentMatch = null;
         this.actionsHistory = [];
@@ -311,11 +313,18 @@ const MatchesModule = {
         }
 
         // Confetti si bon match (> 10 points)
-        if (this.currentMatch.stats.totalPoints >= 10 && window.ConfettiModule) {
+        if (finishedMatch.stats.totalPoints >= 10 && window.ConfettiModule) {
             ConfettiModule.explode(150);
         }
 
         alert('Match terminé et sauvegardé ! 🎉');
+
+        // Proposer le partage
+        if (confirm('Voulez-vous partager le résultat du match ? 📤')) {
+            if (window.ShareModule) {
+                ShareModule.shareMatch(finishedMatch);
+            }
+        }
 
         // Retourner à l'accueil
         if (window.AppModule && window.AppModule.showView) {
@@ -392,7 +401,10 @@ const MatchesModule = {
             <div class="text-right">
               ${mvpBadge}
               <div class="badge badge-primary">${matchDate}</div>
-              <button class="btn btn-danger mt-sm" onclick="MatchesModule.deleteMatchAndRefresh('${match.id}')">🗑️</button>
+              <div class="flex gap-sm mt-sm justify-end">
+                <button class="btn btn-secondary btn-sm" onclick="MatchesModule.shareMatch('${match.id}')">📤 Partager</button>
+                <button class="btn btn-danger btn-sm" onclick="MatchesModule.deleteMatchAndRefresh('${match.id}')">🗑️</button>
+              </div>
             </div>
           </div>
           <div class="stats-grid">
@@ -420,6 +432,14 @@ const MatchesModule = {
         </div>
       `;
         }).join('');
+    },
+
+    // Helper pour partager un match
+    shareMatch(matchId) {
+        const match = this.getAllMatches().find(m => m.id === matchId);
+        if (match && window.ShareModule) {
+            ShareModule.shareMatch(match);
+        }
     },
 
     // Helper pour supprimer et rafraîchir
