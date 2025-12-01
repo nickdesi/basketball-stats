@@ -7,15 +7,21 @@ const MatchesModule = {
     actionsHistory: [],
     longPressTimer: null,
     longPressAction: null,
+    matchesCache: null, // Cache pour les données
+    domCache: {}, // Cache pour les éléments DOM
 
-    // Récupérer tous les matchs
+    // Récupérer tous les matchs (avec cache)
     getAllMatches() {
-        const matches = localStorage.getItem('basketball_matches');
-        return matches ? JSON.parse(matches) : [];
+        if (!this.matchesCache) {
+            const matches = localStorage.getItem('basketball_matches');
+            this.matchesCache = matches ? JSON.parse(matches) : [];
+        }
+        return this.matchesCache;
     },
 
     // Sauvegarder les matchs
     saveMatches(matches) {
+        this.matchesCache = matches; // Mettre à jour le cache
         localStorage.setItem('basketball_matches', JSON.stringify(matches));
     },
 
@@ -50,7 +56,27 @@ const MatchesModule = {
         };
 
         this.actionsHistory = [];
+        
+        // Initialiser le cache DOM pour le match
+        setTimeout(() => this.initLiveStatsUI(), 100);
+        
         return true;
+    },
+
+    // Initialiser le cache des éléments DOM
+    initLiveStatsUI() {
+        this.domCache = {
+            points1: document.querySelector('[data-stat="points1"]'),
+            points2: document.querySelector('[data-stat="points2"]'),
+            points3: document.querySelector('[data-stat="points3"]'),
+            rebounds: document.querySelector('[data-stat="rebounds"]'),
+            assists: document.querySelector('[data-stat="assists"]'),
+            steals: document.querySelector('[data-stat="steals"]'),
+            blocks: document.querySelector('[data-stat="blocks"]'),
+            turnovers: document.querySelector('[data-stat="turnovers"]'),
+            fouls: document.querySelector('[data-stat="fouls"]'),
+            container: document.getElementById('live-stats')
+        };
     },
 
     // Ajouter une action
@@ -195,21 +221,25 @@ const MatchesModule = {
 
         const stats = this.currentMatch.stats;
 
-        // Mettre à jour les compteurs sur les boutons
-        document.querySelector('[data-stat="points1"]').textContent = stats.points1;
-        document.querySelector('[data-stat="points2"]').textContent = stats.points2;
-        document.querySelector('[data-stat="points3"]').textContent = stats.points3;
-        document.querySelector('[data-stat="rebounds"]').textContent = stats.rebounds;
-        document.querySelector('[data-stat="assists"]').textContent = stats.assists;
-        document.querySelector('[data-stat="steals"]').textContent = stats.steals;
-        document.querySelector('[data-stat="blocks"]').textContent = stats.blocks;
-        document.querySelector('[data-stat="turnovers"]').textContent = stats.turnovers;
-        document.querySelector('[data-stat="fouls"]').textContent = stats.fouls;
+        // Si le cache DOM n'est pas initialisé (ex: rechargement de page), on l'initialise
+        if (!this.domCache.points1) {
+            this.initLiveStatsUI();
+        }
+
+        // Utiliser le cache pour mettre à jour les compteurs
+        if (this.domCache.points1) this.domCache.points1.textContent = stats.points1;
+        if (this.domCache.points2) this.domCache.points2.textContent = stats.points2;
+        if (this.domCache.points3) this.domCache.points3.textContent = stats.points3;
+        if (this.domCache.rebounds) this.domCache.rebounds.textContent = stats.rebounds;
+        if (this.domCache.assists) this.domCache.assists.textContent = stats.assists;
+        if (this.domCache.steals) this.domCache.steals.textContent = stats.steals;
+        if (this.domCache.blocks) this.domCache.blocks.textContent = stats.blocks;
+        if (this.domCache.turnovers) this.domCache.turnovers.textContent = stats.turnovers;
+        if (this.domCache.fouls) this.domCache.fouls.textContent = stats.fouls;
 
         // Mettre à jour les cartes de stats
-        const liveStatsContainer = document.getElementById('live-stats');
-        if (liveStatsContainer) {
-            liveStatsContainer.innerHTML = `
+        if (this.domCache.container) {
+            this.domCache.container.innerHTML = `
         <div class="stat-card">
           <div class="stat-value">${stats.totalPoints}</div>
           <div class="stat-label">Points Totaux</div>

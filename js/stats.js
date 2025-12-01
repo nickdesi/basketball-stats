@@ -10,30 +10,34 @@ const StatsModule = {
     },
 
     // Initialiser ou mettre à jour les graphiques
-    initCharts() {
+    initCharts(matches = null) {
         // Si les graphiques existent déjà, on met juste à jour les données
         if (this.charts.pointsChart) {
-            this.updatePointsEvolutionChart();
-            this.updatePointsDistributionChart();
-            this.updateStatsComparisonChart();
+            this.updatePointsEvolutionChart(matches);
+            this.updatePointsDistributionChart(matches);
+            this.updateStatsComparisonChart(matches);
         } else {
             // Sinon on les crée
-            this.createPointsEvolutionChart();
-            this.createPointsDistributionChart();
-            this.createStatsComparisonChart();
+            this.createPointsEvolutionChart(matches);
+            this.createPointsDistributionChart(matches);
+            this.createStatsComparisonChart(matches);
         }
     },
 
     // Graphique d'évolution des points
-    createPointsEvolutionChart() {
+    createPointsEvolutionChart(preFilteredMatches = null) {
         const ctx = document.getElementById('points-chart');
         if (!ctx) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
-        let matches = this.getFilteredMatches(playerFilter, periodFilter);
-        matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Cloner pour ne pas affecter l'ordre original si on trie
+        matches = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
 
         const labels = matches.map((m, i) => `Match ${i + 1}`);
         const data = matches.map(m => m.stats.totalPoints);
@@ -88,14 +92,17 @@ const StatsModule = {
     },
 
     // Mettre à jour le graphique d'évolution
-    updatePointsEvolutionChart() {
+    updatePointsEvolutionChart(preFilteredMatches = null) {
         if (!this.charts.pointsChart) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
-        let matches = this.getFilteredMatches(playerFilter, periodFilter);
-        matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+        matches = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
 
         const labels = matches.map((m, i) => `Match ${i + 1}`);
         const data = matches.map(m => m.stats.totalPoints);
@@ -106,14 +113,16 @@ const StatsModule = {
     },
 
     // Graphique de répartition des points
-    createPointsDistributionChart() {
+    createPointsDistributionChart(preFilteredMatches = null) {
         const ctx = document.getElementById('points-distribution-chart');
         if (!ctx) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
-
-        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
         let total1 = 0, total2 = 0, total3 = 0;
         matches.forEach(m => {
@@ -159,13 +168,15 @@ const StatsModule = {
     },
 
     // Mettre à jour le graphique de répartition
-    updatePointsDistributionChart() {
+    updatePointsDistributionChart(preFilteredMatches = null) {
         if (!this.charts.distributionChart) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
-
-        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
         let total1 = 0, total2 = 0, total3 = 0;
         matches.forEach(m => {
@@ -179,14 +190,16 @@ const StatsModule = {
     },
 
     // Graphique de comparaison des stats
-    createStatsComparisonChart() {
+    createStatsComparisonChart(preFilteredMatches = null) {
         const ctx = document.getElementById('stats-comparison-chart');
         if (!ctx) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
-
-        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
         if (matches.length === 0) return;
 
@@ -262,13 +275,15 @@ const StatsModule = {
     },
 
     // Mettre à jour le graphique de comparaison
-    updateStatsComparisonChart() {
+    updateStatsComparisonChart(preFilteredMatches = null) {
         if (!this.charts.comparisonChart) return;
 
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
-
-        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
         if (matches.length === 0) {
             this.charts.comparisonChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
@@ -321,11 +336,13 @@ const StatsModule = {
     },
 
     // Mettre à jour les cartes de stats
-    updateDashboardCards() {
-        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
-        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
-
-        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+    updateDashboardCards(preFilteredMatches = null) {
+        let matches = preFilteredMatches;
+        if (!matches) {
+            const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+            const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+            matches = this.getFilteredMatches(playerFilter, periodFilter);
+        }
 
         if (matches.length === 0) {
             document.getElementById('avg-points').textContent = '0.0';
@@ -355,8 +372,13 @@ const StatsModule = {
 
     // Mettre à jour tout le dashboard
     updateDashboard() {
-        this.updateDashboardCards();
-        this.initCharts();
+        // Optimisation : on récupère les matchs filtrés UNE SEULE FOIS
+        const playerFilter = document.getElementById('dashboard-player-filter')?.value || 'all';
+        const periodFilter = document.getElementById('dashboard-period-filter')?.value || 'all';
+        const matches = this.getFilteredMatches(playerFilter, periodFilter);
+
+        this.updateDashboardCards(matches);
+        this.initCharts(matches);
     },
 
     // Afficher les stats de la saison (page d'accueil)
