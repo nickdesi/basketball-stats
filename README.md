@@ -88,7 +88,6 @@ L'application peut être installée sur votre smartphone :
 ## 📊 Captures d'Écran
 
 ### Interface Desktop
-### Interface Desktop
 ![Desktop View](assets/screenshot-desktop.png)
 
 ### Interface Mobile
