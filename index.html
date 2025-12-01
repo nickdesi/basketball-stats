@@ -21,8 +21,17 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registered'))
+          .then(reg => {
+            console.log('SW registered');
+            // Vérifier les mises à jour
+            reg.update();
+          })
           .catch(err => console.log('SW error', err));
+
+        // Recharger la page si le SW change (mise à jour critique)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
       });
     }
   </script>
@@ -376,14 +385,14 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
-  <script src="js/haptic.js" defer></script>
-  <script src="js/confetti.js" defer></script>
-  <script src="js/players.js" defer></script>
-  <script src="js/matches.js" defer></script>
-  <script src="js/stats.js" defer></script>
-  <script src="js/export.js" defer></script>
-  <script src="js/share.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="js/haptic.js?v=1.0.1" defer></script>
+  <script src="js/confetti.js?v=1.0.1" defer></script>
+  <script src="js/players.js?v=1.0.1" defer></script>
+  <script src="js/matches.js?v=1.0.1" defer></script>
+  <script src="js/stats.js?v=1.0.1" defer></script>
+  <script src="js/export.js?v=1.0.1" defer></script>
+  <script src="js/share.js?v=1.0.1" defer></script>
+  <script src="app.js?v=1.0.1" defer></script>
 
   <!-- Container caché pour la génération d'image -->
   <div id="share-container" style="position: absolute; left: -9999px; top: 0;"></div>
