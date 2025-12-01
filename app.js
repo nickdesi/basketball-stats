@@ -142,15 +142,22 @@ const AppModule = {
 
         // === PAGE MATCH EN DIRECT - Boutons d'actions ===
         const actionButtons = document.querySelectorAll('.action-btn');
+        let lastTouchTime = 0; // Variable pour éviter les doubles clics (ghost clicks)
+
         actionButtons.forEach(btn => {
             let longPressTimer;
             let longPressTriggered = false;
 
             // Touch start / Mouse down
             const startPress = (e) => {
-                // Empêcher le comportement par défaut pour le touch (scroll, zoom, etc.)
-                // et pour éviter la propagation vers les événements souris
+                // Ignorer les événements souris qui suivent immédiatement un touch (ghost clicks)
+                if (e.type === 'mousedown' && Date.now() - lastTouchTime < 800) {
+                    return;
+                }
+
+                // Empêcher le comportement par défaut pour le touch
                 if (e.type === 'touchstart') {
+                    lastTouchTime = Date.now();
                     e.preventDefault();
                 }
 
@@ -174,7 +181,13 @@ const AppModule = {
 
             // Touch end / Mouse up
             const endPress = (e) => {
+                // Ignorer les événements souris qui suivent immédiatement un touch
+                if (e.type === 'mouseup' && Date.now() - lastTouchTime < 800) {
+                    return;
+                }
+
                 if (e.type === 'touchend') {
+                    lastTouchTime = Date.now();
                     e.preventDefault();
                 }
 
