@@ -15,6 +15,7 @@ Application web moderne pour le suivi des statistiques de basketball en temps r�
 - 📱 **Responsive** : Optimisé pour smartphone, tablette et desktop
 - 💾 **Export/Import** : Sauvegardez vos données en JSON ou CSV
 - 🎨 **Design moderne** : Interface ultra moderne avec glassmorphism
+- ⚡ **Haute Performance** : Architecture optimisée pour une réactivité instantanée
 - 🇫🇷 **100% Français** : Interface entièrement en français
 
 ## 🎯 Statistiques Suivies
