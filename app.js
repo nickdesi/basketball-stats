@@ -158,6 +158,9 @@ const AppModule = {
                 // Empêcher le comportement par défaut pour le touch
                 if (e.type === 'touchstart') {
                     lastTouchTime = Date.now();
+                    // IMPORTANT: preventDefault ici empêche souvent la génération du mousedown/click
+                    // mais certains navigateurs mobiles peuvent être capricieux.
+                    // Le debounce dans MatchesModule.addAction est la sécurité finale.
                     e.preventDefault();
                 }
 

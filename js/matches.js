@@ -9,6 +9,8 @@ const MatchesModule = {
     longPressAction: null,
     matchesCache: null, // Cache pour les données
     domCache: {}, // Cache pour les éléments DOM
+    lastActionTime: 0, // Pour le debounce
+    lastActionType: null, // Pour le debounce
 
     // Récupérer tous les matchs (avec cache)
     getAllMatches() {
@@ -56,10 +58,10 @@ const MatchesModule = {
         };
 
         this.actionsHistory = [];
-        
+
         // Initialiser le cache DOM pour le match
         setTimeout(() => this.initLiveStatsUI(), 100);
-        
+
         return true;
     },
 
@@ -82,6 +84,16 @@ const MatchesModule = {
     // Ajouter une action
     addAction(actionType) {
         if (!this.currentMatch) return;
+
+        // Debounce : Empêcher la même action d'être ajoutée deux fois en moins de 500ms
+        // Cela corrige définitivement le problème de "double tap" sur mobile
+        const now = Date.now();
+        if (actionType === this.lastActionType && (now - this.lastActionTime < 500)) {
+            console.log('🚫 Double action prevented (Debounce)');
+            return;
+        }
+        this.lastActionTime = now;
+        this.lastActionType = actionType;
 
         // Retour haptique medium
         if (window.HapticModule) {
