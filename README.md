@@ -1,128 +1,89 @@
-# 🏀 Basketball Stats Pro
+# 🏀 HoopStats - Suivi de Stats de Basket
 
-Application web moderne pour le suivi des statistiques de basketball en temps réel.
+Une application web moderne et futuriste pour suivre les statistiques de matchs de basket-ball, conçue pour les parents et les coachs. Créez des joueurs, choisissez votre équipe, et enregistrez les performances en temps réel !
 
-![Basketball Stats Pro](https://img.shields.io/badge/version-1.0.0-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Basketball Stats Preview](https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop)
 
 ## ✨ Fonctionnalités
 
-- 📊 **Suivi en temps réel** : Enregistrez toutes les actions pendant un match
-- ↩️ **Annulation Rapide** : Appui long sur n'importe quelle touche pour annuler la dernière action
-- 🚫 **Gestion des Fautes** : Alerte automatique et proposition de fin de match à 5 fautes
-- 📈 **Graphiques interactifs** : Visualisez vos performances avec Chart.js
-- 👥 **Multi-joueurs** : Gérez plusieurs joueurs et leurs statistiques
-- 📱 **Responsive** : Optimisé pour smartphone, tablette et desktop
-- 💾 **Export/Import** : Sauvegardez vos données en JSON ou CSV
-- 🎨 **Design moderne** : Interface ultra moderne avec glassmorphism
-- ⚡ **Haute Performance** : Architecture optimisée pour une réactivité instantanée
-- 📱 **Support Tactile Amélioré** : Gestion intelligente des événements tactiles (anti-ghost clicks)
-- 📤 **Partage Social** : Générez et partagez des cartes de stats visuelles sur vos réseaux
-- 🔄 **Mises à jour Auto** : L'application se met à jour automatiquement pour garantir la meilleure expérience
-- 🇫🇷 **100% Français** : Interface entièrement en français
+### 🎮 Enregistrement de Match (Mode Arcade)
 
-## 🎯 Statistiques Suivies
+- **Interface intuitive :** Gros boutons pour ajouter des points (1pt, 2pts, 3pts) sans regarder l'écran.
+- **Suivi complet :** Rebonds, Passes, Interceptions, Contres, Balles Perdues.
+- **Fautes :** Gestion des fautes avec exclusion automatique (ou stricte) au bout de 5 fautes.
+- **Annulation :** Possibilité d'annuler la dernière action en cas d'erreur.
+- **Effets visuels :** Animations "Arcade" pour chaque panier marqué.
 
-- Points (1pt, 2pts, 3pts)
-- Rebonds
-- Passes décisives
-- Interceptions
-- Contres
-- Balles perdues
-- Fautes (Max 5)
+### 📊 Tableau de Bord (Dashboard)
 
-## 🚀 Démo en Ligne
+- **Vue d'ensemble :** Statistiques globales (Points, Rebonds, Passes par match).
+- **Graphiques interactifs :**
+  - Évolution des points au fil des matchs (Courbe).
+  - Répartition des points (Camembert 1pt/2pts/3pts).
+  - Comparaison des performances moyennes (Barres).
+- **Historique détaillé :** Liste de tous les matchs passés avec scores et dates.
 
-Accédez à l'application : **[Basketball Stats Pro](https://nickdesi.github.io/basketball-stats/)**
+### 📜 Gestion des Matchs
 
-## 💻 Technologies
+- **Détails du match :** Cliquez sur un match pour voir la feuille de stats complète.
+- **Partage :** Partagez un résumé textuel du match (WhatsApp, SMS, etc.).
+- **Export JSON :** Téléchargez les données brutes d'un match spécifique ou de tout l'historique.
+- **Suppression :** Supprimez un match de l'historique en cas d'erreur.
 
-- HTML5
-- CSS3 (Glassmorphism, Animations)
-- JavaScript ES6+ (Vanilla)
-- Chart.js 4.4.0
-- LocalStorage API
+### 👥 Gestion des Joueurs
 
-## 📦 Utilisation Locale
+- **Profils multiples :** Créez et gérez plusieurs joueurs.
+- **Sélection rapide :** Changez de joueur actif à la volée.
+- **Stats individualisées :** Le tableau de bord s'adapte au joueur sélectionné.
 
-1. Clonez le repository :
-```bash
-git clone https://github.com/votre-username/basketball-stats.git
-```
+## 🛠 Technologies
 
-2. Ouvrez `index.html` dans votre navigateur
+- **Frontend :** [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Langage :** [TypeScript](https://www.typescriptlang.org/)
+- **Styles :** [Tailwind CSS v4](https://tailwindcss.com/)
+- **État :** [Zustand](https://github.com/pmndrs/zustand) (avec persistance locale)
+- **Graphiques :** [Chart.js](https://www.chartjs.org/) + [React-Chartjs-2](https://react-chartjs-2.js.org/)
+- **Icônes :** [Lucide React](https://lucide.dev/)
 
-Aucune installation nécessaire ! L'application fonctionne entièrement côté client.
+## 🚀 Installation
 
-## 📱 Installation comme PWA
+1. **Cloner le projet :**
 
-L'application peut être installée sur votre smartphone :
-1. Ouvrez l'app dans votre navigateur mobile
-2. Utilisez "Ajouter à l'écran d'accueil"
-3. Profitez de l'expérience app native !
+    ```bash
+    git clone https://github.com/votre-username/basketball-stats-1.git
+    cd basketball-stats-1
+    ```
 
-## 🎮 Guide d'Utilisation
+2. **Installer les dépendances :**
 
-### Premier Lancement
-1. Accédez à l'onglet **"Joueurs"**
-2. Ajoutez un joueur avec son nom, numéro et position
-3. Retournez à l'**Accueil**
+    ```bash
+    npm install
+    ```
 
-### Démarrer un Match
-1. Sélectionnez le joueur
-2. (Optionnel) Ajoutez l'équipe adverse
-3. Cliquez sur **"Démarrer le Match"**
+3. **Lancer le serveur de développement :**
 
-### Pendant le Match
-- **Ajout** : Cliquez sur les boutons d'actions pour enregistrer les stats
-- **Annulation** : Faites un **appui long** (>0.5s) sur une touche pour annuler sa dernière action
-- **Fautes** : À 5 fautes, l'app vous proposera de terminer le match (joueur exclu)
-- Les stats se mettent à jour en temps réel
-- Terminez avec **"Terminer"**
+    ```bash
+    npm run dev
+    ```
 
-### Analyse des Performances
-- **Statistiques** : Visualisez les graphiques et moyennes
-- **Historique** : Consultez tous les matchs passés
-- **Export** : Sauvegardez vos données
+4. **Construire pour la production :**
 
-## 📊 Captures d'Écran
+    ```bash
+    npm run build
+    ```
 
-### Interface Desktop
-![Desktop View](assets/screenshot-desktop.png)
+## 📱 Utilisation
 
-### Interface Mobile
-![Mobile View](assets/screenshot-mobile.png)
-
-## 🗂️ Structure du Projet
-
-```
-basketball-stats/
-├── index.html          # Page principale
-├── styles.css          # Design system
-├── app.js              # Contrôleur principal
-├── js/
-│   ├── players.js      # Gestion joueurs
-│   ├── matches.js      # Gestion matchs
-│   ├── stats.js        # Statistiques & graphiques
-│   └── export.js       # Export/Import données
-└── assets/             # Ressources (si besoin)
-```
+1. Allez dans l'onglet **Joueurs** pour créer le profil de votre enfant/joueur.
+2. Dans **Nouveau Match**, sélectionnez le joueur et le nom de l'adversaire.
+3. Pendant le match, cliquez sur les boutons pour ajouter des stats.
+4. À la fin du match, cliquez sur "Terminer le match" pour sauvegarder.
+5. Consultez les progrès dans le **Tableau de Bord**.
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-- Signaler des bugs
-- Proposer des nouvelles fonctionnalités
-- Soumettre des pull requests
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une Pull Request.
 
 ## 📄 Licence
 
-MIT License - Vous êtes libre d'utiliser, modifier et distribuer cette application.
-
-## 👨‍💻 Auteur
-
-Créé avec ❤️ pour les passionnés de basketball
-
----
-
-**⭐ Si vous aimez ce projet, n'oubliez pas de lui donner une étoile sur GitHub !**
+MIT License.

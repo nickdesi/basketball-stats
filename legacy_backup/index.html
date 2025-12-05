@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Application moderne de statistiques de basketball">
+  <title>Basketball Stats Pro 🏀</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FF6B35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => {
+            console.log('SW registered');
+            // Vérifier les mises à jour
+            reg.update();
+          })
+          .catch(err => console.log('SW error', err));
+
+        // Recharger la page si le SW change (mise à jour critique)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+      });
+    }
+  </script>
+  <div class="app-container">
+    <!-- NAVIGATION -->
+    <nav class="nav-container">
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <button class="nav-btn active" data-view="home">
+            <span class="icon">🏠</span>
+            Accueil
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-view="live-match">
+            <span class="icon">🏀</span>
+            Match en Direct
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-view="dashboard">
+            <span class="icon">📊</span>
+            Statistiques
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-view="history">
+            <span class="icon">📜</span>
+            Historique
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-view="players">
+            <span class="icon">👥</span>
+            Joueurs
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- VUE: ACCUEIL -->
+    <div id="home" class="view active">
+      <div class="text-center mb-lg">
+        <h1 class="text-gradient">Basketball Stats Pro</h1>
+        <p class="text-muted">Suivez vos performances en temps réel</p>
+      </div>
+
+      <!-- Nouveau Match -->
+      <div class="card glass-card mb-lg">
+        <div class="card-header">
+          <h2 class="card-title">🏀 Nouveau Match</h2>
+        </div>
+        <div id="new-match-section">
+          <div class="form-group">
+            <label class="form-label">Sélectionner le joueur</label>
+            <select id="player-select" class="form-input">
+              <option value="">-- Choisir un joueur --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Équipe adverse (optionnel)</label>
+            <input type="text" id="opponent-input" class="form-input" placeholder="Nom de l'équipe adverse">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date du match</label>
+            <input type="date" id="match-date" class="form-input">
+          </div>
+          <button id="start-match-btn" class="btn btn-primary btn-large w-full">
+            Démarrer le Match 🚀
+          </button>
+        </div>
+      </div>
+
+      <!-- Aperçu des stats -->
+      <div class="card mb-lg">
+        <div class="card-header">
+          <h3 class="card-title">📈 Statistiques de la Saison</h3>
+        </div>
+        <div id="season-stats-preview" class="stats-grid">
+          <!-- Généré dynamiquement -->
+        </div>
+      </div>
+
+      <!-- Derniers matchs -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🕐 Derniers Matchs</h3>
+        </div>
+        <div id="recent-matches">
+          <!-- Généré dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE: MATCH EN DIRECT -->
+    <div id="live-match" class="view">
+      <div class="card mb-lg">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Match en Direct</h2>
+            <p class="text-muted" id="current-player-name">--</p>
+          </div>
+          <div class="flex gap-sm">
+            <button id="undo-btn" class="btn btn-secondary">
+              ↩️ Annuler
+            </button>
+            <button id="end-match-btn" class="btn btn-danger">
+              🏁 Terminer
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats en temps réel -->
+        <div id="live-stats" class="stats-grid mb-lg">
+          <!-- Généré dynamiquement -->
+        </div>
+
+        <!-- Boutons d'actions -->
+        <h3 class="mb-md text-center">Scoring</h3>
+        <div class="action-grid scoring-grid">
+          <!-- Points -->
+          <button class="action-btn points-1 btn-xl" data-action="freethrow">
+            <span class="action-icon">1️⃣</span>
+            <span class="action-label">Lancer</span>
+            <span class="action-count" data-stat="points1">0</span>
+          </button>
+
+          <button class="action-btn points-2 btn-xl" data-action="2points">
+            <span class="action-icon">2️⃣</span>
+            <span class="action-label">2 Pts</span>
+            <span class="action-count" data-stat="points2">0</span>
+          </button>
+
+          <button class="action-btn points-3 btn-xl" data-action="3points">
+            <span class="action-icon">3️⃣</span>
+            <span class="action-label">3 Pts</span>
+            <span class="action-count" data-stat="points3">0</span>
+          </button>
+        </div>
+
+        <h3 class="mb-md text-center">Défense & Jeu</h3>
+        <div class="action-grid">
+          <!-- Autres stats -->
+          <button class="action-btn rebound" data-action="rebound">
+            <span class="action-icon">🔄</span>
+            <span class="action-label">Rebond</span>
+            <span class="action-count" data-stat="rebounds">0</span>
+          </button>
+
+          <button class="action-btn assist" data-action="assist">
+            <span class="action-icon">🎯</span>
+            <span class="action-label">Passe D.</span>
+            <span class="action-count" data-stat="assists">0</span>
+          </button>
+
+          <button class="action-btn steal" data-action="steal">
+            <span class="action-icon">🤚</span>
+            <span class="action-label">Intercept.</span>
+            <span class="action-count" data-stat="steals">0</span>
+          </button>
+
+          <button class="action-btn block" data-action="block">
+            <span class="action-icon">🚫</span>
+            <span class="action-label">Contre</span>
+            <span class="action-count" data-stat="blocks">0</span>
+          </button>
+
+          <button class="action-btn turnover" data-action="turnover">
+            <span class="action-icon">❌</span>
+            <span class="action-label">Perte</span>
+            <span class="action-count" data-stat="turnovers">0</span>
+          </button>
+
+          <button class="action-btn foul" data-action="foul">
+            <span class="action-icon">⚠️</span>
+            <span class="action-label">Faute</span>
+            <span class="action-count" data-stat="fouls">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE: DASHBOARD (Graphiques) -->
+    <div id="dashboard" class="view">
+      <div class="text-center mb-lg">
+        <h1 class="text-gradient">Tableau de Bord</h1>
+        <p class="text-muted">Analysez vos performances</p>
+      </div>
+
+      <!-- Filtres -->
+      <div class="card mb-lg">
+        <div class="flex gap-md">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Joueur</label>
+            <select id="dashboard-player-filter" class="form-input">
+              <option value="all">Tous les joueurs</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Période</label>
+            <select id="dashboard-period-filter" class="form-input">
+              <option value="all">Toute la saison</option>
+              <option value="last5">5 derniers matchs</option>
+              <option value="last10">10 derniers matchs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cartes de stats principales -->
+      <div id="main-stats-cards" class="stats-grid mb-lg">
+        <div class="stat-card">
+          <div class="stat-value" id="avg-points">0.0</div>
+          <div class="stat-label">Moy. Points/Match</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-rebounds">0.0</div>
+          <div class="stat-label">Moy. Rebonds/Match</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-assists">0.0</div>
+          <div class="stat-label">Moy. Passes/Match</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="total-matches">0</div>
+          <div class="stat-label">Matchs Joués</div>
+        </div>
+      </div>
+
+      <!-- Graphiques en grille compacte -->
+      <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-md);">
+        <!-- Évolution des points -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📈 Évolution des Points</h3>
+          </div>
+          <div style="position: relative; height: 250px; width: 100%;">
+            <canvas id="points-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Grille 2 colonnes pour les autres graphiques -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+          <!-- Répartition -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" style="font-size: 1rem;">🥧 Répartition</h3>
+            </div>
+            <div style="position: relative; height: 220px; width: 100%;">
+              <canvas id="points-distribution-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Comparaison -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" style="font-size: 1rem;">📊 Comparaison</h3>
+            </div>
+            <div style="position: relative; height: 220px; width: 100%;">
+              <canvas id="stats-comparison-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE: HISTORIQUE -->
+    <div id="history" class="view">
+      <div class="text-center mb-lg">
+        <h1 class="text-gradient">Historique des Matchs</h1>
+        <p class="text-muted">Consultez tous vos matchs</p>
+      </div>
+
+      <!-- Filtres -->
+      <div class="card mb-lg">
+        <div class="flex gap-md">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Joueur</label>
+            <select id="history-player-filter" class="form-input">
+              <option value="all">Tous les joueurs</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Trier par</label>
+            <select id="history-sort" class="form-input">
+              <option value="date-desc">Plus récent</option>
+              <option value="date-asc">Plus ancien</option>
+              <option value="points-desc">Plus de points</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste des matchs -->
+      <div id="matches-list">
+        <!-- Généré dynamiquement -->
+      </div>
+    </div>
+
+    <!-- VUE: JOUEURS -->
+    <div id="players" class="view">
+      <div class="text-center mb-lg">
+        <h1 class="text-gradient">Gestion des Joueurs</h1>
+        <p class="text-muted">Ajoutez et gérez vos joueurs</p>
+      </div>
+
+      <!-- Formulaire ajout joueur -->
+      <div class="card glass-card mb-lg">
+        <div class="card-header">
+          <h2 class="card-title">➕ Ajouter un Joueur</h2>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom Complet</label>
+          <input type="text" id="player-name-input" class="form-input" placeholder="Ex: Victor Wembanyama">
+        </div>
+        <div class="flex gap-md">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Numéro de Maillot</label>
+            <input type="number" id="player-number-input" class="form-input" placeholder="Ex: 23" min="0" max="99">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Position</label>
+            <select id="player-position-input" class="form-input">
+              <option value="">-- Position --</option>
+              <option value="meneur">Meneur (PG)</option>
+              <option value="arriere">Arrière (SG)</option>
+              <option value="ailier">Ailier (SF)</option>
+              <option value="ailier-fort">Ailier Fort (PF)</option>
+              <option value="pivot">Pivot (C)</option>
+            </select>
+          </div>
+        </div>
+        <button id="add-player-btn" class="btn btn-primary w-full">
+          Ajouter le Joueur 🎯
+        </button>
+      </div>
+
+      <!-- Liste des joueurs -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">👥 Mes Joueurs</h3>
+        </div>
+        <div id="players-list">
+          <!-- Généré dynamiquement -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="js/haptic.js?v=1.0.1" defer></script>
+  <script src="js/confetti.js?v=1.0.1" defer></script>
+  <script src="js/players.js?v=1.0.1" defer></script>
+  <script src="js/matches.js?v=1.0.1" defer></script>
+  <script src="js/stats.js?v=1.0.1" defer></script>
+  <script src="js/export.js?v=1.0.1" defer></script>
+  <script src="js/share.js?v=1.0.1" defer></script>
+  <script src="app.js?v=1.0.1" defer></script>
+
+  <!-- Container caché pour la génération d'image -->
+  <div id="share-container" style="position: absolute; left: -9999px; top: 0;"></div>
+</body>
+
+</html>
