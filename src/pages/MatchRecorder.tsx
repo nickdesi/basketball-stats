@@ -132,14 +132,14 @@ const MatchRecorder = () => {
                 onContextMenu={(e) => { e.preventDefault(); handleUndo(stat, label); }}
                 disabled={isFouledOut}
                 className={`
-                    relative flex flex-col items-center justify-center p-2 rounded-2xl border transition-all duration-75 touch-none select-none disabled:opacity-30 disabled:grayscale ${colorClass} btn-press-effect
+                    relative flex flex-col items-center justify-center p-1 rounded-xl border transition-all duration-75 touch-none select-none disabled:opacity-30 disabled:grayscale ${colorClass} btn-press-effect
                     active:scale-90 active:brightness-125
                     ${isClicked ? 'scale-90 brightness-150 shadow-[0_0_30px_currentColor] z-10' : 'hover:scale-[1.02]'}
                 `}
             >
-                <div className="text-2xl mb-1 filter drop-shadow-lg transform transition-transform duration-75">{emoji}</div>
-                <div className="text-3xl font-bold mb-1 leading-none">{currentStats[stat]}</div>
-                <div className="text-[10px] uppercase tracking-wider opacity-80 font-bold">{label}</div>
+                <div className="text-xl mb-0 filter drop-shadow-lg transform transition-transform duration-75">{emoji}</div>
+                <div className="text-2xl font-bold mb-0 leading-none">{currentStats[stat]}</div>
+                <div className="text-[9px] uppercase tracking-wider opacity-80 font-bold">{label}</div>
             </button>
         );
     };
@@ -207,7 +207,7 @@ const MatchRecorder = () => {
 
     // --- RENDER GAME RECORDER ---
     return (
-        <div className="h-[calc(100vh-140px)] flex flex-col gap-4 animate-in fade-in zoom-in duration-300 relative">
+        <div className="h-[calc(100vh-140px)] flex flex-col gap-2 animate-in fade-in zoom-in duration-300 relative">
 
             {/* FOULED OUT OVERLAY */}
             {isFouledOut && (
@@ -234,20 +234,20 @@ const MatchRecorder = () => {
             )}
 
             {/* Header Stats */}
-            <div className="flex gap-4 glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] shrink-0 items-center justify-between">
+            <div className="flex gap-2 glass-panel p-2 rounded-xl border border-[var(--color-glass-border)] shrink-0 items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                         <UserCircle className="text-gray-300" size={24} />
                     </div>
                     <div>
                         <div className="text-xs text-gray-400 uppercase font-bold">{activePlayerName}</div>
-                        <div className="text-xs text-[var(--color-neon-blue)] font-mono">{totalPoints} PTS</div>
+                        <div className="text-sm text-[var(--color-neon-blue)] font-mono font-bold leading-none">{totalPoints} PTS</div>
                     </div>
                 </div>
 
                 <div className="text-center">
-                    <div className="text-xs text-gray-400">FAUTES</div>
-                    <div className={`text-3xl font-bold font-mono ${isFouledOut ? 'text-red-500' : 'text-gray-200'}`}>
+                    <div className="text-[10px] text-gray-400 uppercase font-bold">Fautes</div>
+                    <div className={`text-2xl font-bold font-mono leading-none ${isFouledOut ? 'text-red-500' : 'text-gray-200'}`}>
                         {currentStats.fouls}
                     </div>
                 </div>
@@ -266,7 +266,7 @@ const MatchRecorder = () => {
             </div>
 
             {/* Main Action Grid */}
-            <div className="grid grid-cols-3 grid-rows-3 gap-3 flex-1">
+            <div className="grid grid-cols-3 grid-rows-3 gap-2 flex-1 min-h-0">
                 {/* Scoring Row */}
                 <ActionButton
                     stat="points1"
@@ -356,9 +356,9 @@ const MatchRecorder = () => {
             )}
 
             {/* Undo Hint */}
-            <div className="text-center text-xs text-gray-500 mt-[-8px]">
-                <Undo2 size={12} className="inline mr-1" />
-                Clic droit pour annuler
+            <div className="text-center text-[10px] text-gray-500 mt-[-4px]">
+                <Undo2 size={10} className="inline mr-1" />
+                Clic droit : annuler
             </div>
 
             {/* Floating Animations Container */}
