@@ -30,6 +30,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Détails du match :** Cliquez sur un match pour voir la feuille de stats complète.
 - **Partage :** Partagez un résumé textuel du match (WhatsApp, SMS, etc.).
 - **Export JSON :** Téléchargez les données brutes d'un match spécifique ou de tout l'historique.
+- [x] **Modification :** Modifiez les stats d'un match terminé en cas d'oubli ou d'erreur.
 - **Suppression :** Supprimez un match de l'historique en cas d'erreur.
 
 ### 👥 Gestion des Joueurs
