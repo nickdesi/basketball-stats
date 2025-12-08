@@ -28,9 +28,45 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-    const { history, players, deleteGame } = useGameStore();
+    const { history, players, deleteGame, updateGame } = useGameStore();
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editStats, setEditStats] = useState<any>(null);
+
+    const startEditing = () => {
+        if (selectedGame) {
+            setEditStats({ ...selectedGame.stats });
+            setIsEditing(true);
+        }
+    };
+
+    const cancelEditing = () => {
+        setIsEditing(false);
+        setEditStats(null);
+    };
+
+    const saveEditing = () => {
+        if (selectedGame && editStats) {
+            updateGame(selectedGame.id, editStats);
+
+            // Update the locally selected game to reflect changes immediately in the modal
+            setSelectedGame({
+                ...selectedGame,
+                stats: { ...editStats }
+            });
+
+            setIsEditing(false);
+            setEditStats(null);
+        }
+    };
+
+    const handleEditStatChange = (stat: string, value: number) => {
+        setEditStats((prev: any) => ({
+            ...prev,
+            [stat]: Math.max(0, value)
+        }));
+    };
 
     const handleExport = () => {
         const dataStr = JSON.stringify(history, null, 2);
@@ -183,7 +219,9 @@ const Dashboard = () => {
                         {/* Modal Header */}
                         <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-start">
                             <div>
-                                <div className="text-xs text-[var(--color-neon-blue)] font-bold uppercase tracking-wider mb-1">Détails du Match</div>
+                                <div className="text-xs text-[var(--color-neon-blue)] font-bold uppercase tracking-wider mb-1">
+                                    {isEditing ? 'Modification du Match' : 'Détails du Match'}
+                                </div>
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                     {selectedGame.opponent || "Match d'entraînement"}
                                 </h3>
@@ -192,100 +230,172 @@ const Dashboard = () => {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-red-500" title="Supprimer">
-                                    <Trash2 size={20} />
-                                </button>
-                                <button onClick={() => handleShareGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-[var(--color-neon-blue)]" title="Partager">
-                                    <Share2 size={20} />
-                                </button>
-                                <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white" title="Exporter JSON">
-                                    <Download size={20} />
-                                </button>
-                                <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
-                                    <span className="text-2xl leading-none">&times;</span>
-                                </button>
+                                {!isEditing ? (
+                                    <>
+                                        <button onClick={startEditing} className="p-2 hover:bg-white/10 rounded-full transition-colors text-yellow-400" title="Modifier">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                        </button>
+                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-red-500" title="Supprimer">
+                                            <Trash2 size={20} />
+                                        </button>
+                                        <button onClick={() => handleShareGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-[var(--color-neon-blue)]" title="Partager">
+                                            <Share2 size={20} />
+                                        </button>
+                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white" title="Exporter JSON">
+                                            <Download size={20} />
+                                        </button>
+                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
+                                            <span className="text-2xl leading-none">&times;</span>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button onClick={cancelEditing} className="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
+                                        <span className="text-2xl leading-none">&times;</span>
+                                    </button>
+                                )}
                             </div>
                         </div>
 
                         {/* Modal Body - Scrollable */}
                         <div className="p-6 overflow-y-auto space-y-6">
 
-                            {/* Score Recap */}
-                            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
-                                <div>
-                                    <div className="text-sm text-gray-400 uppercase font-bold">Joueur</div>
-                                    <div className="text-xl font-bold text-[var(--color-neon-blue)]">
-                                        {players.find(p => p.id === selectedGame.playerId)?.name || 'Inconnu'}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-4xl font-black font-mono text-white">
-                                        {(selectedGame.stats.points1 * 1) + (selectedGame.stats.points2 * 2) + (selectedGame.stats.points3 * 3)}
-                                    </div>
-                                    <div className="text-[10px] text-gray-500 font-bold uppercase">Points Totaux</div>
-                                </div>
-                            </div>
-
-                            {/* Stats Grid */}
-                            <div>
-                                <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">Statistiques Complètes</h4>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                        <div className="text-2xl mb-1">🎯</div>
-                                        <div className="font-bold text-xl">{selectedGame.stats.points1}</div>
-                                        <div className="text-[10px] text-gray-500 uppercase">1 Pt</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                        <div className="text-2xl mb-1">🏀</div>
-                                        <div className="font-bold text-xl">{selectedGame.stats.points2}</div>
-                                        <div className="text-[10px] text-gray-500 uppercase">2 Pts</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                        <div className="text-2xl mb-1">🔥</div>
-                                        <div className="font-bold text-xl">{selectedGame.stats.points3}</div>
-                                        <div className="text-[10px] text-gray-500 uppercase">3 Pts</div>
+                            {isEditing ? (
+                                // --- EDIT MODE ---
+                                <div className="space-y-6">
+                                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-yellow-200 text-sm mb-4">
+                                        Vous modifiez les statistiques de ce match.
                                     </div>
 
-                                    <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                        <div className="text-2xl mb-1">⛹️‍♂️</div>
-                                        <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.rebounds}</div>
-                                        <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Rebonds</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                        <div className="text-2xl mb-1">🎁</div>
-                                        <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.assists}</div>
-                                        <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Passes</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                        <div className="text-2xl mb-1">🧤</div>
-                                        <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.steals}</div>
-                                        <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Intercep.</div>
-                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {Object.entries(editStats || {}).map(([key, value]) => {
+                                            const labels: Record<string, string> = {
+                                                points1: "1 Point",
+                                                points2: "2 Points",
+                                                points3: "3 Points",
+                                                rebounds: "Rebonds",
+                                                assists: "Passes",
+                                                steals: "Interceptions",
+                                                blocks: "Contres",
+                                                turnovers: "Balles Perdues",
+                                                fouls: "Fautes"
+                                            };
+                                            if (!labels[key]) return null;
 
-                                    <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 border border-[var(--color-neon-purple)]/20 text-center">
-                                        <div className="text-2xl mb-1">🧱</div>
-                                        <div className="font-bold text-xl text-[var(--color-neon-purple)]">{selectedGame.stats.blocks}</div>
-                                        <div className="text-[10px] text-[var(--color-neon-purple)]/70 uppercase">Contres</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-center">
-                                        <div className="text-2xl mb-1">🥔</div>
-                                        <div className="font-bold text-xl text-orange-500">{selectedGame.stats.turnovers}</div>
-                                        <div className="text-[10px] text-orange-500/70 uppercase">Balles P.</div>
-                                    </div>
-                                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-center">
-                                        <div className="text-2xl mb-1">👮</div>
-                                        <div className="font-bold text-xl text-red-500">{selectedGame.stats.fouls}</div>
-                                        <div className="text-[10px] text-red-500/70 uppercase">Fautes</div>
+                                            return (
+                                                <div key={key} className="p-3 rounded-lg bg-white/5 border border-white/10 flex flex-col items-center">
+                                                    <label className="text-xs text-gray-400 uppercase font-bold mb-2">{labels[key]}</label>
+                                                    <div className="flex items-center gap-3">
+                                                        <button
+                                                            onClick={() => handleEditStatChange(key, (value as number) - 1)}
+                                                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <span className="text-xl font-mono font-bold w-8 text-center">{value as number}</span>
+                                                        <button
+                                                            onClick={() => handleEditStatChange(key, (value as number) + 1)}
+                                                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                // --- VIEW MODE ---
+                                <>
+                                    {/* Score Recap */}
+                                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                                        <div>
+                                            <div className="text-sm text-gray-400 uppercase font-bold">Joueur</div>
+                                            <div className="text-xl font-bold text-[var(--color-neon-blue)]">
+                                                {players.find(p => p.id === selectedGame.playerId)?.name || 'Inconnu'}
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-4xl font-black font-mono text-white">
+                                                {(selectedGame.stats.points1 * 1) + (selectedGame.stats.points2 * 2) + (selectedGame.stats.points3 * 3)}
+                                            </div>
+                                            <div className="text-[10px] text-gray-500 font-bold uppercase">Points Totaux</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    <div>
+                                        <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">Statistiques Complètes</h4>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
+                                                <div className="text-2xl mb-1">🎯</div>
+                                                <div className="font-bold text-xl">{selectedGame.stats.points1}</div>
+                                                <div className="text-[10px] text-gray-500 uppercase">1 Pt</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
+                                                <div className="text-2xl mb-1">🏀</div>
+                                                <div className="font-bold text-xl">{selectedGame.stats.points2}</div>
+                                                <div className="text-[10px] text-gray-500 uppercase">2 Pts</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
+                                                <div className="text-2xl mb-1">🔥</div>
+                                                <div className="font-bold text-xl">{selectedGame.stats.points3}</div>
+                                                <div className="text-[10px] text-gray-500 uppercase">3 Pts</div>
+                                            </div>
+
+                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
+                                                <div className="text-2xl mb-1">⛹️‍♂️</div>
+                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.rebounds}</div>
+                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Rebonds</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
+                                                <div className="text-2xl mb-1">🎁</div>
+                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.assists}</div>
+                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Passes</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
+                                                <div className="text-2xl mb-1">🧤</div>
+                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.steals}</div>
+                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Intercep.</div>
+                                            </div>
+
+                                            <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 border border-[var(--color-neon-purple)]/20 text-center">
+                                                <div className="text-2xl mb-1">🧱</div>
+                                                <div className="font-bold text-xl text-[var(--color-neon-purple)]">{selectedGame.stats.blocks}</div>
+                                                <div className="text-[10px] text-[var(--color-neon-purple)]/70 uppercase">Contres</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-center">
+                                                <div className="text-2xl mb-1">🥔</div>
+                                                <div className="font-bold text-xl text-orange-500">{selectedGame.stats.turnovers}</div>
+                                                <div className="text-[10px] text-orange-500/70 uppercase">Balles P.</div>
+                                            </div>
+                                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-center">
+                                                <div className="text-2xl mb-1">👮</div>
+                                                <div className="font-bold text-xl text-red-500">{selectedGame.stats.fouls}</div>
+                                                <div className="text-[10px] text-red-500/70 uppercase">Fautes</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-4 border-t border-white/10 bg-white/5 flex justify-end">
-                            <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
-                                Fermer
-                            </button>
+                        <div className="p-4 border-t border-white/10 bg-white/5 flex justify-end gap-3">
+                            {isEditing ? (
+                                <>
+                                    <button onClick={cancelEditing} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                        Annuler
+                                    </button>
+                                    <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:bg-green-400 text-black rounded-lg font-bold transition-colors">
+                                        Enregistrer
+                                    </button>
+                                </>
+                            ) : (
+                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                    Fermer
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

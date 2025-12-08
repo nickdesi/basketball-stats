@@ -57,6 +57,7 @@ export type GameState = {
     resetGame: () => void;
     finishGame: () => void;
     deleteGame: (id: string) => void;
+    updateGame: (gameId: string, updatedStats: GameStats) => void;
 };
 
 const initialStats: GameStats = {
@@ -149,6 +150,14 @@ export const useGameStore = create<GameState>()(
 
             deleteGame: (id) => set((state) => ({
                 history: state.history.filter(g => g.id !== id)
+            })),
+
+            updateGame: (gameId, updatedStats) => set((state) => ({
+                history: state.history.map(g =>
+                    g.id === gameId
+                        ? { ...g, stats: { ...updatedStats } }
+                        : g
+                )
             })),
         }),
         {
