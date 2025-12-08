@@ -21,6 +21,24 @@ const MatchRecorder = () => {
 
     const [lastAction, setLastAction] = useState<string | null>(null);
     const [clickEffect, setClickEffect] = useState<{ id: string, stat: string } | null>(null);
+    const [animations, setAnimations] = useState<{ id: string, text: string, x: number, y: number, color: string, rot: number }[]>([]);
+
+    const addAnimation = (e: React.MouseEvent<HTMLButtonElement>, text: string, color: string) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        // Calculate center relative to the viewport, but we'll render likely fixed or absolute.
+        // Actually, rendering it fixed over the screen is easiest.
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const rot = (Math.random() - 0.5) * 40; // Random rotation between -20 and 20 degrees
+
+        const newAnim = { id: Date.now().toString() + Math.random(), text, x, y, color, rot };
+        setAnimations(prev => [...prev, newAnim]);
+
+        // Cleanup
+        setTimeout(() => {
+            setAnimations(prev => prev.filter(a => a.id !== newAnim.id));
+        }, 800);
+    };
 
     // Setup State
     const [selectedPlayer, setSelectedPlayer] = useState<string>(activePlayerId || '');
@@ -58,12 +76,23 @@ const MatchRecorder = () => {
         }
     };
 
-    const handleStat = (stat: keyof GameStats, label: string) => {
-        if (isFouledOut && stat !== 'fouls') return; // Block input if fouled out (except maybe undoing fouls)
+    const handleStat = (stat: keyof GameStats, label: string, e: React.MouseEvent<HTMLButtonElement>, colorClass: string) => {
+        if (isFouledOut && stat !== 'fouls') return;
 
         incrementStat(stat);
         setLastAction(`${label} +1`);
         setClickEffect({ id: Date.now().toString(), stat });
+
+        // Extract color from class or default
+        let color = '#fff';
+        if (colorClass.includes('neon-blue')) color = 'var(--color-neon-blue)';
+        else if (colorClass.includes('neon-green')) color = 'var(--color-neon-green)';
+        else if (colorClass.includes('neon-purple')) color = 'var(--color-neon-purple)';
+        else if (colorClass.includes('orange')) color = '#f97316';
+        else if (colorClass.includes('red')) color = '#ef4444';
+
+        addAnimation(e, "+1", color);
+
         if (navigator.vibrate) navigator.vibrate(50);
     };
 
@@ -99,11 +128,11 @@ const MatchRecorder = () => {
 
         return (
             <button
-                onClick={() => handleStat(stat, label)}
+                onClick={(e) => handleStat(stat, label, e, colorClass)}
                 onContextMenu={(e) => { e.preventDefault(); handleUndo(stat, label); }}
                 disabled={isFouledOut}
                 className={`
-                    relative flex flex-col items-center justify-center p-2 rounded-2xl border transition-all duration-75 touch-none select-none disabled:opacity-30 disabled:grayscale ${colorClass}
+                    relative flex flex-col items-center justify-center p-2 rounded-2xl border transition-all duration-75 touch-none select-none disabled:opacity-30 disabled:grayscale ${colorClass} btn-press-effect
                     active:scale-90 active:brightness-125
                     ${isClicked ? 'scale-90 brightness-150 shadow-[0_0_30px_currentColor] z-10' : 'hover:scale-[1.02]'}
                 `}
@@ -331,6 +360,23 @@ const MatchRecorder = () => {
                 <Undo2 size={12} className="inline mr-1" />
                 Clic droit pour annuler
             </div>
+
+            {/* Floating Animations Container */}
+            {animations.map(anim => (
+                <div
+                    key={anim.id}
+                    className="fixed pointer-events-none z-[100] animate-arcade-pop font-black text-6xl tracking-tighter"
+                    style={{
+                        left: anim.x,
+                        top: anim.y,
+                        color: anim.color,
+                        '--rot': `${anim.rot}deg`,
+                        textShadow: '3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+                    } as React.CSSProperties}
+                >
+                    {anim.text}
+                </div>
+            ))}
         </div>
     );
 };
