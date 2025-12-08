@@ -39,6 +39,7 @@ const MatchRecorder = () => {
     };
 
     // Setup State
+    const activePlayer = players.find(p => p.id === activePlayerId);
     const [selectedPlayer, setSelectedPlayer] = useState<string>(activePlayerId || '');
     const [opponentName, setOpponentName] = useState('');
 
@@ -272,12 +273,20 @@ const MatchRecorder = () => {
                     emoji="🏀"
                     colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
                 />
-                <ActionButton
-                    stat="points3"
-                    label="3 PTS"
-                    emoji="🔥"
-                    colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
-                />
+
+                {/* 3 PTS Button - Hidden for U11 */}
+                {(activePlayer?.level !== 'U11') ? (
+                    <ActionButton
+                        stat="points3"
+                        label="3 PTS"
+                        emoji="🔥"
+                        colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
+                    />
+                ) : (
+                    <div className="rounded-xl border border-white/5 bg-white/5 flex items-center justify-center opacity-30 select-none">
+                        <span className="text-[10px] text-gray-500 font-bold uppercase">U11 Mode</span>
+                    </div>
+                )}
 
                 {/* Core Stats Row 1 */}
                 <ActionButton

@@ -8,11 +8,12 @@ const Players = () => {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
     const [position, setPosition] = useState('Meneur');
+    const [level, setLevel] = useState<'U11' | 'U13' | 'U15' | 'U18'>('U15');
 
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
         if (name && number) {
-            addPlayer(name, number, position);
+            addPlayer(name, number, position, level);
             setName('');
             setNumber('');
         }
@@ -61,19 +62,33 @@ const Players = () => {
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs text-gray-400 uppercase font-bold">Poste</label>
+                            <label className="text-xs text-gray-400 uppercase font-bold">Niveau</label>
                             <select
-                                value={position}
-                                onChange={(e) => setPosition(e.target.value)}
+                                value={level}
+                                onChange={(e) => setLevel(e.target.value as any)}
                                 className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                             >
-                                <option value="Meneur">Meneur</option>
-                                <option value="Arrière">Arrière</option>
-                                <option value="Ailier">Ailier</option>
-                                <option value="Ailier Fort">Ailier Fort</option>
-                                <option value="Pivot">Pivot</option>
+                                <option value="U11">U11 (Pas de 3 pts)</option>
+                                <option value="U13">U13</option>
+                                <option value="U15">U15</option>
+                                <option value="U18">U18+</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-400 uppercase font-bold">Poste</label>
+                        <select
+                            value={position}
+                            onChange={(e) => setPosition(e.target.value)}
+                            className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
+                        >
+                            <option value="Meneur">Meneur</option>
+                            <option value="Arrière">Arrière</option>
+                            <option value="Ailier">Ailier</option>
+                            <option value="Ailier Fort">Ailier Fort</option>
+                            <option value="Pivot">Pivot</option>
+                        </select>
                     </div>
                 </div>
 
@@ -101,7 +116,7 @@ const Players = () => {
                                 </div>
                                 <div>
                                     <div className="font-bold text-lg">{player.name}</div>
-                                    <div className="text-xs text-gray-400 uppercase">{player.position}</div>
+                                    <div className="text-xs text-gray-400 uppercase">{player.position} • <span className="text-[var(--color-neon-blue)]">{player.level}</span></div>
                                 </div>
                             </div>
 

@@ -131,12 +131,16 @@ const Dashboard = () => {
     const totalP2 = filteredHistory.reduce((acc, g) => acc + (g.stats.points2 * 2), 0);
     const totalP3 = filteredHistory.reduce((acc, g) => acc + (g.stats.points3 * 3), 0);
 
+    // Check if we should show 3pts (if specific player selected and is U11, hide it)
+    const activeFilterPlayer = players.find(p => p.id === selectedPlayerId);
+    const isU11Filter = activeFilterPlayer?.level === 'U11';
+
     const doughnutData = {
-        labels: ['1 Point', '2 Points', '3 Points'],
+        labels: isU11Filter ? ['1 Point', '2 Points'] : ['1 Point', '2 Points', '3 Points'],
         datasets: [
             {
-                data: [totalP1, totalP2, totalP3],
-                backgroundColor: ['#00F3FF', '#BC13FE', '#00FF9D'],
+                data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
+                backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
                 borderColor: '#111',
                 borderWidth: 2,
             },
@@ -281,6 +285,10 @@ const Dashboard = () => {
                                             };
                                             if (!labels[key]) return null;
 
+                                            // Hide 3 Points for U11
+                                            const player = players.find(p => p.id === selectedGame.playerId);
+                                            if (player?.level === 'U11' && key === 'points3') return null;
+
                                             return (
                                                 <div key={key} className="p-3 rounded-lg bg-white/5 border border-white/10 flex flex-col items-center">
                                                     <label className="text-xs text-gray-400 uppercase font-bold mb-2">{labels[key]}</label>
@@ -332,16 +340,21 @@ const Dashboard = () => {
                                                 <div className="font-bold text-xl">{selectedGame.stats.points1}</div>
                                                 <div className="text-[10px] text-gray-500 uppercase">1 Pt</div>
                                             </div>
+
                                             <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
                                                 <div className="text-2xl mb-1">🏀</div>
                                                 <div className="font-bold text-xl">{selectedGame.stats.points2}</div>
                                                 <div className="text-[10px] text-gray-500 uppercase">2 Pts</div>
                                             </div>
-                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                                <div className="text-2xl mb-1">🔥</div>
-                                                <div className="font-bold text-xl">{selectedGame.stats.points3}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase">3 Pts</div>
-                                            </div>
+
+                                            {/* Hide 3 pts for U11 */}
+                                            {(players.find(p => p.id === selectedGame.playerId)?.level !== 'U11') && (
+                                                <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
+                                                    <div className="text-2xl mb-1">🔥</div>
+                                                    <div className="font-bold text-xl">{selectedGame.stats.points3}</div>
+                                                    <div className="text-[10px] text-gray-500 uppercase">3 Pts</div>
+                                                </div>
+                                            )}
 
                                             <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
                                                 <div className="text-2xl mb-1">⛹️‍♂️</div>
@@ -399,7 +412,8 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
             {/* Header & Filters */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -469,46 +483,48 @@ const Dashboard = () => {
             </div>
 
             {/* CHARTS SECTION */}
-            {totalGames > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Line Chart */}
-                    <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)] md:col-span-2">
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <TrendingUp size={20} className="text-[var(--color-neon-blue)]" />
-                            Évolution des Points
-                        </h3>
-                        <div className="h-[250px]">
-                            <Line options={chartOptions} data={lineData} />
+            {
+                totalGames > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Line Chart */}
+                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)] md:col-span-2">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <TrendingUp size={20} className="text-[var(--color-neon-blue)]" />
+                                Évolution des Points
+                            </h3>
+                            <div className="h-[250px]">
+                                <Line options={chartOptions} data={lineData} />
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Doughnut Chart */}
-                    <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <PieIcon size={20} className="text-[var(--color-neon-purple)]" />
-                            Répartition des Points
-                        </h3>
-                        <div className="h-[200px] flex justify-center">
-                            <Doughnut options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ccc' } } } }} data={doughnutData} />
+                        {/* Doughnut Chart */}
+                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <PieIcon size={20} className="text-[var(--color-neon-purple)]" />
+                                Répartition des Points
+                            </h3>
+                            <div className="h-[200px] flex justify-center">
+                                <Doughnut options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ccc' } } } }} data={doughnutData} />
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Bar Chart */}
-                    <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <BarChart3 size={20} className="text-[var(--color-neon-green)]" />
-                            Performance Moyenne
-                        </h3>
-                        <div className="h-[200px]">
-                            <Bar options={chartOptions} data={barData} />
+                        {/* Bar Chart */}
+                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <BarChart3 size={20} className="text-[var(--color-neon-green)]" />
+                                Performance Moyenne
+                            </h3>
+                            <div className="h-[200px]">
+                                <Bar options={chartOptions} data={barData} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            ) : (
-                <div className="text-center py-12 glass-panel rounded-xl text-gray-500">
-                    Enregistrez des matchs pour voir apparaître les graphiques.
-                </div>
-            )}
+                ) : (
+                    <div className="text-center py-12 glass-panel rounded-xl text-gray-500">
+                        Enregistrez des matchs pour voir apparaître les graphiques.
+                    </div>
+                )
+            }
 
             {/* Recent History */}
             <h3 className="text-xl font-bold mt-8 flex items-center gap-2">
@@ -565,7 +581,7 @@ const Dashboard = () => {
                     })
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

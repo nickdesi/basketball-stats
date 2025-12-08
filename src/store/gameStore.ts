@@ -6,6 +6,7 @@ export type Player = {
     name: string;
     number: string;
     position: string;
+    level: 'U11' | 'U13' | 'U15' | 'U18';
 };
 
 export type GameStats = {
@@ -44,7 +45,7 @@ export type GameState = {
     history: CompletedGame[];
 
     // Actions
-    addPlayer: (name: string, number: string, position: string) => void;
+    addPlayer: (name: string, number: string, position: string, level: 'U11' | 'U13' | 'U15' | 'U18') => void;
     deletePlayer: (id: string) => void;
 
     setupGame: (playerId: string, opponent: string) => void;
@@ -79,8 +80,8 @@ export const useGameStore = create<GameState>()(
             currentStats: { ...initialStats },
             history: [],
 
-            addPlayer: (name, number, position) => set((state) => ({
-                players: [...state.players, { id: crypto.randomUUID(), name, number, position }]
+            addPlayer: (name, number, position, level) => set((state) => ({
+                players: [...state.players, { id: crypto.randomUUID(), name, number, position, level }]
             })),
 
             deletePlayer: (id) => set((state) => ({
