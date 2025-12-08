@@ -213,7 +213,7 @@ const Dashboard = () => {
 
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
                     <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
 
                         {/* Modal Header */}
@@ -388,7 +388,7 @@ const Dashboard = () => {
                                         Annuler
                                     </button>
                                     <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:bg-green-400 text-black rounded-lg font-bold transition-colors">
-                                        Enregistrer
+                                        Terminer
                                     </button>
                                 </>
                             ) : (

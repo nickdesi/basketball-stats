@@ -15,6 +15,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Fautes :** Gestion des fautes avec exclusion automatique (ou stricte) au bout de 5 fautes.
 - **Annulation :** Possibilité d'annuler la dernière action en cas d'erreur.
 - **Effets visuels :** Animations "Arcade" pour chaque panier marqué.
+- **Mobile First :** Interface optimisée pour une utilisation à une main sur smartphone (boutons accessibles, navigation fluide).
 
 ### 📊 Tableau de Bord (Dashboard)
 

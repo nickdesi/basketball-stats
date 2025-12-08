@@ -306,14 +306,14 @@ const MatchRecorder = () => {
                     className="flex items-center justify-center gap-2 py-3 bg-red-900/20 border border-red-500/30 text-red-400 rounded-xl font-bold active:scale-95 transition-colors"
                 >
                     <RotateCcw size={18} />
-                    <span className="text-sm">ANNULER MATCH</span>
+                    <span className="text-sm">ANNULER</span>
                 </button>
                 <button
                     onClick={() => finishGame()}
                     className="flex items-center justify-center gap-2 py-3 bg-[var(--color-neon-green)]/20 border border-[var(--color-neon-green)]/30 text-[var(--color-neon-green)] rounded-xl font-bold active:scale-95 transition-colors"
                 >
                     <Save size={18} />
-                    <span className="text-sm">TERMINER LE MATCH</span>
+                    <span className="text-sm">TERMINER</span>
                 </button>
             </div>
 
