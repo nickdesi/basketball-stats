@@ -46,6 +46,7 @@ export type GameState = {
 
     // Actions
     addPlayer: (name: string, number: string, position: string, level: 'U11' | 'U13' | 'U15' | 'U18') => void;
+    updatePlayer: (id: string, updates: Partial<Player>) => void;
     deletePlayer: (id: string) => void;
 
     setupGame: (playerId: string, opponent: string) => void;
@@ -82,6 +83,10 @@ export const useGameStore = create<GameState>()(
 
             addPlayer: (name, number, position, level) => set((state) => ({
                 players: [...state.players, { id: crypto.randomUUID(), name, number, position, level }]
+            })),
+
+            updatePlayer: (id: string, updates: Partial<Player>) => set((state) => ({
+                players: state.players.map(p => p.id === id ? { ...p, ...updates } : p)
             })),
 
             deletePlayer: (id) => set((state) => ({

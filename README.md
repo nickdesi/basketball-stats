@@ -14,6 +14,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Suivi complet :** Rebonds, Passes, Interceptions, Contres, Balles Perdues.
 - **Fautes :** Gestion des fautes avec exclusion automatique (ou stricte) au bout de 5 fautes.
 - **Niveaux de Joueurs :** Gestion des catégories (U11, U13, U15, U18). Pour les U11, les tirs à 3 points sont automatiquement désactivés (Match & Stats).
+- **Gestion Complète :** Création, Modification (Nom, Numéro, Poste, Niveau) et Suppression des joueurs.
 - **Annulation :** Appui long sur n'importe quelle action pour l'annuler en cas d'erreur.
 - **Effets visuels :** Animations "Arcade" avec textes flottants style sticker, rotations et effets de pop explosifs à chaque action.
 - **Mobile First :** Interface "Zéro Scroll" optimisée pour tenir sur un seul écran, idéale pour une saisie rapide à une main.
