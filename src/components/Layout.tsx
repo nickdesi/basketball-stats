@@ -15,9 +15,12 @@ interface LayoutProps {
 
 const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
 
+    const isMobileMatch = currentView === 'match';
+
     return (
         <div className="min-h-screen bg-[var(--color-dark-bg)] text-white font-sans selection:bg-[var(--color-neon-blue)] selection:text-black pb-20 md:pb-0">
-            <header className="fixed top-0 left-0 w-full z-50 glass-panel border-b border-[var(--color-glass-border)] px-6 py-4 flex items-center justify-between">
+            {/* Header - Hidden on Mobile Match View to save space */}
+            <header className={`fixed top-0 left-0 w-full z-50 glass-panel border-b border-[var(--color-glass-border)] px-6 py-4 flex items-center justify-between transition-transform duration-300 ${isMobileMatch ? '-translate-y-full md:translate-y-0' : 'translate-y-0'}`}>
                 <h1 className="text-2xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-[var(--color-neon-blue)] to-[var(--color-neon-purple)]">
                     HOOP.STATS
                 </h1>
@@ -48,7 +51,7 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                 </nav>
             </header>
 
-            <main className="pt-24 px-4 md:px-8 max-w-7xl mx-auto">
+            <main className={`transition-all duration-300 px-4 md:px-8 max-w-7xl mx-auto ${isMobileMatch ? 'pt-4 md:pt-24' : 'pt-24'}`}>
                 {children}
             </main>
 

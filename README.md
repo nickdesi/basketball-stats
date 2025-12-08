@@ -13,7 +13,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Interface intuitive :** Gros boutons pour ajouter des points (1pt, 2pts, 3pts) sans regarder l'écran.
 - **Suivi complet :** Rebonds, Passes, Interceptions, Contres, Balles Perdues.
 - **Fautes :** Gestion des fautes avec exclusion automatique (ou stricte) au bout de 5 fautes.
-- **Annulation :** Possibilité d'annuler la dernière action en cas d'erreur.
+- **Annulation :** Appui long sur n'importe quelle action pour l'annuler en cas d'erreur.
 - **Effets visuels :** Animations "Arcade" avec textes flottants style sticker, rotations et effets de pop explosifs à chaque action.
 - **Mobile First :** Interface "Zéro Scroll" optimisée pour tenir sur un seul écran, idéale pour une saisie rapide à une main.
 

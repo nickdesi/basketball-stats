@@ -26,7 +26,6 @@ export type CompletedGame = {
     playerId: string;
     opponent?: string;
     stats: GameStats;
-    quarter: number;
 };
 
 export type GameState = {
@@ -39,7 +38,6 @@ export type GameState = {
 
     // Current Game State
     isGameActive: boolean;
-    quarter: number;
     currentStats: GameStats;
 
     // History
@@ -53,7 +51,6 @@ export type GameState = {
     startGame: () => void;
     incrementStat: (stat: keyof GameStats) => void;
     decrementStat: (stat: keyof GameStats) => void;
-    nextQuarter: () => void;
     resetGame: () => void;
     finishGame: () => void;
     deleteGame: (id: string) => void;
@@ -79,7 +76,6 @@ export const useGameStore = create<GameState>()(
             activePlayerId: null,
             activeOpponent: '',
             isGameActive: false,
-            quarter: 1,
             currentStats: { ...initialStats },
             history: [],
 
@@ -99,7 +95,6 @@ export const useGameStore = create<GameState>()(
 
             startGame: () => set({
                 isGameActive: true,
-                quarter: 1,
                 currentStats: { ...initialStats }
             }),
 
@@ -117,13 +112,10 @@ export const useGameStore = create<GameState>()(
                 }
             })),
 
-            nextQuarter: () => set((state) => ({
-                quarter: state.quarter < 4 ? state.quarter + 1 : state.quarter
-            })),
+
 
             resetGame: () => set({
                 isGameActive: false,
-                quarter: 1,
                 currentStats: { ...initialStats }
             }),
 
@@ -136,7 +128,6 @@ export const useGameStore = create<GameState>()(
                     playerId: state.activePlayerId,
                     opponent: state.activeOpponent,
                     stats: { ...state.currentStats },
-                    quarter: state.quarter,
                 };
                 return {
                     history: [newGame, ...state.history],
@@ -144,7 +135,6 @@ export const useGameStore = create<GameState>()(
                     activePlayerId: null,
                     activeOpponent: '',
                     currentStats: { ...initialStats },
-                    quarter: 1
                 };
             }),
 

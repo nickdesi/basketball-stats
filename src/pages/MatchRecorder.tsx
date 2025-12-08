@@ -5,7 +5,6 @@ import { Undo2, Save, RotateCcw, UserCircle, Play, Share2, AlertTriangle } from 
 const MatchRecorder = () => {
     const {
         currentStats,
-        quarter,
         isGameActive,
         players,
         activePlayerId,
@@ -14,7 +13,6 @@ const MatchRecorder = () => {
         startGame,
         incrementStat,
         decrementStat,
-        nextQuarter,
         finishGame,
         resetGame
     } = useGameStore();
@@ -253,14 +251,8 @@ const MatchRecorder = () => {
                 </div>
 
                 <div className="flex flex-col items-end gap-1">
-                    <div className="flex items-center gap-2">
-                        <button onClick={handleShare} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-[var(--color-neon-blue)]">
-                            <Share2 size={16} />
-                        </button>
-                        <div className="text-4xl font-bold text-[var(--color-neon-purple)] font-mono leading-none">Q{quarter}</div>
-                    </div>
-                    <button onClick={nextQuarter} disabled={isFouledOut} className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-bold uppercase transition-colors">
-                        Suivant
+                    <button onClick={handleShare} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-[var(--color-neon-blue)]">
+                        <Share2 size={16} />
                     </button>
                 </div>
             </div>
@@ -358,7 +350,7 @@ const MatchRecorder = () => {
             {/* Undo Hint */}
             <div className="text-center text-[10px] text-gray-500 mt-[-4px]">
                 <Undo2 size={10} className="inline mr-1" />
-                Clic droit : annuler
+                Appui long : annuler
             </div>
 
             {/* Floating Animations Container */}
