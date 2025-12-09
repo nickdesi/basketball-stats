@@ -56,7 +56,7 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
             </main>
 
             {/* Mobile Navigation */}
-            <nav className="fixed bottom-0 left-0 w-full glass-panel border-t border-[var(--color-glass-border)] p-4 flex justify-around md:hidden z-50">
+            <nav className="fixed bottom-0 left-0 w-full glass-panel border-t border-[var(--color-glass-border)] flex justify-around md:hidden z-50 pb-[var(--safe-bottom)] pt-2 md:pb-4">
                 <button
                     onClick={() => onNavigate('dashboard')}
                     className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${currentView === 'dashboard' ? 'text-[var(--color-neon-blue)]' : 'text-gray-400'}`}

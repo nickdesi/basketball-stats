@@ -15,6 +15,9 @@
   --color-neon-green: #0aff68;
   --color-neon-orange: #ff8c00;
   --color-neon-red: #ff3344;
+
+  /* Safe Area Insets */
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 body {
@@ -23,6 +26,20 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Prevent bounce scroll on mobile if needed, though overflow-hidden on container is better */
+}
+
+/* 
+  MOBILE OPTIMIZATION:
+  Force 16px font size on inputs to prevent iOS Safari from zooming in on focus.
+*/
+@media screen and (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Custom Scrollbar */

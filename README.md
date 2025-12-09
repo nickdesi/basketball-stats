@@ -15,6 +15,10 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Règles U11 Intégrées :** Si un joueur est U11, les tirs à 3 points sont automatiquement masqués (Saisie & Stats match/historique).
 - **Limite de Fautes :** Avertissement et exclusion automatique (fin de match) confirmée au bout de la 5ème faute.
 - **Effets visuels :** Animations "Arcade" avec textes flottants et feedbacks visuels impactants.
+- **Mobile Optimsé :** Expérience "Native App" (PWA) :
+  - **Zéro Zoom :** Saisie stable sans zoom intempestif sur iPhone.
+  - **Plein Écran :** Support "Safe Area" (encoches) et masquage des barres navigateur.
+  - **Icone :** Prêt à être ajouté sur l'écran d'accueil.
 
 ### 📊 Tableau de Bord (Dashboard)
 
