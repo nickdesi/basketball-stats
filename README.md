@@ -10,37 +10,24 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 ### 🎮 Enregistrement de Match (Mode Arcade)
 
-- **Interface intuitive :** Gros boutons pour ajouter des points (1pt, 2pts, 3pts) sans regarder l'écran.
-- **Suivi complet :** Rebonds, Passes, Interceptions, Contres, Balles Perdues.
-- **Fautes :** Gestion des fautes avec exclusion automatique (ou stricte) au bout de 5 fautes.
-- **Niveaux de Joueurs :** Gestion des catégories (U11, U13, U15, U18). Pour les U11, les tirs à 3 points sont automatiquement désactivés (Match & Stats).
-- **Gestion Complète :** Création, Modification (Nom, Numéro, Poste, Niveau) et Suppression des joueurs.
-- **Annulation :** Appui long sur n'importe quelle action pour l'annuler en cas d'erreur.
-- **Effets visuels :** Animations "Arcade" avec textes flottants style sticker, rotations et effets de pop explosifs à chaque action.
-- **Mobile First :** Interface "Zéro Scroll" optimisée pour tenir sur un seul écran, idéale pour une saisie rapide à une main.
+- **Interface Intuitive & Ergonomique :** Saisie ultra-rapide avec un design "Zéro Scroll". Boutons compacts (cercle cliquable pour incrémenter) et labels positionnés intelligemment (en haut pour la ligne 1, en bas pour la ligne 2).
+- **Suivi complet :** Rebonds (Off/Def), Passes, Interceptions, Contres, Balles Perdues, Fautes.
+- **Règles U11 Intégrées :** Si un joueur est U11, les tirs à 3 points sont automatiquement masqués (Saisie & Stats match/historique).
+- **Limite de Fautes :** Avertissement et exclusion automatique (fin de match) confirmée au bout de la 5ème faute.
+- **Effets visuels :** Animations "Arcade" avec textes flottants et feedbacks visuels impactants.
 
 ### 📊 Tableau de Bord (Dashboard)
 
-- **Vue d'ensemble :** Statistiques globales (Points, Rebonds, Passes par match).
-- **Graphiques interactifs :**
-  - Évolution des points au fil des matchs (Courbe).
-  - Répartition des points (Camembert 1pt/2pts/3pts).
-  - Comparaison des performances moyennes (Barres).
-- **Historique détaillé :** Liste de tous les matchs passés avec scores et dates.
+- **Stats Détaillées :** Nouvelle grille de stats ultra-complète sur 4 colonnes (FG%, 3P%, eFG%, TS%, Eval), identique en live et en historique.
+- **Graphiques Intelligents :** Courbes, Camemberts (adaptés U11 sans 3pts), et Barres de progression.
+- **Historique :** Liste des matchs avec scores, dates, et accès rapide aux détails.
 
-### 📜 Gestion des Matchs
+### 📜 Gestion des Matchs & Joueurs
 
-- **Détails du match :** Cliquez sur un match pour voir la feuille de stats complète.
-- **Partage :** Partagez un résumé textuel du match (WhatsApp, SMS, etc.).
-- **Export JSON :** Téléchargez les données brutes d'un match spécifique ou de tout l'historique.
-- [x] **Modification :** Modifiez les stats d'un match terminé en cas d'oubli ou d'erreur.
-- **Suppression :** Supprimez un match de l'historique en cas d'erreur.
-
-### 👥 Gestion des Joueurs
-
-- **Profils multiples :** Créez et gérez plusieurs joueurs.
-- **Sélection rapide :** Changez de joueur actif à la volée.
-- **Stats individualisées :** Le tableau de bord s'adapte au joueur sélectionné.
+- **Match Setup :** Saisie du nom de l'adversaire.
+- **Profils Joueurs :** Gestion complète (Nom, Numéro, Poste, Niveau U11-U18).
+- **Partage Image :** Créez une image récapitulative pro à partager sur les réseaux.
+- **Correction :** Mode correction pour annuler les erreurs de saisie.
 
 ## 🛠 Technologies
 

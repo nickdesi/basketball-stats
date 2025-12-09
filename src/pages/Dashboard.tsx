@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { useGameStore, type CompletedGame } from '../store/gameStore';
+import StatBox from '../components/StatBox';
 import { Trophy, Activity, CalendarDays, History, TrendingUp, PieChart as PieIcon, BarChart3, Download, Share2, Trash2 } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -29,6 +31,7 @@ ChartJS.register(
 
 const Dashboard = () => {
     const { history, players, deleteGame, updateGame } = useGameStore();
+    const cardRef = useRef<HTMLDivElement>(null);
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -178,25 +181,47 @@ const Dashboard = () => {
         }
     };
 
-    const handleShareGame = async (game: CompletedGame) => {
-        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
-        const player = players.find(p => p.id === game.playerId);
+    const handleShareGame = async (game: any) => {
+        if (!cardRef.current) return;
 
-        const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${game.stats.rebounds}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
+        try {
+            const canvas = await html2canvas(cardRef.current, {
+                backgroundColor: '#1a1a1a',
+                scale: 2 // Better quality
+            });
 
-        if (navigator.share) {
-            try {
-                await navigator.share({ title: 'Statistiques du Match', text: text });
-            } catch (err) {
-                console.log('Share failed', err);
-            }
-        } else {
-            await navigator.clipboard.writeText(text);
-            alert("Résumé copié dans le presse-papier !");
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+
+                const file = new File([blob], `match-${new Date(game.date).toISOString().split('T')[0]}.png`, { type: 'image/png' });
+
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Résultat du Match',
+                            text: 'Regarde mes stats sur HoopStats !'
+                        });
+                    } catch (err) {
+                        console.log('Share failed', err);
+                    }
+                } else {
+                    // Fallback: Download
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `match-stats.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }, 'image/png');
+        } catch (err) {
+            console.error('Error generating image', err);
         }
     };
 
-    const handleExportGame = (game: CompletedGame) => {
+    const handleExportGame = (game: any) => {
         const dataStr = JSON.stringify(game, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -218,7 +243,7 @@ const Dashboard = () => {
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
-                    <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                    <div ref={cardRef} className="bg-[#1a1a1a] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
 
                         {/* Modal Header */}
                         <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-start">
@@ -331,63 +356,88 @@ const Dashboard = () => {
                                         </div>
                                     </div>
 
-                                    {/* Stats Grid */}
+                                    {/* Stats Grid - Updated to Match SessionStats Layout */}
                                     <div>
                                         <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">Statistiques Complètes</h4>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                                <div className="text-2xl mb-1">🎯</div>
-                                                <div className="font-bold text-xl">{selectedGame.stats.points1}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase">1 Pt</div>
-                                            </div>
 
-                                            <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                                <div className="text-2xl mb-1">🏀</div>
-                                                <div className="font-bold text-xl">{selectedGame.stats.points2}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase">2 Pts</div>
-                                            </div>
+                                        {/* Derived Calculations (Inline for now to keep logic contained) */}
+                                        {(() => {
+                                            const s = selectedGame.stats;
+                                            // 1. FG
+                                            const fgMakes = s.points2 + s.points3;
+                                            const fgMisses = s.missedPoints2 + s.missedPoints3;
+                                            const fgAttempts = fgMakes + fgMisses;
+                                            const fgPercent = fgAttempts > 0 ? Math.round((fgMakes / fgAttempts) * 100) : 0;
 
-                                            {/* Hide 3 pts for U11 */}
-                                            {(players.find(p => p.id === selectedGame.playerId)?.level !== 'U11') && (
-                                                <div className="p-3 rounded-lg bg-white/5 border border-white/5 text-center">
-                                                    <div className="text-2xl mb-1">🔥</div>
-                                                    <div className="font-bold text-xl">{selectedGame.stats.points3}</div>
-                                                    <div className="text-[10px] text-gray-500 uppercase">3 Pts</div>
+                                            // 2. 3PT
+                                            const p3Makes = s.points3;
+                                            const p3Attempts = s.points3 + s.missedPoints3;
+                                            const p3Percent = p3Attempts > 0 ? Math.round((p3Makes / p3Attempts) * 100) : 0;
+
+                                            // 3. FT
+                                            const ftMakes = s.points1;
+                                            const ftAttempts = s.points1 + s.missedPoints1;
+                                            const ftPercent = ftAttempts > 0 ? Math.round((ftMakes / ftAttempts) * 100) : 0;
+
+                                            // 4. TS%
+                                            const totalPoints = (s.points1 * 1) + (s.points2 * 2) + (s.points3 * 3);
+                                            const tsDenominator = 2 * (fgAttempts + (0.44 * ftAttempts));
+                                            const tsPercent = tsDenominator > 0 ? Math.round((totalPoints / tsDenominator) * 100) : 0;
+
+                                            // 5. eFG%
+                                            const efgPercent = fgAttempts > 0 ? Math.round(((fgMakes + 0.5 * p3Makes) / fgAttempts) * 100) : 0;
+
+                                            // 6. Eval
+                                            const evaluation = totalPoints + s.offensiveRebounds + s.defensiveRebounds + s.assists + s.steals + s.blocks - fgMisses - s.missedPoints1 - s.turnovers;
+                                            const totalReb = s.offensiveRebounds + s.defensiveRebounds;
+
+                                            return (
+                                                <div className="space-y-4">
+                                                    <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
+                                                        {/* Row 1: Shooting */}
+                                                        <div className={`grid ${players.find(p => p.id === selectedGame.playerId)?.level === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-white/10 border-b border-white/10 bg-white/[0.02]`}>
+                                                            <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} color="white" />
+                                                            <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'white'} />
+                                                            {players.find(p => p.id === selectedGame.playerId)?.level !== 'U11' && (
+                                                                <>
+                                                                    <StatBox label="3P" value={`${p3Makes}/${p3Attempts}`} color="white" />
+                                                                    <StatBox label="3P%" value={p3Percent} isPercent />
+                                                                </>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Row 2: FT & Rebounds */}
+                                                        <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-white/10">
+                                                            <StatBox label="FT%" value={ftPercent} isPercent />
+                                                            <StatBox label="REB OFF" value={s.offensiveRebounds} />
+                                                            <StatBox label="REB DEF" value={s.defensiveRebounds} />
+                                                            <StatBox label="REB TOT" value={totalReb} color="var(--color-neon-purple)" />
+                                                        </div>
+
+                                                        {/* Row 3: Playmaking & Defense */}
+                                                        <div className="grid grid-cols-4 divide-x divide-white/10">
+                                                            <StatBox label="PASSES" value={s.assists} color="var(--color-neon-blue)" />
+                                                            <StatBox label="CONTRES" value={s.blocks} />
+                                                            <StatBox label="INTERCEP" value={s.steals} />
+                                                            <StatBox label="MIN" value="-" />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* ADVANCED */}
+                                                    <div>
+                                                        <div className="text-xs font-bold text-[var(--color-neon-orange)] uppercase mb-2">Avancées</div>
+                                                        <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
+                                                            <div className="grid grid-cols-4 divide-x divide-white/10">
+                                                                <StatBox label="PTS" value={totalPoints} color="var(--color-neon-blue)" />
+                                                                <StatBox label="eFG%" value={efgPercent} isPercent />
+                                                                <StatBox label="TS%" value={tsPercent} isPercent />
+                                                                <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'white'} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            )}
-
-                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                                <div className="text-2xl mb-1">⛹️‍♂️</div>
-                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.rebounds}</div>
-                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Rebonds</div>
-                                            </div>
-                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                                <div className="text-2xl mb-1">🎁</div>
-                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.assists}</div>
-                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Passes</div>
-                                            </div>
-                                            <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 border border-[var(--color-neon-green)]/20 text-center">
-                                                <div className="text-2xl mb-1">🧤</div>
-                                                <div className="font-bold text-xl text-[var(--color-neon-green)]">{selectedGame.stats.steals}</div>
-                                                <div className="text-[10px] text-[var(--color-neon-green)]/70 uppercase">Intercep.</div>
-                                            </div>
-
-                                            <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 border border-[var(--color-neon-purple)]/20 text-center">
-                                                <div className="text-2xl mb-1">🧱</div>
-                                                <div className="font-bold text-xl text-[var(--color-neon-purple)]">{selectedGame.stats.blocks}</div>
-                                                <div className="text-[10px] text-[var(--color-neon-purple)]/70 uppercase">Contres</div>
-                                            </div>
-                                            <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-center">
-                                                <div className="text-2xl mb-1">🥔</div>
-                                                <div className="font-bold text-xl text-orange-500">{selectedGame.stats.turnovers}</div>
-                                                <div className="text-[10px] text-orange-500/70 uppercase">Balles P.</div>
-                                            </div>
-                                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-center">
-                                                <div className="text-2xl mb-1">👮</div>
-                                                <div className="font-bold text-xl text-red-500">{selectedGame.stats.fouls}</div>
-                                                <div className="text-[10px] text-red-500/70 uppercase">Fautes</div>
-                                            </div>
-                                        </div>
+                                            );
+                                        })()}
                                     </div>
                                 </>
                             )}
@@ -504,7 +554,11 @@ const Dashboard = () => {
                                 Répartition des Points
                             </h3>
                             <div className="h-[200px] flex justify-center">
-                                <Doughnut options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ccc' } } } }} data={doughnutData} />
+                                <Doughnut
+                                    key={selectedPlayerId}
+                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ccc' } } } }}
+                                    data={doughnutData}
+                                />
                             </div>
                         </div>
 

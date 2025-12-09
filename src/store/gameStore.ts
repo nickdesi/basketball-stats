@@ -11,14 +11,20 @@ export type Player = {
 
 export type GameStats = {
     points1: number;
+    missedPoints1: number;
     points2: number;
+    missedPoints2: number;
     points3: number;
-    rebounds: number;
+    missedPoints3: number;
+    rebounds: number; // Kept for legacy/total, but we will mostly use off/def
+    offensiveRebounds: number;
+    defensiveRebounds: number;
     assists: number;
     steals: number;
     blocks: number;
     turnovers: number;
     fouls: number;
+    missedFreeThrows: number; // Redundant if we have missedPoints1 but explicit is nice. Actually missedPoints1 covers it. I will stick to missedPoints1.
 };
 
 export type CompletedGame = {
@@ -61,14 +67,20 @@ export type GameState = {
 
 const initialStats: GameStats = {
     points1: 0,
+    missedPoints1: 0,
     points2: 0,
+    missedPoints2: 0,
     points3: 0,
+    missedPoints3: 0,
     rebounds: 0,
+    offensiveRebounds: 0,
+    defensiveRebounds: 0,
     assists: 0,
     steals: 0,
     blocks: 0,
     turnovers: 0,
     fouls: 0,
+    missedFreeThrows: 0,
 };
 
 export const useGameStore = create<GameState>()(

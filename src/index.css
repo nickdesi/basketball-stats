@@ -1,15 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
 
-  /* Futuristic Color Palette */
+  /* Premium Dark Base */
+  --color-dark-bg: #050505;
+  --color-dark-card: #0f0f13;
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-bg: rgba(20, 20, 25, 0.7);
+
+  /* Neon Accents - Refined */
   --color-neon-blue: #00f3ff;
   --color-neon-purple: #bc13fe;
   --color-neon-green: #0aff68;
-  --color-dark-bg: #0a0a0f;
-  --color-glass-border: rgba(255, 255, 255, 0.1);
-  --color-glass-bg: rgba(20, 20, 30, 0.6);
+  --color-neon-orange: #ff8c00;
+  --color-neon-red: #ff3344;
 }
 
 body {
@@ -22,7 +27,7 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -30,14 +35,15 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #2a2a2a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #444;
 }
 
+/* Animations */
 @keyframes popUp {
   0% {
     transform: translateY(0) scale(0.5) rotate(var(--rot));
@@ -65,16 +71,25 @@ body {
   box-shadow: 0 0 15px currentColor;
 }
 
-/* Glassmorphism Utility Class (can also use Tailwind utilities) */
+/* Glassmorphism Utility Class */
 .glass-panel {
   background: var(--color-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-glass-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Typography Utilities */
+.font-numeric {
+  font-feature-settings: "tnum" on, "lnum" on;
 }
 
 @theme {
   --color-neon-blue: #00f3ff;
   --color-neon-purple: #bc13fe;
   --color-neon-green: #0aff68;
+  --color-neon-orange: #ff8c00;
+  --color-neon-red: #ff3344;
+  --color-glass-bg: rgba(20, 20, 25, 0.7);
 }

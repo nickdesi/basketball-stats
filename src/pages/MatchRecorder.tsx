@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useGameStore, type GameStats } from '../store/gameStore';
-import { Undo2, Save, RotateCcw, UserCircle, Play, Share2, AlertTriangle } from 'lucide-react';
+import { UserCircle, GripHorizontal, BarChart3, Undo2 } from 'lucide-react';
+import SessionStats from '../components/SessionStats';
+import CounterInput from '../components/CounterInput';
 
 const MatchRecorder = () => {
     const {
@@ -8,7 +10,6 @@ const MatchRecorder = () => {
         isGameActive,
         players,
         activePlayerId,
-        activeOpponent,
         setupGame,
         startGame,
         incrementStat,
@@ -17,367 +18,329 @@ const MatchRecorder = () => {
         resetGame
     } = useGameStore();
 
-    const [lastAction, setLastAction] = useState<string | null>(null);
-    const [clickEffect, setClickEffect] = useState<{ id: string, stat: string } | null>(null);
+    const [viewMode, setViewMode] = useState<'input' | 'stats'>('input');
     const [animations, setAnimations] = useState<{ id: string, text: string, x: number, y: number, color: string, rot: number }[]>([]);
 
-    const addAnimation = (e: React.MouseEvent<HTMLButtonElement>, text: string, color: string) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        // Calculate center relative to the viewport, but we'll render likely fixed or absolute.
-        // Actually, rendering it fixed over the screen is easiest.
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-        const rot = (Math.random() - 0.5) * 40; // Random rotation between -20 and 20 degrees
-
-        const newAnim = { id: Date.now().toString() + Math.random(), text, x, y, color, rot };
-        setAnimations(prev => [...prev, newAnim]);
-
-        // Cleanup
-        setTimeout(() => {
-            setAnimations(prev => prev.filter(a => a.id !== newAnim.id));
-        }, 800);
-    };
-
-    // Setup State
+    // Setup selection
     const activePlayer = players.find(p => p.id === activePlayerId);
     const [selectedPlayer, setSelectedPlayer] = useState<string>(activePlayerId || '');
     const [opponentName, setOpponentName] = useState('');
 
     const isFouledOut = currentStats.fouls >= 5;
 
-    // Clear action message
-    useEffect(() => {
-        if (lastAction) {
-            const timer = setTimeout(() => setLastAction(null), 1500);
-            return () => clearTimeout(timer);
+    // --- ANIMATION LOGIC ---
+    const triggerAnimation = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>, text: string, color: string) => {
+        // Get coordinates - handle both touch and mouse
+        let clientX, clientY;
+        if ('touches' in e) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = (e as React.MouseEvent).clientX;
+            clientY = (e as React.MouseEvent).clientY;
         }
-    }, [lastAction]);
 
-    // Clear click effect
-    useEffect(() => {
-        if (clickEffect) {
-            const timer = setTimeout(() => setClickEffect(null), 200);
-            return () => clearTimeout(timer);
-        }
-    }, [clickEffect]);
+        const id = Date.now().toString() + Math.random();
+        const rot = (Math.random() - 0.5) * 30; // Tilt
+        setAnimations(prev => [...prev, { id, text, x: clientX, y: clientY, color, rot }]);
 
-    // 5 Foul Limit Check (Vibration Only, UI handles blocking)
-    useEffect(() => {
-        if (currentStats.fouls === 5) {
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 500]);
-        }
-    }, [currentStats.fouls]);
+        // Vibration
+        if (navigator.vibrate) navigator.vibrate(50);
 
-    const handleStart = () => {
-        if (selectedPlayer) {
-            setupGame(selectedPlayer, opponentName);
-            startGame();
+        // Cleanup
+        setTimeout(() => {
+            setAnimations(prev => prev.filter(a => a.id !== id));
+        }, 800);
+    };
+
+    // --- ACTIONS ---
+
+    // Scoring logic
+    const handleScore = (type: 'make' | 'miss', points: 1 | 2 | 3, e: any) => {
+        if (isFouledOut) return;
+
+        if (type === 'make') {
+            incrementStat(`points${points}` as keyof GameStats);
+            triggerAnimation(e, `+ ${points}`, 'var(--color-neon-green)');
+        } else {
+            incrementStat(`missedPoints${points}` as keyof GameStats);
+            // Also log missed free throw specifically if needed, but missedPoints1 covers it
+            triggerAnimation(e, 'MISS', 'var(--color-neon-red)');
         }
     };
 
-    const handleStat = (stat: keyof GameStats, label: string, e: React.MouseEvent<HTMLButtonElement>, colorClass: string) => {
+    const [showFoulConfirm, setShowFoulConfirm] = useState(false);
+
+    // Stat logic
+    const handleStat = (stat: keyof GameStats, label: string, color: string, e: any) => {
         if (isFouledOut && stat !== 'fouls') return;
 
-        incrementStat(stat);
-        setLastAction(`${label} +1`);
-        setClickEffect({ id: Date.now().toString(), stat });
-
-        // Extract color from class or default
-        let color = '#fff';
-        if (colorClass.includes('neon-blue')) color = 'var(--color-neon-blue)';
-        else if (colorClass.includes('neon-green')) color = 'var(--color-neon-green)';
-        else if (colorClass.includes('neon-purple')) color = 'var(--color-neon-purple)';
-        else if (colorClass.includes('orange')) color = '#f97316';
-        else if (colorClass.includes('red')) color = '#ef4444';
-
-        addAnimation(e, "+1", color);
-
-        if (navigator.vibrate) navigator.vibrate(50);
-    };
-
-    const handleShare = async () => {
-        const totalPoints = (currentStats.points1 * 1) + (currentStats.points2 * 2) + (currentStats.points3 * 3);
-        const activePlayerName = players.find(p => p.id === activePlayerId)?.name || 'Joueur';
-
-        const text = `🏀 MATCH TERMINÉ\n\n👤 ${activePlayerName}\n🆚 ${activeOpponent || 'Adversaire'}\n\n📊 STATS:\n- Points: ${totalPoints}\n- Rebonds: ${currentStats.rebounds}\n- Passes: ${currentStats.assists}\n- Interceptions: ${currentStats.steals}\n- Contres: ${currentStats.blocks}\n\n#HoopStats`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Résultat du Match',
-                    text: text,
-                });
-            } catch (err) {
-                console.log('Share failed', err);
-            }
-        } else {
-            await navigator.clipboard.writeText(text);
-            setLastAction("Stats copiées !");
+        // Check for 5th foul
+        if (stat === 'fouls' && currentStats.fouls === 4) {
+            setShowFoulConfirm(true);
+            return;
         }
+
+        incrementStat(stat);
+        triggerAnimation(e, label, color);
     };
 
-    const handleUndo = (stat: keyof GameStats, label: string) => {
-        decrementStat(stat);
-        setLastAction(`Annulation: ${label}`);
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+    const confirmFoulOut = () => {
+        incrementStat('fouls');
+        setShowFoulConfirm(false);
+        // User requested: "clore le match" (close the match) implies finishing it.
+        // We will increment the stat first, then finish.
+        // Needs a small delay or just call finishGame directly?
+        // Let's call finishGame right after.
+        finishGame();
     };
 
-    const ActionButton = ({ stat, label, colorClass, emoji }: { stat: keyof GameStats, label: string, colorClass: string, emoji: string }) => {
-        const isClicked = clickEffect?.stat === stat;
+    const [isCorrectionMode, setIsCorrectionMode] = useState(false);
 
-        return (
-            <button
-                onClick={(e) => handleStat(stat, label, e, colorClass)}
-                onContextMenu={(e) => { e.preventDefault(); handleUndo(stat, label); }}
-                disabled={isFouledOut}
-                className={`
-                    relative flex flex-col items-center justify-center p-1 rounded-xl border transition-all duration-75 touch-none select-none disabled:opacity-30 disabled:grayscale ${colorClass} btn-press-effect
-                    active:scale-90 active:brightness-125
-                    ${isClicked ? 'scale-90 brightness-150 shadow-[0_0_30px_currentColor] z-10' : 'hover:scale-[1.02]'}
-                `}
-            >
-                <div className="text-xl mb-0 filter drop-shadow-lg transform transition-transform duration-75">{emoji}</div>
-                <div className="text-2xl font-bold mb-0 leading-none">{currentStats[stat]}</div>
-                <div className="text-[9px] uppercase tracking-wider opacity-80 font-bold">{label}</div>
-            </button>
-        );
-    };
 
     const totalPoints = (currentStats.points1 * 1) + (currentStats.points2 * 2) + (currentStats.points3 * 3);
-    const activePlayerName = players.find(p => p.id === activePlayerId)?.name || 'Joueur';
 
-    // --- RENDER SETUP IF GAME NOT ACTIVE ---
+
+    // --- RENDER ---
     if (!isGameActive) {
+        // (Keep Setup Screen mostly same but ensure no scroll)
         return (
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] animate-in fade-in zoom-in duration-300">
-                <div className="glass-panel p-8 rounded-2xl border border-[var(--color-glass-border)] w-full max-w-md space-y-6">
-                    <div className="text-center">
-                        <div className="w-20 h-20 bg-[var(--color-neon-blue)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Play size={40} className="text-[var(--color-neon-blue)] ml-1" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Configurez le Match</h2>
-                        <p className="text-gray-400 text-sm">Sélectionnez un joueur pour commencer</p>
-                    </div>
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] p-4 animate-in fade-in zoom-in">
+                <div className="glass-panel p-6 rounded-3xl w-full max-w-sm space-y-6 text-center">
+                    <UserCircle size={48} className="mx-auto text-[var(--color-neon-blue)]" />
+                    <h2 className="text-2xl font-black">NOUVEAU MATCH</h2>
+                    <select
+                        value={selectedPlayer}
+                        onChange={(e) => setSelectedPlayer(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 font-bold"
+                    >
+                        <option value="">Sélectionner Joueur</option>
+                        {players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
 
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <label className="text-xs text-gray-400 uppercase font-bold">Joueur</label>
-                            <select
-                                value={selectedPlayer}
-                                onChange={(e) => setSelectedPlayer(e.target.value)}
-                                className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none appearance-none"
-                            >
-                                <option value="">-- Choisir un joueur --</option>
-                                {players.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name} (#{p.number})</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-xs text-gray-400 uppercase font-bold">Adversaire (Optionnel)</label>
-                            <input
-                                type="text"
-                                value={opponentName}
-                                onChange={(e) => setOpponentName(e.target.value)}
-                                placeholder="Nom de l'équipe adverse"
-                                className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none"
-                            />
-                        </div>
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Nom de l'adversaire (Optionnel)"
+                        value={opponentName}
+                        onChange={(e) => setOpponentName(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 font-bold placeholder:text-gray-600 focus:outline-none focus:border-[var(--color-neon-blue)]"
+                    />
 
                     <button
-                        onClick={handleStart}
+                        onClick={() => { setupGame(selectedPlayer, opponentName || 'Opponent'); startGame(); }}
                         disabled={!selectedPlayer}
-                        className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${selectedPlayer ? 'bg-[var(--color-neon-blue)] hover:bg-blue-500 text-black shadow-[0_0_20px_rgba(0,243,255,0.4)]' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                        className="w-full py-4 bg-white text-black font-black rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
                     >
-                        LANCER LE MATCH
+                        START
                     </button>
-
-                    {players.length === 0 && (
-                        <p className="text-center text-xs text-red-400">
-                            ⚠️ Ajoutez d'abord un joueur dans l'onglet "Joueurs"
-                        </p>
-                    )}
+                    {players.length === 0 && <div className="text-red-400 text-xs">Créez un joueur d'abord</div>}
                 </div>
             </div>
         );
     }
 
-    // --- RENDER GAME RECORDER ---
     return (
-        <div className="h-[calc(100vh-140px)] flex flex-col gap-2 animate-in fade-in zoom-in duration-300 relative">
-
-            {/* FOULED OUT OVERLAY */}
-            {isFouledOut && (
-                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm rounded-xl p-6 text-center animate-in fade-in zoom-in duration-300 border border-red-500/50">
-                    <AlertTriangle size={64} className="text-red-500 mb-4 animate-bounce" />
-                    <h2 className="text-4xl font-black text-white mb-2">5 FAUTES !</h2>
-                    <p className="text-gray-300 mb-8 max-w-[200px]">Le joueur est exclu. Le match est terminé pour lui.</p>
-
-                    <button
-                        onClick={() => finishGame()}
-                        className="w-full py-4 bg-[var(--color-neon-green)] text-black font-bold text-xl rounded-xl shadow-[0_0_30px_rgba(0,255,157,0.4)] hover:scale-105 transition-transform flex items-center justify-center gap-3"
-                    >
-                        <Save size={24} />
-                        TERMINER LE MATCH
-                    </button>
-
-                    <button
-                        onClick={() => handleUndo('fouls', 'Faute')}
-                        className="mt-6 text-sm text-gray-400 underline hover:text-white"
-                    >
-                        Je me suis trompé (Annuler Faute)
-                    </button>
-                </div>
-            )}
-
-            {/* Header Stats */}
-            <div className="flex gap-2 glass-panel p-2 rounded-xl border border-[var(--color-glass-border)] shrink-0 items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                        <UserCircle className="text-gray-300" size={24} />
+        <div className="h-[calc(100vh-140px)] flex flex-col relative overflow-hidden">
+            {/* HEADER */}
+            <div className="flex items-center justify-between p-2 glass-panel rounded-b-2xl mb-2 shrink-0">
+                <div className="flex items-center gap-2">
+                    <div className="font-numeric text-3xl font-black text-[var(--color-neon-blue)] leading-none">
+                        {totalPoints}
                     </div>
-                    <div>
-                        <div className="text-xs text-gray-400 uppercase font-bold">{activePlayerName}</div>
-                        <div className="text-sm text-[var(--color-neon-blue)] font-mono font-bold leading-none">{totalPoints} PTS</div>
+                    <div className="flex flex-col leading-none">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">Points</span>
+                        <span className="text-xs font-bold truncate max-w-[100px]">
+                            {activePlayer?.name}
+                            <span className="ml-1 text-[var(--color-neon-blue)] opacity-70 text-[10px]">
+                                {activePlayer?.level || '(N/A)'}
+                            </span>
+                        </span>
                     </div>
                 </div>
 
-                <div className="text-center">
-                    <div className="text-[10px] text-gray-400 uppercase font-bold">Fautes</div>
-                    <div className={`text-2xl font-bold font-mono leading-none ${isFouledOut ? 'text-red-500' : 'text-gray-200'}`}>
-                        {currentStats.fouls}
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-end gap-1">
-                    <button onClick={handleShare} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-[var(--color-neon-blue)]">
-                        <Share2 size={16} />
-                    </button>
+                <div className="flex bg-black/40 rounded-full p-1 border border-white/10">
+                    <button onClick={() => setViewMode('input')} className={`p - 2 rounded - full ${viewMode === 'input' ? 'bg-white text-black' : 'text-gray-400'} `}><GripHorizontal size={16} /></button>
+                    <button onClick={() => setViewMode('stats')} className={`p - 2 rounded - full ${viewMode === 'stats' ? 'bg-white text-black' : 'text-gray-400'} `}><BarChart3 size={16} /></button>
                 </div>
             </div>
 
-            {/* Main Action Grid */}
-            <div className="grid grid-cols-3 grid-rows-3 gap-2 flex-1 min-h-0">
-                {/* Scoring Row */}
-                <ActionButton
-                    stat="points1"
-                    label="1 PT"
-                    emoji="🎯"
-                    colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
-                />
-                <ActionButton
-                    stat="points2"
-                    label="2 PTS"
-                    emoji="🏀"
-                    colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
-                />
-
-                {/* 3 PTS Button - Hidden for U11 */}
-                {(activePlayer?.level !== 'U11') ? (
-                    <ActionButton
-                        stat="points3"
-                        label="3 PTS"
-                        emoji="🔥"
-                        colorClass="bg-[var(--color-neon-blue)]/10 border-[var(--color-neon-blue)]/30 hover:bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-blue)]"
-                    />
+            {/* CONTENT */}
+            <div className="flex-1 min-h-0 flex flex-col">
+                {viewMode === 'stats' ? (
+                    <div className="overflow-y-auto p-2"><SessionStats stats={currentStats} playerLevel={activePlayer?.level} /></div>
                 ) : (
-                    <div className="rounded-xl border border-white/5 bg-white/5 flex items-center justify-center opacity-30 select-none">
-                        <span className="text-[10px] text-gray-500 font-bold uppercase">U11 Mode</span>
+                    <div className="flex flex-col h-full p-2 gap-4">
+
+                        {/* SCORING SECTION - Split by Value */}
+                        {/* Designed to be clearer: Left side = Make, Right side = Miss (smaller) */}
+                        <div className="grid grid-rows-3 gap-2 shrink-0 h-[40%] min-h-[180px]">
+                            {[
+                                { val: 1, label: 'Lancer Franc', short: '1 PT', color: 'var(--color-neon-blue)' },
+                                { val: 2, label: 'Tir', short: '2 PTS', color: 'var(--color-neon-green)' },
+                                { val: 3, label: '3 Points', short: '3 PTS', color: 'var(--color-neon-orange)' }
+                            ].filter(shot => {
+                                // U11 Rule: No 3 Pointers
+                                if (activePlayer?.level === 'U11' && shot.val === 3) return false;
+                                return true;
+                            }).map((shot) => (
+                                <div key={shot.val} className="flex gap-2 h-full">
+                                    {/* SCORED BUTTON */}
+                                    <button
+                                        onClick={(e) => handleScore('make', shot.val as any, e)}
+                                        className="flex-[2] rounded-xl flex items-center justify-between px-4 relative overflow-hidden active:scale-[0.98] transition-all border border-white/10"
+                                        style={{ background: `linear-gradient(90deg, ${shot.color}15 0%, transparent 100%)`, borderColor: `${shot.color}30` }}
+                                    >
+                                        <div className="flex flex-col items-start leading-none">
+                                            <span className="font-black text-2xl text-white">MARQUÉ</span>
+                                            <span className="text-[10px] font-bold uppercase opacity-60">{shot.label}</span>
+                                        </div>
+                                        <span className="font-black text-3xl tabular-nums" style={{ color: shot.color }}>+{shot.val}</span>
+                                    </button>
+
+                                    {/* MISSED BUTTON */}
+                                    <button
+                                        onClick={(e) => handleScore('miss', shot.val as any, e)}
+                                        className="flex-1 rounded-xl flex flex-col items-center justify-center bg-red-500/10 border border-red-500/20 active:scale-[0.98] transition-all hover:bg-red-500/20"
+                                    >
+                                        <span className="text-xl font-bold text-red-500">MISS</span>
+                                        <span className="text-[9px] uppercase text-red-400/60 font-medium">Manqué</span>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* STATS GRID - Corrected Layout */}
+                        <div className="grid grid-cols-4 gap-2 flex-1 min-h-0 content-start">
+                            {/* Rebounds */}
+                            <CounterInput
+                                label="Reb. OFF"
+                                value={currentStats.offensiveRebounds}
+                                onIncrement={(e) => handleStat('offensiveRebounds', 'REB OFF', '#a855f7', e)}
+                                onDecrement={() => decrementStat('offensiveRebounds')}
+                                color="#a855f7"
+                                labelTop={true}
+                            />
+                            <CounterInput
+                                label="Reb. DEF"
+                                value={currentStats.defensiveRebounds}
+                                onIncrement={(e) => handleStat('defensiveRebounds', 'REB DEF', '#c084fc', e)}
+                                onDecrement={() => decrementStat('defensiveRebounds')}
+                                color="#c084fc"
+                                labelTop={true}
+                            />
+
+                            {/* Standard Stats */}
+                            <CounterInput
+                                label="Passe"
+                                value={currentStats.assists}
+                                onIncrement={(e) => handleStat('assists', 'PASSE', '#22c55e', e)}
+                                onDecrement={() => decrementStat('assists')}
+                                color="#22c55e"
+                                labelTop={true}
+                            />
+                            <CounterInput
+                                label="Intercep"
+                                value={currentStats.steals}
+                                onIncrement={(e) => handleStat('steals', 'INTER', '#3b82f6', e)}
+                                onDecrement={() => decrementStat('steals')}
+                                color="#3b82f6"
+                                labelTop={true}
+                            />
+                            <CounterInput
+                                label="Contre"
+                                value={currentStats.blocks}
+                                onIncrement={(e) => handleStat('blocks', 'CONTRE', '#eab308', e)}
+                                onDecrement={() => decrementStat('blocks')}
+                                color="#eab308"
+                            />
+                            <CounterInput
+                                label="Faute"
+                                value={currentStats.fouls}
+                                onIncrement={(e) => handleStat('fouls', 'FAUTE', '#ef4444', e)}
+                                onDecrement={() => decrementStat('fouls')}
+                                color="#ef4444"
+                            />
+                            <CounterInput
+                                label="Perte"
+                                value={currentStats.turnovers}
+                                onIncrement={(e) => handleStat('turnovers', 'PERTE', '#f97316', e)}
+                                onDecrement={() => decrementStat('turnovers')}
+                                color="#f97316"
+                            />
+
+                            {/* Empty slot or other stat? Maybe a generic Undo? */}
+                            <button
+                                onClick={() => { setIsCorrectionMode(!isCorrectionMode); if (navigator.vibrate) navigator.vibrate(50); }}
+                                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${isCorrectionMode ? 'bg-yellow-500/20 border-yellow-500 text-yellow-500' : 'border-white/5 opacity-50 hover:opacity-100'}`}
+                            >
+                                <Undo2 size={24} />
+                                <span className="text-[9px] font-bold uppercase mt-1">CORR.</span>
+                            </button>
+                        </div>
                     </div>
                 )}
-
-                {/* Core Stats Row 1 */}
-                <ActionButton
-                    stat="rebounds"
-                    label="REBOND"
-                    emoji="⛹️‍♂️"
-                    colorClass="bg-[var(--color-neon-green)]/10 border-[var(--color-neon-green)]/30 hover:bg-[var(--color-neon-green)]/20 text-[var(--color-neon-green)]"
-                />
-                <ActionButton
-                    stat="assists"
-                    label="PASSE D."
-                    emoji="🎁"
-                    colorClass="bg-[var(--color-neon-green)]/10 border-[var(--color-neon-green)]/30 hover:bg-[var(--color-neon-green)]/20 text-[var(--color-neon-green)]"
-                />
-                <ActionButton
-                    stat="steals"
-                    label="INTERCEP."
-                    emoji="🧤"
-                    colorClass="bg-[var(--color-neon-green)]/10 border-[var(--color-neon-green)]/30 hover:bg-[var(--color-neon-green)]/20 text-[var(--color-neon-green)]"
-                />
-
-                {/* Defense/Errors Row */}
-                <ActionButton
-                    stat="blocks"
-                    label="CONTRE"
-                    emoji="🧱"
-                    colorClass="bg-[var(--color-neon-purple)]/10 border-[var(--color-neon-purple)]/30 hover:bg-[var(--color-neon-purple)]/20 text-[var(--color-neon-purple)]"
-                />
-                <ActionButton
-                    stat="turnovers"
-                    label="BALLE P."
-                    emoji="🥔"
-                    colorClass="bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20 text-orange-500"
-                />
-                <ActionButton
-                    stat="fouls"
-                    label="FAUTE"
-                    emoji="👮"
-                    colorClass="bg-red-500/10 border-red-500/30 hover:bg-red-500/20 text-red-500"
-                />
             </div>
 
-            {/* Footer Controls */}
-            <div className="grid grid-cols-2 gap-4 shrink-0">
-                <button
-                    onClick={resetGame}
-                    className="flex items-center justify-center gap-2 py-3 bg-red-900/20 border border-red-500/30 text-red-400 rounded-xl font-bold active:scale-95 transition-colors"
-                >
-                    <RotateCcw size={18} />
-                    <span className="text-sm">ANNULER</span>
-                </button>
-                <button
-                    onClick={() => finishGame()}
-                    className="flex items-center justify-center gap-2 py-3 bg-[var(--color-neon-green)]/20 border border-[var(--color-neon-green)]/30 text-[var(--color-neon-green)] rounded-xl font-bold active:scale-95 transition-colors"
-                >
-                    <Save size={18} />
-                    <span className="text-sm">TERMINER</span>
-                </button>
+            {/* FOOTER ACTIONS */}
+            <div className="grid grid-cols-2 gap-2 mt-2 shrink-0">
+                <button onClick={resetGame} className="py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-400">RESET</button>
+                <button onClick={finishGame} className="py-3 rounded-xl bg-white text-black text-xs font-black hover:scale-[1.02] transition-transform">TERMINER</button>
             </div>
 
-            {/* Overlay Feedback */}
-            {lastAction && (
-                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[100] animate-in fade-in zoom-in duration-200">
-                    <div className="glass-panel px-6 py-3 rounded-xl border border-white/20 text-2xl font-black shadow-[0_0_50px_rgba(0,0,0,0.5)] whitespace-nowrap bg-black/80 backdrop-blur-md">
-                        {lastAction}
-                    </div>
-                </div>
-            )}
-
-            {/* Undo Hint */}
-            <div className="text-center text-[10px] text-gray-500 mt-[-4px]">
-                <Undo2 size={10} className="inline mr-1" />
-                Appui long : annuler
-            </div>
-
-            {/* Floating Animations Container */}
+            {/* ANIMATIONS LAYER */}
             {animations.map(anim => (
                 <div
                     key={anim.id}
-                    className="fixed pointer-events-none z-[100] animate-arcade-pop font-black text-6xl tracking-tighter"
+                    className="fixed pointer-events-none z-[100] animate-arcade-pop font-black text-4xl tracking-tighter stroke-black"
                     style={{
                         left: anim.x,
                         top: anim.y,
                         color: anim.color,
-                        '--rot': `${anim.rot}deg`,
-                        textShadow: '3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+                        '--rot': `${anim.rot} deg`,
+                        textShadow: '2px 2px 0px rgba(0,0,0,0.8)'
                     } as React.CSSProperties}
                 >
                     {anim.text}
                 </div>
             ))}
+
+            {/* CORRECTION OVERLAY */}
+            {isCorrectionMode && (
+                <div className="absolute top-0 left-0 right-0 p-1 bg-yellow-500 text-black text-[10px] font-black uppercase text-center tracking-widest z-50 animate-pulse">
+                    MODE CORRECTION ACTIVÉ
+                </div>
+            )}
+
+            {/* 5-FOUL CONFIRMATION MODAL */}
+            {showFoulConfirm && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
+                    <div className="bg-[#1a1a1a] border border-red-500 rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center">
+                        <div className="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
+                            <span className="text-3xl font-black">5</span>
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-white mb-2">5ème Faute !</h3>
+                            <p className="text-gray-400 text-sm">
+                                Attention, cette action va valider la 5ème faute et <span className="text-white font-bold">terminer le match</span> pour ce joueur.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <button
+                                onClick={() => setShowFoulConfirm(false)}
+                                className="py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-colors"
+                            >
+                                ANNULER
+                            </button>
+                            <button
+                                onClick={confirmFoulOut}
+                                className="py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-red-500/20"
+                            >
+                                CONFIRMER
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
