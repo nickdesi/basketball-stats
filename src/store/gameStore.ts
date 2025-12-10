@@ -63,6 +63,7 @@ export type GameState = {
     finishGame: () => void;
     deleteGame: (id: string) => void;
     updateGame: (gameId: string, updatedStats: GameStats) => void;
+    importGame: (game: CompletedGame) => void;
 };
 
 const initialStats: GameStats = {
@@ -166,6 +167,10 @@ export const useGameStore = create<GameState>()(
                         ? { ...g, stats: { ...updatedStats } }
                         : g
                 )
+            })),
+
+            importGame: (game) => set((state) => ({
+                history: [{ ...game, id: crypto.randomUUID() }, ...state.history]
             })),
         }),
         {

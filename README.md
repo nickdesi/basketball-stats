@@ -26,6 +26,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Stats Détaillées :** Nouvelle grille de stats ultra-complète sur 4 colonnes (FG%, 3P%, eFG%, TS%, Eval), identique en live et en historique.
 - **Graphiques Intelligents :** Courbes, Camemberts (adaptés U11 sans 3pts), et Barres de progression.
 - **Historique :** Liste des matchs avec scores, dates, et accès rapide aux détails.
+- **Import/Export :** Sauvegardez vos matchs en JSON (Export) ou rechargez-les depuis un fichier (Import).
 
 ### 📜 Gestion des Matchs & Joueurs
 

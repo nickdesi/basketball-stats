@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-    const { history, players, deleteGame, updateGame } = useGameStore();
+    const { history, players, deleteGame, updateGame, importGame } = useGameStore();
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
@@ -219,10 +219,37 @@ const Dashboard = () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `match-${new Date(game.date).toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
+        const player = players.find(p => p.id === game.playerId);
+        link.download = `match-${player?.name || 'stats'}-${new Date(game.date).toISOString().split('T')[0]}.json`;
         link.click();
-        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleImportGame = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const json = JSON.parse(event.target?.result as string);
+
+                // basic validation
+                if (!json.stats || !json.playerId || !json.date) {
+                    alert("Fichier invalide : structure incorrecte.");
+                    return;
+                }
+
+                importGame(json as CompletedGame);
+                alert("Match importé avec succès !");
+            } catch (err) {
+                console.error("Import error", err);
+                alert("Erreur lors de l'importation du fichier.");
+            }
+        };
+        reader.readAsText(file);
+        // Reset input
+        e.target.value = '';
     };
 
 
@@ -386,29 +413,46 @@ const Dashboard = () => {
             }
 
             {/* Header & Filters */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold text-white">Tableau de Bord</h2>
-                    <p className="text-gray-400">Statistiques avancées</p>
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                            <Activity className="text-[var(--color-neon-blue)]" />
+                            Tableau de Bord
+                        </h2>
+                        <p className="text-gray-400">Suivi des performances</p>
+                    </div>
+                    <label className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl cursor-pointer transition-colors">
+                        <Download className="rotate-180" size={18} />
+                        <span className="text-sm font-bold">Importer</span>
+                        <input
+                            type="file"
+                            accept=".json"
+                            onChange={handleImportGame}
+                            className="hidden"
+                        />
+                    </label>
                 </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleExport}
-                        className="bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg p-2 text-white transition-colors"
-                        title="Exporter les données (JSON)"
-                    >
-                        <Download size={20} />
-                    </button>
-                    <select
-                        value={selectedPlayerId}
-                        onChange={(e) => setSelectedPlayerId(e.target.value)}
-                        className="bg-black/30 border border-white/10 rounded-lg p-2 text-white min-w-[200px] focus:outline-none focus:border-[var(--color-neon-blue)]"
-                    >
-                        <option value="all">Tous les joueurs</option>
-                        {players.map(p => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
-                    </select>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleExport}
+                            className="bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg p-2 text-white transition-colors"
+                            title="Exporter les données (JSON)"
+                        >
+                            <Download size={20} />
+                        </button>
+                        <select
+                            value={selectedPlayerId}
+                            onChange={(e) => setSelectedPlayerId(e.target.value)}
+                            className="bg-black/30 border border-white/10 rounded-lg p-2 text-white min-w-[200px] focus:outline-none focus:border-[var(--color-neon-blue)]"
+                        >
+                            <option value="all">Tous les joueurs</option>
+                            {players.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
