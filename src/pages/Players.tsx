@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore, type Player } from '../store/gameStore';
 import { UserPlus, Trash2, Users } from 'lucide-react';
 
 const Players = () => {
@@ -11,7 +11,7 @@ const Players = () => {
     const [level, setLevel] = useState<'U11' | 'U13' | 'U15' | 'U18'>('U15');
 
     // Edit State
-    const [editingPlayer, setEditingPlayer] = useState<any>(null);
+    const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,7 +22,7 @@ const Players = () => {
         }
     };
 
-    const startEditing = (player: any) => {
+    const startEditing = (player: Player) => {
         setEditingPlayer({ ...player });
     };
 
@@ -81,7 +81,7 @@ const Players = () => {
                                     <label className="text-xs text-gray-400 uppercase font-bold">Niveau</label>
                                     <select
                                         value={editingPlayer.level}
-                                        onChange={(e) => setEditingPlayer({ ...editingPlayer, level: e.target.value })}
+                                        onChange={(e) => setEditingPlayer({ ...editingPlayer, level: e.target.value as any })}
                                         className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                                     >
                                         <option value="U11">U11 (Pas de 3 pts)</option>

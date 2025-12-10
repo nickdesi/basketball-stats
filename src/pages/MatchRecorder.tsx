@@ -29,7 +29,7 @@ const MatchRecorder = () => {
     const isFouledOut = currentStats.fouls >= 5;
 
     // --- ANIMATION LOGIC ---
-    const triggerAnimation = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>, text: string, color: string) => {
+    const triggerAnimation = (e: React.MouseEvent | React.TouchEvent, text: string, color: string) => {
         // Get coordinates - handle both touch and mouse
         let clientX, clientY;
         if ('touches' in e) {
@@ -56,7 +56,7 @@ const MatchRecorder = () => {
     // --- ACTIONS ---
 
     // Scoring logic
-    const handleScore = (type: 'make' | 'miss', points: 1 | 2 | 3, e: any) => {
+    const handleScore = (type: 'make' | 'miss', points: 1 | 2 | 3, e: React.MouseEvent | React.TouchEvent) => {
         if (isFouledOut) return;
 
         if (type === 'make') {
@@ -72,7 +72,7 @@ const MatchRecorder = () => {
     const [showFoulConfirm, setShowFoulConfirm] = useState(false);
 
     // Stat logic
-    const handleStat = (stat: keyof GameStats, label: string, color: string, e: any) => {
+    const handleStat = (stat: keyof GameStats, label: string, color: string, e: React.MouseEvent | React.TouchEvent) => {
         if (isFouledOut && stat !== 'fouls') return;
 
         // Check for 5th foul
@@ -186,7 +186,7 @@ const MatchRecorder = () => {
                                 <div key={shot.val} className="flex gap-2 h-full">
                                     {/* SCORED BUTTON */}
                                     <button
-                                        onClick={(e) => handleScore('make', shot.val as any, e)}
+                                        onClick={(e) => handleScore('make', shot.val as 1 | 2 | 3, e)}
                                         className="flex-[2] rounded-xl flex items-center justify-between px-4 relative overflow-hidden active:scale-[0.98] transition-all border border-white/10"
                                         style={{ background: `linear-gradient(90deg, ${shot.color}15 0%, transparent 100%)`, borderColor: `${shot.color}30` }}
                                     >
@@ -199,7 +199,7 @@ const MatchRecorder = () => {
 
                                     {/* MISSED BUTTON */}
                                     <button
-                                        onClick={(e) => handleScore('miss', shot.val as any, e)}
+                                        onClick={(e) => handleScore('miss', shot.val as 1 | 2 | 3, e)}
                                         className="flex-1 rounded-xl flex flex-col items-center justify-center bg-red-500/10 border border-red-500/20 active:scale-[0.98] transition-all hover:bg-red-500/20"
                                     >
                                         <span className="text-xl font-bold text-red-500">MISS</span>
