@@ -4,6 +4,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 ![Basketball Stats Preview](https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop)
 
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://basket.desimone.fr)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnickdesi%2Fbasketball-stats)
 
 ## ✨ Fonctionnalités
