@@ -48,8 +48,8 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 1. **Cloner le projet :**
 
     ```bash
-    git clone https://github.com/votre-username/basketball-stats-1.git
-    cd basketball-stats-1
+    git clone https://github.com/nickdesi/basketball-stats.git
+    cd basketball-stats
     ```
 
 2. **Installer les dépendances :**
