@@ -36,6 +36,7 @@ const Dashboard = () => {
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editStats, setEditStats] = useState<any>(null);
+    const [isSharing, setIsSharing] = useState(false);
 
     const startEditing = () => {
         if (selectedGame) {
@@ -43,6 +44,16 @@ const Dashboard = () => {
             setIsEditing(true);
         }
     };
+    // ...
+    // Note: I'm skipping lines for brevity where unchanged, but ensure I replace the block correctly.
+    // Wait, I should not skip lines in "ReplacementContent" unless I am matching a smaller chunk.
+    // I will do this in two chunks to be safe and clean, or one large chunk if contiguous.
+    // The state is at the top, the handler is in the middle, the button is in the JSX.
+    // The user wants me to use replace_file_content (single chunk) if contiguous? No, the tool says "use REPL_FILE_CONTENT ONLY when... SINGLE CONTIGUOUS block".
+    // These are NON-contiguous edits (State at top, Handler in middle, JSX at bottom).
+    // I MUST use multi_replace.
+    // ABORTING this tool call and switching to multi_replace.
+
 
     const cancelEditing = () => {
         setIsEditing(false);
@@ -183,15 +194,23 @@ const Dashboard = () => {
 
     const handleShareGame = async (game: any) => {
         if (!cardRef.current) return;
+        setIsSharing(true);
 
         try {
             const canvas = await html2canvas(cardRef.current, {
                 backgroundColor: '#1a1a1a',
-                scale: 2 // Better quality
+                scale: 2, // Better quality
+                useCORS: true,
+                logging: true // Help debug
             });
 
+
             canvas.toBlob(async (blob) => {
-                if (!blob) return;
+                if (!blob) {
+                    setIsSharing(false);
+                    alert("Erreur: Impossible de générer l'image (Blob vide).");
+                    return;
+                }
 
                 const file = new File([blob], `match-${new Date(game.date).toISOString().split('T')[0]}.png`, { type: 'image/png' });
 
@@ -203,21 +222,52 @@ const Dashboard = () => {
                             text: 'Regarde mes stats sur HoopStats !'
                         });
                     } catch (err) {
-                        console.log('Share failed', err);
+                        console.log('Share failed or cancelled', err);
+                        // Share cancelled or failed, try clipboard
+                        try {
+                            const clipboardItem = new ClipboardItem({ [file.type]: blob });
+                            await navigator.clipboard.write([clipboardItem]);
+                            alert("Partage échoué/annulé. Image copiée dans le presse-papier !");
+                        } catch (clipboardErr) {
+                            // Fallback to download
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `match-stats.png`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            alert("Partage non supporté : Image téléchargée.");
+                        }
+                    } finally {
+                        setIsSharing(false);
                     }
                 } else {
-                    // Fallback: Download
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `match-stats.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    // Fallback 1: Clipboard
+                    try {
+                        const clipboardItem = new ClipboardItem({ [file.type]: blob });
+                        await navigator.clipboard.write([clipboardItem]);
+                        alert("Image copiée dans le presse-papier !");
+                        setIsSharing(false);
+                    } catch (err) {
+                        console.error('Clipboard failed', err);
+                        // Fallback 2: Download
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `match-stats.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        alert("Partage non supporté : Image téléchargée.");
+                        setIsSharing(false);
+                    }
                 }
             }, 'image/png');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error generating image', err);
+            alert(`Erreur lors de la génération de l'image: ${err?.message || JSON.stringify(err)}`);
+            setIsSharing(false);
         }
     };
 
@@ -243,10 +293,10 @@ const Dashboard = () => {
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
-                    <div ref={cardRef} className="bg-[#1a1a1a] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                    <div ref={cardRef} className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
 
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-start">
+                        <div className="p-6 border-b border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] flex justify-between items-start">
                             <div>
                                 <div className="text-xs text-[var(--color-neon-blue)] font-bold uppercase tracking-wider mb-1">
                                     {isEditing ? 'Modification du Match' : 'Détails du Match'}
@@ -254,31 +304,40 @@ const Dashboard = () => {
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                     {selectedGame.opponent || "Match d'entraînement"}
                                 </h3>
-                                <div className="text-gray-400 text-sm mt-1">
+                                <div className="text-[#9ca3af] text-sm mt-1">
                                     {new Date(selectedGame.date).toLocaleDateString()} • {new Date(selectedGame.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             </div>
                             <div className="flex gap-2">
                                 {!isEditing ? (
                                     <>
-                                        <button onClick={startEditing} className="p-2 hover:bg-white/10 rounded-full transition-colors text-yellow-400" title="Modifier">
+                                        <button onClick={startEditing} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[#facc15]" title="Modifier">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                         </button>
-                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-red-500" title="Supprimer">
+                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-[rgba(239,68,68,0.2)] rounded-full transition-colors text-[#ef4444]" title="Supprimer">
                                             <Trash2 size={20} />
                                         </button>
-                                        <button onClick={() => handleShareGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-[var(--color-neon-blue)]" title="Partager">
-                                            <Share2 size={20} />
+                                        <button
+                                            onClick={() => handleShareGame(selectedGame)}
+                                            className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[var(--color-neon-blue)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title="Partager"
+                                            disabled={isSharing}
+                                        >
+                                            {isSharing ? (
+                                                <div className="animate-spin h-5 w-5 border-2 border-[var(--color-neon-blue)] border-t-transparent rounded-full" />
+                                            ) : (
+                                                <Share2 size={20} />
+                                            )}
                                         </button>
-                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white" title="Exporter JSON">
+                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-white" title="Exporter JSON">
                                             <Download size={20} />
                                         </button>
-                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
+                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors ml-2">
                                             <span className="text-2xl leading-none">&times;</span>
                                         </button>
                                     </>
                                 ) : (
-                                    <button onClick={cancelEditing} className="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
+                                    <button onClick={cancelEditing} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors ml-2">
                                         <span className="text-2xl leading-none">&times;</span>
                                     </button>
                                 )}
@@ -291,7 +350,7 @@ const Dashboard = () => {
                             {isEditing ? (
                                 // --- EDIT MODE ---
                                 <div className="space-y-6">
-                                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-yellow-200 text-sm mb-4">
+                                    <div className="bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.2)] p-4 rounded-xl text-[#fef08a] text-sm mb-4">
                                         Vous modifiez les statistiques de ce match.
                                     </div>
 
@@ -315,19 +374,19 @@ const Dashboard = () => {
                                             if (player?.level === 'U11' && key === 'points3') return null;
 
                                             return (
-                                                <div key={key} className="p-3 rounded-lg bg-white/5 border border-white/10 flex flex-col items-center">
-                                                    <label className="text-xs text-gray-400 uppercase font-bold mb-2">{labels[key]}</label>
+                                                <div key={key} className="p-3 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] flex flex-col items-center">
+                                                    <label className="text-xs text-[#9ca3af] uppercase font-bold mb-2">{labels[key]}</label>
                                                     <div className="flex items-center gap-3">
                                                         <button
                                                             onClick={() => handleEditStatChange(key, (value as number) - 1)}
-                                                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+                                                            className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-white"
                                                         >
                                                             -
                                                         </button>
                                                         <span className="text-xl font-mono font-bold w-8 text-center">{value as number}</span>
                                                         <button
                                                             onClick={() => handleEditStatChange(key, (value as number) + 1)}
-                                                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+                                                            className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-white"
                                                         >
                                                             +
                                                         </button>
@@ -341,9 +400,9 @@ const Dashboard = () => {
                                 // --- VIEW MODE ---
                                 <>
                                     {/* Score Recap */}
-                                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div className="flex items-center justify-between p-4 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)]">
                                         <div>
-                                            <div className="text-sm text-gray-400 uppercase font-bold">Joueur</div>
+                                            <div className="text-sm text-[#9ca3af] uppercase font-bold">Joueur</div>
                                             <div className="text-xl font-bold text-[var(--color-neon-blue)]">
                                                 {players.find(p => p.id === selectedGame.playerId)?.name || 'Inconnu'}
                                             </div>
@@ -352,13 +411,13 @@ const Dashboard = () => {
                                             <div className="text-4xl font-black font-mono text-white">
                                                 {(selectedGame.stats.points1 * 1) + (selectedGame.stats.points2 * 2) + (selectedGame.stats.points3 * 3)}
                                             </div>
-                                            <div className="text-[10px] text-gray-500 font-bold uppercase">Points Totaux</div>
+                                            <div className="text-[10px] text-[#6b7280] font-bold uppercase">Points Totaux</div>
                                         </div>
                                     </div>
 
                                     {/* Stats Grid - Updated to Match SessionStats Layout */}
                                     <div>
-                                        <h4 className="text-sm font-bold text-gray-400 uppercase mb-3">Statistiques Complètes</h4>
+                                        <h4 className="text-sm font-bold text-[#9ca3af] uppercase mb-3">Statistiques Complètes</h4>
 
                                         {/* Derived Calculations (Inline for now to keep logic contained) */}
                                         {(() => {
@@ -393,9 +452,9 @@ const Dashboard = () => {
 
                                             return (
                                                 <div className="space-y-4">
-                                                    <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
+                                                    <div className="bg-[#111] rounded-2xl border border-[rgba(255,255,255,0.1)] overflow-hidden">
                                                         {/* Row 1: Shooting */}
-                                                        <div className={`grid ${players.find(p => p.id === selectedGame.playerId)?.level === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-white/10 border-b border-white/10 bg-white/[0.02]`}>
+                                                        <div className={`grid ${players.find(p => p.id === selectedGame.playerId)?.level === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-white/10 border-b border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]`}>
                                                             <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} color="white" />
                                                             <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'white'} />
                                                             {players.find(p => p.id === selectedGame.playerId)?.level !== 'U11' && (
@@ -407,7 +466,7 @@ const Dashboard = () => {
                                                         </div>
 
                                                         {/* Row 2: FT & Rebounds */}
-                                                        <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-white/10">
+                                                        <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-[rgba(255,255,255,0.1)]">
                                                             <StatBox label="FT%" value={ftPercent} isPercent />
                                                             <StatBox label="REB OFF" value={s.offensiveRebounds} />
                                                             <StatBox label="REB DEF" value={s.defensiveRebounds} />
@@ -426,7 +485,7 @@ const Dashboard = () => {
                                                     {/* ADVANCED */}
                                                     <div>
                                                         <div className="text-xs font-bold text-[var(--color-neon-orange)] uppercase mb-2">Avancées</div>
-                                                        <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
+                                                        <div className="bg-[#111] rounded-2xl border border-[rgba(255,255,255,0.1)] overflow-hidden">
                                                             <div className="grid grid-cols-4 divide-x divide-white/10">
                                                                 <StatBox label="PTS" value={totalPoints} color="var(--color-neon-blue)" />
                                                                 <StatBox label="eFG%" value={efgPercent} isPercent />
@@ -444,10 +503,10 @@ const Dashboard = () => {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-4 border-t border-white/10 bg-white/5 flex justify-end gap-3">
+                        <div className="p-4 border-t border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] flex justify-end gap-3">
                             {isEditing ? (
                                 <>
-                                    <button onClick={cancelEditing} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                    <button onClick={cancelEditing} className="px-6 py-2 bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] text-white rounded-lg font-bold transition-colors">
                                         Annuler
                                     </button>
                                     <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:bg-green-400 text-black rounded-lg font-bold transition-colors">
@@ -455,7 +514,7 @@ const Dashboard = () => {
                                     </button>
                                 </>
                             ) : (
-                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] text-white rounded-lg font-bold transition-colors">
                                     Fermer
                                 </button>
                             )}
