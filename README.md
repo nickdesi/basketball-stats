@@ -30,7 +30,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 - **Match Setup :** Saisie du nom de l'adversaire.
 - **Profils Joueurs :** Gestion complète (Nom, Numéro, Poste, Niveau U11-U18).
-- **Partage Image :** Créez une image récapitulative pro à partager sur les réseaux.
+- **Partage Résumé :** Copiez un résumé texte complet du match à partager (WhatsApp, Notes, etc.).
 - **Correction :** Mode correction pour annuler les erreurs de saisie.
 
 ## 🛠 Technologies

@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import { useState } from 'react';
+
 import { useGameStore, type CompletedGame } from '../store/gameStore';
 import StatBox from '../components/StatBox';
 import { Trophy, Activity, CalendarDays, History, TrendingUp, PieChart as PieIcon, BarChart3, Download, Share2, Trash2 } from 'lucide-react';
@@ -31,12 +31,12 @@ ChartJS.register(
 
 const Dashboard = () => {
     const { history, players, deleteGame, updateGame } = useGameStore();
-    const cardRef = useRef<HTMLDivElement>(null);
+
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editStats, setEditStats] = useState<any>(null);
-    const [isSharing, setIsSharing] = useState(false);
+
 
     const startEditing = () => {
         if (selectedGame) {
@@ -193,81 +193,20 @@ const Dashboard = () => {
     };
 
     const handleShareGame = async (game: any) => {
-        if (!cardRef.current) return;
-        setIsSharing(true);
+        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
+        const player = players.find(p => p.id === game.playerId);
 
-        try {
-            const canvas = await html2canvas(cardRef.current, {
-                backgroundColor: '#1a1a1a',
-                scale: 2, // Better quality
-                useCORS: true,
-                logging: true // Help debug
-            });
+        const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${game.stats.rebounds}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
 
-
-            canvas.toBlob(async (blob) => {
-                if (!blob) {
-                    setIsSharing(false);
-                    alert("Erreur: Impossible de générer l'image (Blob vide).");
-                    return;
-                }
-
-                const file = new File([blob], `match-${new Date(game.date).toISOString().split('T')[0]}.png`, { type: 'image/png' });
-
-                if (navigator.share && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Résultat du Match',
-                            text: 'Regarde mes stats sur HoopStats !'
-                        });
-                    } catch (err) {
-                        console.log('Share failed or cancelled', err);
-                        // Share cancelled or failed, try clipboard
-                        try {
-                            const clipboardItem = new ClipboardItem({ [file.type]: blob });
-                            await navigator.clipboard.write([clipboardItem]);
-                            alert("Partage échoué/annulé. Image copiée dans le presse-papier !");
-                        } catch (clipboardErr) {
-                            // Fallback to download
-                            const url = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = `match-stats.png`;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            alert("Partage non supporté : Image téléchargée.");
-                        }
-                    } finally {
-                        setIsSharing(false);
-                    }
-                } else {
-                    // Fallback 1: Clipboard
-                    try {
-                        const clipboardItem = new ClipboardItem({ [file.type]: blob });
-                        await navigator.clipboard.write([clipboardItem]);
-                        alert("Image copiée dans le presse-papier !");
-                        setIsSharing(false);
-                    } catch (err) {
-                        console.error('Clipboard failed', err);
-                        // Fallback 2: Download
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `match-stats.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        alert("Partage non supporté : Image téléchargée.");
-                        setIsSharing(false);
-                    }
-                }
-            }, 'image/png');
-        } catch (err: any) {
-            console.error('Error generating image', err);
-            alert(`Erreur lors de la génération de l'image: ${err?.message || JSON.stringify(err)}`);
-            setIsSharing(false);
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Statistiques du Match', text: text });
+            } catch (err) {
+                console.log('Share failed', err);
+            }
+        } else {
+            await navigator.clipboard.writeText(text);
+            alert("Résumé copié dans le presse-papier !");
         }
     };
 
@@ -293,7 +232,7 @@ const Dashboard = () => {
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
-                    <div ref={cardRef} className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
 
                         {/* Modal Header */}
                         <div className="p-6 border-b border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] flex justify-between items-start">
@@ -319,15 +258,10 @@ const Dashboard = () => {
                                         </button>
                                         <button
                                             onClick={() => handleShareGame(selectedGame)}
-                                            className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[var(--color-neon-blue)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[var(--color-neon-blue)]"
                                             title="Partager"
-                                            disabled={isSharing}
                                         >
-                                            {isSharing ? (
-                                                <div className="animate-spin h-5 w-5 border-2 border-[var(--color-neon-blue)] border-t-transparent rounded-full" />
-                                            ) : (
-                                                <Share2 size={20} />
-                                            )}
+                                            <Share2 size={20} />
                                         </button>
                                         <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-white" title="Exporter JSON">
                                             <Download size={20} />

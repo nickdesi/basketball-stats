@@ -13,7 +13,6 @@
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
-    "html2canvas": "^1.4.1",
     "lucide-react": "^0.556.0",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
