@@ -17,6 +17,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Limite de Fautes :** Avertissement et exclusion automatique (fin de match) confirmée au bout de la 5ème faute.
 - **Thème Clair/Sombre :** Interface adaptative avec un mode sombre (néon) et un mode clair (épuré), basculable en un clic.
 - **Effets visuels :** Animations "Arcade" avec textes flottants et feedbacks visuels impactants.
+- **Ultra-Premium UX :** Transitions de pages fluides et animations d'interface avancées propulsées par **Framer Motion**.
 - **Mobile Optimisé :** Expérience "Native App" (PWA) :
   - **Zéro Zoom :** Saisie stable sans zoom intempestif sur iPhone.
   - **Plein Écran :** Support "Safe Area" (encoches) et masquage des barres navigateur.
@@ -34,7 +35,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Match Setup :** Saisie du nom de l'adversaire.
 - **Profils Joueurs :** Gestion complète (Nom, Numéro, Poste, Niveau U11-U18).
 - **Partage Résumé :** Copiez un résumé texte complet du match à partager (WhatsApp, Notes, etc.).
-- **Correction :** Mode correction pour annuler les erreurs de saisie.
+- **Correction & Édition :** Mode correction pour annuler les erreurs de saisie et **possibilité de modifier la date** et les stats complètes après le match.
 
 ## 🛠 Technologies
 
@@ -43,6 +44,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Styles :** [Tailwind CSS v4](https://tailwindcss.com/)
 - **État :** [Zustand](https://github.com/pmndrs/zustand) (avec persistance locale)
 - **Graphiques :** [Chart.js](https://www.chartjs.org/) + [React-Chartjs-2](https://react-chartjs-2.js.org/)
+- **Animation :** [Framer Motion](https://www.framer.com/motion/)
 - **Icônes :** [Lucide React](https://lucide.dev/)
 
 ## 🚀 Installation
