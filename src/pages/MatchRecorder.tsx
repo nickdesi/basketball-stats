@@ -158,9 +158,9 @@ const MatchRecorder = () => {
                     </div>
                 </div>
 
-                <div className="flex bg-[var(--color-card)] rounded-full p-1 border border-[var(--color-glass-border)]">
-                    <button onClick={() => setViewMode('input')} className={`p-2 rounded-full ${viewMode === 'input' ? 'bg-[var(--color-text)] text-[var(--color-bg)]' : 'text-[var(--color-text-dim)]'} `}><GripHorizontal size={16} /></button>
-                    <button onClick={() => setViewMode('stats')} className={`p-2 rounded-full ${viewMode === 'stats' ? 'bg-[var(--color-text)] text-[var(--color-bg)]' : 'text-[var(--color-text-dim)]'} `}><BarChart3 size={16} /></button>
+                <div className="flex bg-[var(--color-card)] rounded-full p-1.5 border border-[var(--color-glass-border)] gap-1">
+                    <button onClick={() => setViewMode('input')} className={`p-2 rounded-full transition-all ${viewMode === 'input' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-white/5'} `}><GripHorizontal size={18} /></button>
+                    <button onClick={() => setViewMode('stats')} className={`p-2 rounded-full transition-all ${viewMode === 'stats' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-white/5'} `}><BarChart3 size={18} /></button>
                 </div>
             </div>
 
@@ -173,7 +173,7 @@ const MatchRecorder = () => {
 
                         {/* SCORING SECTION - Split by Value */}
                         {/* Designed to be clearer: Left side = Make, Right side = Miss (smaller) */}
-                        <div className="grid grid-rows-3 gap-2 shrink-0 h-[40%] min-h-[180px]">
+                        <div className="grid grid-rows-3 gap-2 shrink-0">
                             {[
                                 { val: 1, label: 'Lancer Franc', short: '1 PT', color: 'var(--color-neon-blue)' },
                                 { val: 2, label: 'Tir', short: '2 PTS', color: 'var(--color-neon-green)' },
