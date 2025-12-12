@@ -13,8 +13,9 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 - **Interface Intuitive & Ergonomique :** Saisie ultra-rapide avec un design "Zéro Scroll". Boutons compacts (cercle cliquable pour incrémenter) et labels positionnés intelligemment (en haut pour la ligne 1, en bas pour la ligne 2).
 - **Suivi complet :** Rebonds (Off/Def), Passes, Interceptions, Contres, Balles Perdues, Fautes.
-- **Règles U11 Intégrées :** Si un joueur est U11, les tirs à 3 points sont automatiquement masqués (Saisie & Stats match/historique).
+- **Règles U11 Intégrées :** Si un joueur est U11, les tirs à 3 points sont automatiquement masqués (Saisie & Stats).
 - **Limite de Fautes :** Avertissement et exclusion automatique (fin de match) confirmée au bout de la 5ème faute.
+- **Thème Clair/Sombre :** Interface adaptative avec un mode sombre (néon) et un mode clair (épuré), basculable en un clic.
 - **Effets visuels :** Animations "Arcade" avec textes flottants et feedbacks visuels impactants.
 - **Mobile Optimisé :** Expérience "Native App" (PWA) :
   - **Zéro Zoom :** Saisie stable sans zoom intempestif sur iPhone.
@@ -26,7 +27,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Stats Détaillées :** Nouvelle grille de stats ultra-complète sur 4 colonnes (FG%, 3P%, eFG%, TS%, Eval), identique en live et en historique.
 - **Graphiques Intelligents :** Courbes, Camemberts (adaptés U11 sans 3pts), et Barres de progression.
 - **Historique :** Liste des matchs avec scores, dates, et accès rapide aux détails.
-- **Import/Export :** Sauvegardez vos matchs en JSON (Export) ou rechargez-les depuis un fichier (Import).
+- **Import/Export :** Sauvegardez vos matchs en JSON pour les archiver (Export) ou rechargez-les depuis un fichier (Import), idéal pour transférer des données entre appareils.
 
 ### 📜 Gestion des Matchs & Joueurs
 
