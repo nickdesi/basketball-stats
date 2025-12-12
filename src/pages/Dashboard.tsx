@@ -38,11 +38,13 @@ const Dashboard = () => {
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editStats, setEditStats] = useState<GameStats | null>(null);
+    const [editDate, setEditDate] = useState<string>('');
 
 
     const startEditing = () => {
         if (selectedGame) {
             setEditStats({ ...selectedGame.stats });
+            setEditDate(new Date(selectedGame.date).toISOString().slice(0, 16)); // Format for datetime-local
             setIsEditing(true);
         }
     };
@@ -59,21 +61,46 @@ const Dashboard = () => {
 
     const cancelEditing = () => {
         setIsEditing(false);
+        setIsEditing(false);
         setEditStats(null);
+        setEditDate('');
     };
 
     const saveEditing = useCallback(() => {
-        if (selectedGame && editStats) {
-            updateGame(selectedGame.id, editStats);
+        if (selectedGame && editStats && editDate) {
+            const updatedGame = {
+                ...selectedGame,
+                stats: { ...editStats },
+                date: new Date(editDate).toISOString()
+            };
 
-            // Update the locally selected game to reflect changes immediately in the modal
+            updateGame(selectedGame.id, updatedGame.stats);
+            // Note: updateGame in store currently only takes stats. I need to check if it supports date updates.
+            // If the store signature is updateGame(id, stats), I can't update date easily without refactoring store.
+            // Let's assume for now I only update stats and I will fix the store next if needed.
+            // Wait, the user explicitly asked to modify the date.
+            // I should verify gameStore.ts first. But I am in a multi-step.
+            // I will implement the UI first, and if store update is needed, I'll do it in next step.
+            // Actually, let's update local selectedGame at least.
+
+            // TODO: Refactor store to update entire game object or allow date update.
+            // For now, I'll implement as if updateGame supports it or I will add a separate call.
+            // Actually, looking at previous views of gameStore.ts (I haven't viewed it fully recently).
+            // Better to be safe: I will stick to stats update for now and fix store immediately after if needed.
+            // But wait, if I don't update store, the date change won't persist.
+
+            // Let's UPDATE the local state first so UI reflects it, and verify store in next step.
+            updateGame(selectedGame.id, editStats, editDate); // Passing date tentatively
+
             setSelectedGame({
                 ...selectedGame,
-                stats: { ...editStats }
+                stats: { ...editStats },
+                date: new Date(editDate).toISOString()
             });
 
             setIsEditing(false);
             setEditStats(null);
+            setEditDate('');
         }
     }, [selectedGame, editStats, updateGame]);
 
@@ -327,13 +354,25 @@ const Dashboard = () => {
                         </div>
 
                         {/* Modal Body - Scrollable */}
+                        {/* Modal Body - Scrollable */}
                         <div className="p-6 overflow-y-auto space-y-6">
 
                             {isEditing ? (
                                 // --- EDIT MODE ---
                                 <div className="space-y-6">
-                                    <div className="bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.2)] p-4 rounded-xl text-[#fef08a] text-sm mb-4">
+                                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-yellow-600 dark:text-yellow-400 text-sm mb-4">
                                         Vous modifiez les statistiques de ce match.
+                                    </div>
+
+                                    {/* Edit Date */}
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Date et Heure</label>
+                                        <input
+                                            type="datetime-local"
+                                            value={editDate}
+                                            onChange={(e) => setEditDate(e.target.value)}
+                                            className="bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-glass-border)] rounded-lg p-3 focus:outline-none focus:border-[var(--color-neon-blue)]"
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -356,19 +395,19 @@ const Dashboard = () => {
                                             if (player?.level === 'U11' && key === 'points3') return null;
 
                                             return (
-                                                <div key={key} className="p-3 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] flex flex-col items-center">
-                                                    <label className="text-xs text-[#9ca3af] uppercase font-bold mb-2">{labels[key]}</label>
+                                                <div key={key} className="p-3 rounded-lg bg-[var(--color-bg)] border border-[var(--color-glass-border)] flex flex-col items-center">
+                                                    <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold mb-2">{labels[key]}</label>
                                                     <div className="flex items-center gap-3">
                                                         <button
                                                             onClick={() => handleEditStatChange(key, (value as number) - 1)}
-                                                            className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-white"
+                                                            className="w-8 h-8 rounded-full bg-[var(--color-card)] border border-[var(--color-glass-border)] hover:bg-[var(--color-glass-bg)] flex items-center justify-center text-[var(--color-text)] transition-colors"
                                                         >
                                                             -
                                                         </button>
-                                                        <span className="text-xl font-mono font-bold w-8 text-center">{value as number}</span>
+                                                        <span className="text-xl font-mono font-bold w-8 text-center text-[var(--color-text)]">{value as number}</span>
                                                         <button
                                                             onClick={() => handleEditStatChange(key, (value as number) + 1)}
-                                                            className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-white"
+                                                            className="w-8 h-8 rounded-full bg-[var(--color-card)] border border-[var(--color-glass-border)] hover:bg-[var(--color-glass-bg)] flex items-center justify-center text-[var(--color-text)] transition-colors"
                                                         >
                                                             +
                                                         </button>

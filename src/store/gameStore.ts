@@ -62,7 +62,7 @@ export type GameState = {
     resetGame: () => void;
     finishGame: () => void;
     deleteGame: (id: string) => void;
-    updateGame: (gameId: string, updatedStats: GameStats) => void;
+    updateGame: (gameId: string, updatedStats: GameStats, date?: string) => void;
     importGame: (game: CompletedGame) => void;
 };
 
@@ -161,10 +161,10 @@ export const useGameStore = create<GameState>()(
                 history: state.history.filter(g => g.id !== id)
             })),
 
-            updateGame: (gameId, updatedStats) => set((state) => ({
+            updateGame: (gameId, updatedStats, date) => set((state) => ({
                 history: state.history.map(g =>
                     g.id === gameId
-                        ? { ...g, stats: { ...updatedStats } }
+                        ? { ...g, stats: { ...updatedStats }, ...(date ? { date } : {}) }
                         : g
                 )
             })),
