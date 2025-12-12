@@ -10,7 +10,7 @@ interface CounterInputProps {
     min?: number;
 }
 
-const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white', min = 0, orientation = 'vertical', labelTop = false }: CounterInputProps & { orientation?: 'vertical' | 'horizontal', labelTop?: boolean }) => {
+const CounterInput = React.memo(({ label, value, onIncrement, onDecrement, color = 'white', min = 0, orientation = 'vertical', labelTop = false }: CounterInputProps & { orientation?: 'vertical' | 'horizontal', labelTop?: boolean }) => {
 
     const handleAction = (e: React.MouseEvent, action: (e: React.MouseEvent) => void) => {
         if (navigator.vibrate) navigator.vibrate(10);
@@ -61,7 +61,7 @@ const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white',
                 {value}
             </button>
 
-            {/* Down Button ({/* Down Button (Smaller / Less prominent) */}
+            {/* Down Button (Smaller / Less prominent) */}
             <button onClick={(e) => handleAction(e, onDecrement)} disabled={value <= min} className="p-2 -mt-1 rounded-full text-[var(--color-text-dim)] hover:text-[var(--color-text)] active:scale-90 transition-all disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronDown size={24} strokeWidth={3} />
             </button>
@@ -74,6 +74,6 @@ const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white',
             )}
         </div>
     );
-};
+});
 
 export default CounterInput;

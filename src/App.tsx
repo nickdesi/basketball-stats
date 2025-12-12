@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import MatchRecorder from './pages/MatchRecorder';
-import Players from './pages/Players';
 import { useThemeStore } from './store/themeStore';
-import { useEffect } from 'react';
+
+// Lazy load pages for code splitting
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const MatchRecorder = lazy(() => import('./pages/MatchRecorder'));
+const Players = lazy(() => import('./pages/Players'));
 
 function App() {
   const [view, setView] = useState<'dashboard' | 'match' | 'players'>('dashboard');
@@ -15,15 +16,24 @@ function App() {
     document.documentElement.classList.add(theme);
   }, [theme]);
 
+  // Loading spinner component
+  const LoadingFallback = () => (
+    <div className="flex items-center justify-center h-full w-full min-h-[50vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-neon-blue)]"></div>
+    </div>
+  );
+
   return (
     <Layout currentView={view} onNavigate={setView}>
-      {view === 'dashboard' ? (
-        <Dashboard />
-      ) : view === 'players' ? (
-        <Players />
-      ) : (
-        <MatchRecorder />
-      )}
+      <Suspense fallback={<LoadingFallback />}>
+        {view === 'dashboard' ? (
+          <Dashboard />
+        ) : view === 'players' ? (
+          <Players />
+        ) : (
+          <MatchRecorder />
+        )}
+      </Suspense>
     </Layout>
   );
 }

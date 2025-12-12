@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
 import SessionStats from '../components/SessionStats';
@@ -60,7 +60,7 @@ const Dashboard = () => {
         setEditStats(null);
     };
 
-    const saveEditing = () => {
+    const saveEditing = useCallback(() => {
         if (selectedGame && editStats) {
             updateGame(selectedGame.id, editStats);
 
@@ -73,9 +73,9 @@ const Dashboard = () => {
             setIsEditing(false);
             setEditStats(null);
         }
-    };
+    }, [selectedGame, editStats, updateGame]);
 
-    const handleEditStatChange = (stat: string, value: number) => {
+    const handleEditStatChange = useCallback((stat: string, value: number) => {
         setEditStats((prev) => {
             if (!prev) return null;
             return {
@@ -83,7 +83,7 @@ const Dashboard = () => {
                 [stat]: Math.max(0, value)
             };
         });
-    };
+    }, []);
 
     const handleExport = () => {
         const dataStr = JSON.stringify(history, null, 2);
@@ -99,87 +99,99 @@ const Dashboard = () => {
 
     // ... (rest of helper functions) ...
 
-    const handleDeleteGame = (id: string) => {
+    const handleDeleteGame = useCallback((id: string) => {
         if (confirm("Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.")) {
             deleteGame(id);
             setSelectedGame(null);
         }
-    };
+    }, [deleteGame]);
 
     // ...
 
 
-    // Filter History
-    const filteredHistory = selectedPlayerId === 'all'
-        ? history
-        : history.filter(game => game.playerId === selectedPlayerId);
+    // --- FILTER ---
+    const filteredHistory = useMemo(() => {
+        return selectedPlayerId === 'all'
+            ? history
+            : history.filter(game => game.playerId === selectedPlayerId);
+    }, [history, selectedPlayerId]);
 
     // --- STATS CALCULATION ---
-    const totalGames = filteredHistory.length;
-    const totalPoints = filteredHistory.reduce((acc, game) =>
-        acc + (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3), 0);
-    const totalRebounds = filteredHistory.reduce((acc, game) => acc + game.stats.rebounds, 0);
-    const totalAssists = filteredHistory.reduce((acc, game) => acc + game.stats.assists, 0);
+    const { totalGames, totalRebounds, totalAssists, avgPoints, avgRebounds, avgAssists } = useMemo(() => {
+        const totalGames = filteredHistory.length;
+        const totalPoints = filteredHistory.reduce((acc, game) =>
+            acc + (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3), 0);
+        const totalRebounds = filteredHistory.reduce((acc, game) => acc + game.stats.rebounds, 0);
+        const totalAssists = filteredHistory.reduce((acc, game) => acc + game.stats.assists, 0);
 
-    const avgPoints = totalGames > 0 ? (totalPoints / totalGames).toFixed(1) : '0.0';
-    const avgRebounds = totalGames > 0 ? (totalRebounds / totalGames).toFixed(1) : '0.0';
-    const avgAssists = totalGames > 0 ? (totalAssists / totalGames).toFixed(1) : '0.0';
+        const avgPoints = totalGames > 0 ? (totalPoints / totalGames).toFixed(1) : '0.0';
+        const avgRebounds = totalGames > 0 ? (totalRebounds / totalGames).toFixed(1) : '0.0';
+        const avgAssists = totalGames > 0 ? (totalAssists / totalGames).toFixed(1) : '0.0';
+
+        return { totalGames, totalPoints, totalRebounds, totalAssists, avgPoints, avgRebounds, avgAssists };
+    }, [filteredHistory]);
 
     // --- CHART DATA ---
 
     // 1. Line Chart: Points Evolution
-    const sortedHistory = [...filteredHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const lineData = {
-        labels: sortedHistory.map((_, i) => `Match ${i + 1}`),
-        datasets: [
-            {
-                label: 'Points',
-                data: sortedHistory.map(g => (g.stats.points1) + (g.stats.points2 * 2) + (g.stats.points3 * 3)),
-                borderColor: '#00F3FF',
-                backgroundColor: 'rgba(0, 243, 255, 0.2)',
-                tension: 0.4,
-                fill: true,
-            },
-        ],
-    };
+    const lineData = useMemo(() => {
+        const sortedHistory = [...filteredHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        return {
+            labels: sortedHistory.map((_, i) => `Match ${i + 1}`),
+            datasets: [
+                {
+                    label: 'Points',
+                    data: sortedHistory.map(g => (g.stats.points1) + (g.stats.points2 * 2) + (g.stats.points3 * 3)),
+                    borderColor: '#00F3FF',
+                    backgroundColor: 'rgba(0, 243, 255, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                },
+            ],
+        };
+    }, [filteredHistory]);
 
     // 2. Doughnut Chart: Scoring Distribution
-    const totalP1 = filteredHistory.reduce((acc, g) => acc + g.stats.points1, 0);
-    const totalP2 = filteredHistory.reduce((acc, g) => acc + (g.stats.points2 * 2), 0);
-    const totalP3 = filteredHistory.reduce((acc, g) => acc + (g.stats.points3 * 3), 0);
+    const doughnutData = useMemo(() => {
+        const totalP1 = filteredHistory.reduce((acc, g) => acc + g.stats.points1, 0);
+        const totalP2 = filteredHistory.reduce((acc, g) => acc + (g.stats.points2 * 2), 0);
+        const totalP3 = filteredHistory.reduce((acc, g) => acc + (g.stats.points3 * 3), 0);
 
-    // Check if we should show 3pts (if specific player selected and is U11, hide it)
-    const activeFilterPlayer = players.find(p => p.id === selectedPlayerId);
-    const isU11Filter = activeFilterPlayer?.level === 'U11';
+        // Check if we should show 3pts (if specific player selected and is U11, hide it)
+        const activeFilterPlayer = players.find(p => p.id === selectedPlayerId);
+        const isU11Filter = activeFilterPlayer?.level === 'U11';
 
-    const doughnutData = {
-        labels: isU11Filter ? ['1 Point', '2 Points'] : ['1 Point', '2 Points', '3 Points'],
-        datasets: [
-            {
-                data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
-                backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
-                borderColor: '#111',
-                borderWidth: 2,
-            },
-        ],
-    };
+        return {
+            labels: isU11Filter ? ['1 Point', '2 Points'] : ['1 Point', '2 Points', '3 Points'],
+            datasets: [
+                {
+                    data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
+                    backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
+                    borderColor: '#111',
+                    borderWidth: 2,
+                },
+            ],
+        };
+    }, [filteredHistory, players, selectedPlayerId]);
 
     // 3. Bar Chart: Stats Comparison
-    const barData = {
-        labels: ['Rebonds', 'Passes', 'Interc.', 'Contres'],
-        datasets: [
-            {
-                label: 'Moyenne',
-                data: [
-                    totalGames ? (totalRebounds / totalGames) : 0,
-                    totalGames ? (totalAssists / totalGames) : 0,
-                    totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.steals, 0) / totalGames) : 0,
-                    totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.blocks, 0) / totalGames) : 0,
-                ],
-                backgroundColor: ['#00FF9D', '#BC13FE', '#00F3FF', '#FF0055'],
-            },
-        ],
-    };
+    const barData = useMemo(() => {
+        return {
+            labels: ['Rebonds', 'Passes', 'Interc.', 'Contres'],
+            datasets: [
+                {
+                    label: 'Moyenne',
+                    data: [
+                        totalGames ? (totalRebounds / totalGames) : 0,
+                        totalGames ? (totalAssists / totalGames) : 0,
+                        totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.steals, 0) / totalGames) : 0,
+                        totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.blocks, 0) / totalGames) : 0,
+                    ],
+                    backgroundColor: ['#00FF9D', '#BC13FE', '#00F3FF', '#FF0055'],
+                },
+            ],
+        };
+    }, [filteredHistory, totalGames, totalRebounds, totalAssists]);
 
     const chartOptions = {
         responsive: true,

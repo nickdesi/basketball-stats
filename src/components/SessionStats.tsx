@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { GameStats } from '../store/gameStore';
 import StatBox from './StatBox';
 
@@ -9,42 +10,55 @@ interface SessionStatsProps {
 const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
 
     // --- CALCULATIONS ---
-    // 1. FG (2PT + 3PT) - Field Goals
-    const fgMakes = stats.points2 + stats.points3;
-    const fgMisses = stats.missedPoints2 + stats.missedPoints3;
-    const fgAttempts = fgMakes + fgMisses;
-    const fgPercent = fgAttempts > 0 ? Math.round((fgMakes / fgAttempts) * 100) : 0;
+    const computedStats = useMemo(() => {
+        // 1. FG (2PT + 3PT) - Field Goals
+        const fgMakes = stats.points2 + stats.points3;
+        const fgMisses = stats.missedPoints2 + stats.missedPoints3;
+        const fgAttempts = fgMakes + fgMisses;
+        const fgPercent = fgAttempts > 0 ? Math.round((fgMakes / fgAttempts) * 100) : 0;
 
-    // 2. 3PT
-    const p3Makes = stats.points3;
-    const p3Attempts = stats.points3 + stats.missedPoints3;
-    const p3Percent = p3Attempts > 0 ? Math.round((p3Makes / p3Attempts) * 100) : 0;
+        // 2. 3PT
+        const p3Makes = stats.points3;
+        const p3Attempts = stats.points3 + stats.missedPoints3;
+        const p3Percent = p3Attempts > 0 ? Math.round((p3Makes / p3Attempts) * 100) : 0;
 
-    // 3. FT (1PT) - Free Throws
-    const ftMakes = stats.points1;
-    const ftAttempts = stats.points1 + stats.missedPoints1;
-    const ftPercent = ftAttempts > 0 ? Math.round((ftMakes / ftAttempts) * 100) : 0;
+        // 3. FT (1PT) - Free Throws
+        const ftMakes = stats.points1;
+        const ftAttempts = stats.points1 + stats.missedPoints1;
+        const ftPercent = ftAttempts > 0 ? Math.round((ftMakes / ftAttempts) * 100) : 0;
 
-    // 4. TS% (True Shooting Percentage) = PTS / (2 * (FGA + 0.44 * FTA))
-    const totalPoints = (stats.points1 * 1) + (stats.points2 * 2) + (stats.points3 * 3);
-    const tsDenominator = 2 * (fgAttempts + (0.44 * ftAttempts));
-    const tsPercent = tsDenominator > 0 ? Math.round((totalPoints / tsDenominator) * 100) : 0;
+        // 4. TS% (True Shooting Percentage)
+        const totalPoints = (stats.points1 * 1) + (stats.points2 * 2) + (stats.points3 * 3);
+        const tsDenominator = 2 * (fgAttempts + (0.44 * ftAttempts));
+        const tsPercent = tsDenominator > 0 ? Math.round((totalPoints / tsDenominator) * 100) : 0;
 
-    // 5. eFG% (Effective Field Goal Percentage) = (FG + 0.5 * 3P) / FGA
-    const efgPercent = fgAttempts > 0 ? Math.round(((fgMakes + 0.5 * p3Makes) / fgAttempts) * 100) : 0;
+        // 5. eFG% (Effective Field Goal Percentage)
+        const efgPercent = fgAttempts > 0 ? Math.round(((fgMakes + 0.5 * p3Makes) / fgAttempts) * 100) : 0;
 
-    // 6. Game Score / Evaluation (Approximate)
-    // Formula: PTS + REB + AST + STL + BLK - Missed FG - Missed FT - TO
-    const evaluation = totalPoints
-        + stats.rebounds + stats.offensiveRebounds + stats.defensiveRebounds // Note: rebounds might be Double Counted if 'rebounds' stores sum? Let's assume rebounds = total for now or calculate sum.
-        // Actually, let's use sum of off+def if available, or just use what we have.
-        // Legacy: 'rebounds' variable might be unused. Best to use (off + def).
-        + stats.assists + stats.steals + stats.blocks
-        - fgMisses - stats.missedPoints1 - stats.turnovers;
+        // 6. Game Score / Evaluation
+        const evaluation = totalPoints
+            + stats.rebounds + stats.offensiveRebounds + stats.defensiveRebounds
+            + stats.assists + stats.steals + stats.blocks
+            - fgMisses - stats.missedPoints1 - stats.turnovers;
 
-    // Note for efficiency: In our store, we have rebounds (legacy) AND off/def.
-    // We should rely on Off + Def.
-    const totalReb = stats.offensiveRebounds + stats.defensiveRebounds;
+        const totalReb = stats.offensiveRebounds + stats.defensiveRebounds;
+
+        return {
+            fgMakes, fgAttempts, fgPercent,
+            p3Makes, p3Attempts, p3Percent,
+            ftMakes, ftAttempts, ftPercent,
+            totalPoints, tsPercent, efgPercent,
+            evaluation, totalReb
+        };
+    }, [stats]);
+
+    const {
+        fgMakes, fgAttempts, fgPercent,
+        p3Makes, p3Attempts, p3Percent,
+        ftPercent,
+        totalPoints, tsPercent, efgPercent,
+        evaluation, totalReb
+    } = computedStats;
 
 
     return (
