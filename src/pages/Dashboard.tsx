@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
+import { useThemeStore } from '../store/themeStore';
 import SessionStats from '../components/SessionStats';
 import { Trophy, Activity, CalendarDays, History, TrendingUp, PieChart as PieIcon, BarChart3, Download, Share2, Trash2 } from 'lucide-react';
 import {
@@ -31,6 +32,7 @@ ChartJS.register(
 
 const Dashboard = () => {
     const { history, players, deleteGame, updateGame, importGame } = useGameStore();
+    const theme = useThemeStore((state) => state.theme);
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
@@ -193,17 +195,20 @@ const Dashboard = () => {
         };
     }, [filteredHistory, totalGames, totalRebounds, totalAssists]);
 
+    const textColor = theme === 'dark' ? '#ffffff' : '#1a1a1a';
+    const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                labels: { color: '#ccc', font: { family: 'ui-monospace, monospace' } }
+                labels: { color: textColor, font: { family: 'ui-monospace, monospace' } }
             }
         },
         scales: {
-            y: { ticks: { color: '#888' }, grid: { color: '#333' } },
-            x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+            y: { ticks: { color: textColor }, grid: { color: gridColor } },
+            x: { ticks: { color: textColor }, grid: { color: gridColor } },
         }
     };
 
@@ -532,7 +537,7 @@ const Dashboard = () => {
                             <div className="h-[200px] flex justify-center">
                                 <Doughnut
                                     key={selectedPlayerId}
-                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: 'var(--color-text)' } } } }}
+                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: textColor } } } }}
                                     data={doughnutData}
                                 />
                             </div>
