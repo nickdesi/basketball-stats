@@ -81,7 +81,7 @@ const Players = () => {
                                     <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Niveau</label>
                                     <select
                                         value={editingPlayer.level}
-                                        onChange={(e) => setEditingPlayer({ ...editingPlayer, level: e.target.value as any })}
+                                        onChange={(e) => setEditingPlayer({ ...editingPlayer, level: e.target.value as 'U11' | 'U13' | 'U15' | 'U18' })}
                                         className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                                     >
                                         <option value="U11">U11 (Pas de 3 pts)</option>
@@ -170,7 +170,7 @@ const Players = () => {
                             <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Niveau</label>
                             <select
                                 value={level}
-                                onChange={(e) => setLevel(e.target.value as any)}
+                                onChange={(e) => setLevel(e.target.value as 'U11' | 'U13' | 'U15' | 'U18')}
                                 className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                             >
                                 <option value="U11">U11 (Pas de 3 pts)</option>

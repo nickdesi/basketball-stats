@@ -221,8 +221,9 @@ const Dashboard = () => {
         if (navigator.share) {
             try {
                 await navigator.share({ title: 'Statistiques du Match', text: text });
-            } catch (err) {
-                console.log('Share failed', err);
+            } catch {
+                // Share failed silently or user cancelled
+                // console.error(err);
             }
         } else {
             await navigator.clipboard.writeText(text);
