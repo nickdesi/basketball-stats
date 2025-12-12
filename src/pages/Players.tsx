@@ -40,7 +40,7 @@ const Players = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-24 relative">
+        <div className="space-y-6 pb-24 relative">
             {/* EDIT MODAL */}
             {editingPlayer && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setEditingPlayer(null)}>
