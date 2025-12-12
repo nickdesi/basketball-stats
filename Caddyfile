@@ -1,0 +1,22 @@
+:{$PORT} {
+    root * dist
+    file_server
+
+    # Never cache index.html so updates are immediate
+    @html {
+        path /
+        path /index.html
+    }
+    header @html Cache-Control "no-cache, no-store, must-revalidate"
+    header @html Pragma "no-cache"
+    header @html Expires "0"
+
+    # Cache assets (images, js, css) that have hashes in filenames
+    @assets {
+        path /assets/*
+    }
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    # Support for Single Page Application (SPA) routing
+    try_files {path} /index.html
+}
