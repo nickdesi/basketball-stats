@@ -61,48 +61,29 @@ const Dashboard = () => {
 
     const cancelEditing = () => {
         setIsEditing(false);
-        setIsEditing(false);
         setEditStats(null);
         setEditDate('');
     };
 
     const saveEditing = useCallback(() => {
         if (selectedGame && editStats && editDate) {
-            const updatedGame = {
-                ...selectedGame,
-                stats: { ...editStats },
-                date: new Date(editDate).toISOString()
-            };
+            const isoDate = new Date(editDate).toISOString();
 
-            updateGame(selectedGame.id, updatedGame.stats);
-            // Note: updateGame in store currently only takes stats. I need to check if it supports date updates.
-            // If the store signature is updateGame(id, stats), I can't update date easily without refactoring store.
-            // Let's assume for now I only update stats and I will fix the store next if needed.
-            // Wait, the user explicitly asked to modify the date.
-            // I should verify gameStore.ts first. But I am in a multi-step.
-            // I will implement the UI first, and if store update is needed, I'll do it in next step.
-            // Actually, let's update local selectedGame at least.
+            // Update store
+            updateGame(selectedGame.id, editStats, isoDate);
 
-            // TODO: Refactor store to update entire game object or allow date update.
-            // For now, I'll implement as if updateGame supports it or I will add a separate call.
-            // Actually, looking at previous views of gameStore.ts (I haven't viewed it fully recently).
-            // Better to be safe: I will stick to stats update for now and fix store immediately after if needed.
-            // But wait, if I don't update store, the date change won't persist.
-
-            // Let's UPDATE the local state first so UI reflects it, and verify store in next step.
-            updateGame(selectedGame.id, editStats, editDate); // Passing date tentatively
-
+            // Update local state to reflect changes immediately
             setSelectedGame({
                 ...selectedGame,
                 stats: { ...editStats },
-                date: new Date(editDate).toISOString()
+                date: isoDate
             });
 
             setIsEditing(false);
             setEditStats(null);
             setEditDate('');
         }
-    }, [selectedGame, editStats, updateGame]);
+    }, [selectedGame, editStats, editDate, updateGame]);
 
     const handleEditStatChange = useCallback((stat: string, value: number) => {
         setEditStats((prev) => {
