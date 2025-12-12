@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "caddy"]
 
 [phases.build]
 cmds = ["npm ci", "npm run build"]
 
 [phases.start]
-cmds = ["npm run preview -- --host --port $PORT"]
+cmds = ["caddy file-server --root dist --listen :$PORT"]
