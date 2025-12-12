@@ -112,7 +112,7 @@ const MatchRecorder = () => {
                     <select
                         value={selectedPlayer}
                         onChange={(e) => setSelectedPlayer(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 font-bold"
+                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold text-[var(--color-text)]"
                     >
                         <option value="">Sélectionner Joueur</option>
                         {players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -123,13 +123,13 @@ const MatchRecorder = () => {
                         placeholder="Nom de l'adversaire (Optionnel)"
                         value={opponentName}
                         onChange={(e) => setOpponentName(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 font-bold placeholder:text-gray-600 focus:outline-none focus:border-[var(--color-neon-blue)]"
+                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold placeholder:text-gray-600 focus:outline-none focus:border-[var(--color-neon-blue)] text-[var(--color-text)]"
                     />
 
                     <button
                         onClick={() => { setupGame(selectedPlayer, opponentName || 'Opponent'); startGame(); }}
                         disabled={!selectedPlayer}
-                        className="w-full py-4 bg-white text-black font-black rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
+                        className="w-full py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
                     >
                         START
                     </button>
@@ -148,7 +148,7 @@ const MatchRecorder = () => {
                         {totalPoints}
                     </div>
                     <div className="flex flex-col leading-none">
-                        <span className="text-[10px] text-gray-400 font-bold uppercase">Points</span>
+                        <span className="text-xs text-[var(--color-text-dim)] font-bold uppercase">Points</span>
                         <span className="text-xs font-bold truncate max-w-[100px]">
                             {activePlayer?.name}
                             <span className="ml-1 text-[var(--color-neon-blue)] opacity-70 text-[10px]">
@@ -158,9 +158,9 @@ const MatchRecorder = () => {
                     </div>
                 </div>
 
-                <div className="flex bg-black/40 rounded-full p-1 border border-white/10">
-                    <button onClick={() => setViewMode('input')} className={`p - 2 rounded - full ${viewMode === 'input' ? 'bg-white text-black' : 'text-gray-400'} `}><GripHorizontal size={16} /></button>
-                    <button onClick={() => setViewMode('stats')} className={`p - 2 rounded - full ${viewMode === 'stats' ? 'bg-white text-black' : 'text-gray-400'} `}><BarChart3 size={16} /></button>
+                <div className="flex bg-[var(--color-card)] rounded-full p-1 border border-[var(--color-glass-border)]">
+                    <button onClick={() => setViewMode('input')} className={`p-2 rounded-full ${viewMode === 'input' ? 'bg-[var(--color-text)] text-[var(--color-bg)]' : 'text-[var(--color-text-dim)]'} `}><GripHorizontal size={16} /></button>
+                    <button onClick={() => setViewMode('stats')} className={`p-2 rounded-full ${viewMode === 'stats' ? 'bg-[var(--color-text)] text-[var(--color-bg)]' : 'text-[var(--color-text-dim)]'} `}><BarChart3 size={16} /></button>
                 </div>
             </div>
 
@@ -187,14 +187,14 @@ const MatchRecorder = () => {
                                     {/* SCORED BUTTON */}
                                     <button
                                         onClick={(e) => handleScore('make', shot.val as 1 | 2 | 3, e)}
-                                        className="flex-[2] rounded-xl flex items-center justify-between px-4 relative overflow-hidden active:scale-[0.98] transition-all border border-white/10"
+                                        className="flex-[2] rounded-xl flex items-center justify-between px-4 relative overflow-hidden active:scale-[0.98] transition-all border border-[var(--color-glass-border)]"
                                         style={{ background: `linear-gradient(90deg, ${shot.color}15 0%, transparent 100%)`, borderColor: `${shot.color}30` }}
                                     >
                                         <div className="flex flex-col items-start leading-none">
-                                            <span className="font-black text-2xl text-white">MARQUÉ</span>
-                                            <span className="text-[10px] font-bold uppercase opacity-60">{shot.label}</span>
+                                            <span className="font-black text-2xl text-[var(--color-text)] drop-shadow-md">MARQUÉ</span>
+                                            <span className="text-xs font-bold uppercase opacity-80 text-[var(--color-text-dim)]">{shot.label}</span>
                                         </div>
-                                        <span className="font-black text-3xl tabular-nums" style={{ color: shot.color }}>+{shot.val}</span>
+                                        <span className="font-black text-3xl tabular-nums drop-shadow-md" style={{ color: shot.color }}>+{shot.val}</span>
                                     </button>
 
                                     {/* MISSED BUTTON */}
@@ -283,8 +283,8 @@ const MatchRecorder = () => {
 
             {/* FOOTER ACTIONS */}
             <div className="grid grid-cols-2 gap-2 mt-2 shrink-0">
-                <button onClick={resetGame} className="py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-400">RESET</button>
-                <button onClick={finishGame} className="py-3 rounded-xl bg-white text-black text-xs font-black hover:scale-[1.02] transition-transform">TERMINER</button>
+                <button onClick={resetGame} className="py-3 rounded-xl bg-[var(--color-card)] border border-[var(--color-glass-border)] text-xs font-bold text-[var(--color-text-dim)] hover:bg-[var(--color-bg)] transition-colors">RESET</button>
+                <button onClick={finishGame} className="py-3 rounded-xl bg-[var(--color-text)] text-[var(--color-bg)] text-xs font-black hover:scale-[1.02] transition-transform">TERMINER</button>
             </div>
 
             {/* ANIMATIONS LAYER */}
@@ -297,7 +297,7 @@ const MatchRecorder = () => {
                         top: anim.y,
                         color: anim.color,
                         '--rot': `${anim.rot} deg`,
-                        textShadow: '2px 2px 0px rgba(0,0,0,0.8)'
+                        textShadow: '2px 2px 0px rgba(0,0,0,0.8), -1px -1px 0px rgba(255,255,255,0.2)'
                     } as React.CSSProperties}
                 >
                     {anim.text}

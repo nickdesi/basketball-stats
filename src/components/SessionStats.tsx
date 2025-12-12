@@ -52,21 +52,21 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
             {/* Header omitted to keep it clean like the screenshot, just the grid */}
 
             {/* MAIN STATS GRID - Mimicking the Reference Image */}
-            <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
+            <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] overflow-hidden shadow-sm">
                 {/* Row 1: Shooting */}
-                <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-white/10 border-b border-white/10 bg-white/[0.02]`}>
-                    <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} color="white" />
-                    <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'white'} />
+                <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)] bg-[var(--color-bg)]/50`}>
+                    <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} />
+                    <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'var(--color-text)'} />
                     {playerLevel !== 'U11' && (
                         <>
-                            <StatBox label="3P" value={`${p3Makes}/${p3Attempts}`} color="white" />
+                            <StatBox label="3P" value={`${p3Makes}/${p3Attempts}`} />
                             <StatBox label="3P%" value={p3Percent} isPercent />
                         </>
                     )}
                 </div>
 
                 {/* Row 2: FT & Rebounds */}
-                <div className="grid grid-cols-4 divide-x divide-white/10 border-b border-white/10">
+                <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)]">
                     <StatBox label="FT%" value={ftPercent} isPercent />
                     <StatBox label="REB OFF" value={stats.offensiveRebounds} />
                     <StatBox label="REB DEF" value={stats.defensiveRebounds} />
@@ -74,7 +74,7 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
                 </div>
 
                 {/* Row 3: Playmaking & Defense */}
-                <div className="grid grid-cols-4 divide-x divide-white/10">
+                <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)]">
                     <StatBox label="PASSES" value={stats.assists} color="var(--color-neon-blue)" />
                     <StatBox label="CONTRES" value={stats.blocks} />
                     <StatBox label="INTERCEP" value={stats.steals} />
@@ -87,12 +87,12 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
                 <h4 className="text-[var(--color-neon-orange)] font-bold text-lg mb-3 flex items-center gap-2">
                     Statistiques avancées
                 </h4>
-                <div className="bg-[#111] rounded-2xl border border-white/10 overflow-hidden">
-                    <div className="grid grid-cols-4 divide-x divide-white/10">
+                <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] overflow-hidden shadow-sm">
+                    <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)]">
                         <StatBox label="POINTS" value={totalPoints} color="var(--color-neon-blue)" />
                         <StatBox label="eFG%" value={efgPercent} isPercent />
                         <StatBox label="TS%" value={tsPercent} isPercent />
-                        <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'white'} />
+                        <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'var(--color-text)'} />
                     </div>
                 </div>
             </div>

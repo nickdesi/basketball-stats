@@ -42,7 +42,7 @@ const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white',
         <div className="flex flex-col items-center justify-center gap-1 group">
             {/* Top Label */}
             {labelTop && (
-                <span className="text-[9px] font-bold uppercase text-gray-400 tracking-wider text-center leading-tight max-w-[80px] mb-1">
+                <span className="text-xs font-bold uppercase text-[var(--color-text-dim)] tracking-wider text-center leading-tight max-w-[80px] mb-1">
                     {label}
                 </span>
             )}
@@ -50,11 +50,11 @@ const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white',
             {/* Value Circle/Display (NOW CLICKABLE FOR INCREMENT) */}
             <button
                 onClick={(e) => handleAction(e, onIncrement)}
-                className="w-16 h-16 rounded-full flex items-center justify-center border-2 text-3xl font-bold font-numeric shadow-lg transition-all active:scale-90 hover:scale-105"
+                className="w-16 h-16 rounded-full flex items-center justify-center border-2 text-3xl font-bold font-numeric shadow-lg transition-all active:scale-90 hover:scale-105 bg-[var(--color-card)]"
                 style={{
                     borderColor: color,
-                    backgroundColor: `${color}15`, // 15 = ~10% opacity hex
-                    color: 'white',
+                    // backgroundColor: `${color}15`, // Removed to use var(--color-card) for better contrast
+                    color: 'var(--color-text)', // Use theme text color instead of white
                     boxShadow: `0 0 15px ${color}30` // Glow
                 }}
             >
@@ -62,13 +62,13 @@ const CounterInput = ({ label, value, onIncrement, onDecrement, color = 'white',
             </button>
 
             {/* Down Button ({/* Down Button (Smaller / Less prominent) */}
-            <button onClick={(e) => handleAction(e, onDecrement)} disabled={value <= min} className="p-2 -mt-1 rounded-full text-gray-500 hover:text-white active:scale-90 transition-all disabled:opacity-20 disabled:cursor-not-allowed">
+            <button onClick={(e) => handleAction(e, onDecrement)} disabled={value <= min} className="p-2 -mt-1 rounded-full text-[var(--color-text-dim)] hover:text-[var(--color-text)] active:scale-90 transition-all disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronDown size={24} strokeWidth={3} />
             </button>
 
             {/* Bottom Label (Default) */}
             {!labelTop && (
-                <span className="text-[9px] font-bold uppercase text-gray-400 tracking-wider text-center leading-tight max-w-[80px] mt-1">
+                <span className="text-xs font-bold uppercase text-[var(--color-text-dim)] tracking-wider text-center leading-tight max-w-[80px] mt-1">
                     {label}
                 </span>
             )}

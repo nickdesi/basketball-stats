@@ -262,46 +262,46 @@ const Dashboard = () => {
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
-                    <div className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
 
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] flex justify-between items-start">
+                        <div className="p-6 border-b border-[var(--color-glass-border)] bg-[var(--color-bg)]/50 flex justify-between items-start">
                             <div>
                                 <div className="text-xs text-[var(--color-neon-blue)] font-bold uppercase tracking-wider mb-1">
                                     {isEditing ? 'Modification du Match' : 'Détails du Match'}
                                 </div>
-                                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                                <h3 className="text-2xl font-bold text-[var(--color-text)] flex items-center gap-2">
                                     {selectedGame.opponent || "Match d'entraînement"}
                                 </h3>
-                                <div className="text-[#9ca3af] text-sm mt-1">
+                                <div className="text-[var(--color-text-dim)] text-sm mt-1">
                                     {new Date(selectedGame.date).toLocaleDateString()} • {new Date(selectedGame.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </div>
                             </div>
                             <div className="flex gap-2">
                                 {!isEditing ? (
                                     <>
-                                        <button onClick={startEditing} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[#facc15]" title="Modifier">
+                                        <button onClick={startEditing} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[#facc15]" title="Modifier">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                         </button>
-                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-[rgba(239,68,68,0.2)] rounded-full transition-colors text-[#ef4444]" title="Supprimer">
+                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-[#ef4444]" title="Supprimer">
                                             <Trash2 size={20} />
                                         </button>
                                         <button
                                             onClick={() => handleShareGame(selectedGame)}
-                                            className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-[var(--color-neon-blue)]"
+                                            className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[var(--color-neon-blue)]"
                                             title="Partager"
                                         >
                                             <Share2 size={20} />
                                         </button>
-                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors text-white" title="Exporter JSON">
+                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[var(--color-text)]" title="Exporter JSON">
                                             <Download size={20} />
                                         </button>
-                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors ml-2">
+                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors ml-2 text-[var(--color-text)]">
                                             <span className="text-2xl leading-none">&times;</span>
                                         </button>
                                     </>
                                 ) : (
-                                    <button onClick={cancelEditing} className="p-2 hover:bg-[rgba(255,255,255,0.1)] rounded-full transition-colors ml-2">
+                                    <button onClick={cancelEditing} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors ml-2 text-[var(--color-text)]">
                                         <span className="text-2xl leading-none">&times;</span>
                                     </button>
                                 )}
@@ -364,18 +364,18 @@ const Dashboard = () => {
                                 // --- VIEW MODE ---
                                 <>
                                     {/* Score Recap */}
-                                    <div className="flex items-center justify-between p-4 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)]">
+                                    <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--color-bg)] border border-[var(--color-glass-border)]">
                                         <div>
-                                            <div className="text-sm text-[#9ca3af] uppercase font-bold">Joueur</div>
+                                            <div className="text-sm text-[var(--color-text-dim)] uppercase font-bold">Joueur</div>
                                             <div className="text-xl font-bold text-[var(--color-neon-blue)]">
                                                 {players.find(p => p.id === selectedGame.playerId)?.name || 'Inconnu'}
                                             </div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-4xl font-black font-mono text-white">
+                                            <div className="text-4xl font-black font-mono text-[var(--color-text)]">
                                                 {(selectedGame.stats.points1 * 1) + (selectedGame.stats.points2 * 2) + (selectedGame.stats.points3 * 3)}
                                             </div>
-                                            <div className="text-[10px] text-[#6b7280] font-bold uppercase">Points Totaux</div>
+                                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold uppercase">Points Totaux</div>
                                         </div>
                                     </div>
 
@@ -391,18 +391,18 @@ const Dashboard = () => {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-4 border-t border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] flex justify-end gap-3">
+                        <div className="p-4 border-t border-[var(--color-glass-border)] bg-[var(--color-bg)]/50 flex justify-end gap-3">
                             {isEditing ? (
                                 <>
-                                    <button onClick={cancelEditing} className="px-6 py-2 bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] text-white rounded-lg font-bold transition-colors">
+                                    <button onClick={cancelEditing} className="px-6 py-2 bg-[var(--color-bg)] hover:bg-[var(--color-glass-border)] text-[var(--color-text)] rounded-lg font-bold transition-colors">
                                         Annuler
                                     </button>
-                                    <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:bg-green-400 text-black rounded-lg font-bold transition-colors">
+                                    <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:brightness-110 text-white rounded-lg font-bold transition-colors">
                                         Terminer
                                     </button>
                                 </>
                             ) : (
-                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.2)] text-white rounded-lg font-bold transition-colors">
+                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-[var(--color-bg)] hover:bg-[var(--color-glass-border)] text-[var(--color-text)] rounded-lg font-bold transition-colors">
                                     Fermer
                                 </button>
                             )}
@@ -416,13 +416,13 @@ const Dashboard = () => {
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                        <h2 className="text-3xl font-bold text-[var(--color-text)] flex items-center gap-3">
                             <Activity className="text-[var(--color-neon-blue)]" />
                             Tableau de Bord
                         </h2>
-                        <p className="text-gray-400">Suivi des performances</p>
+                        <p className="text-[var(--color-text-dim)]">Suivi des performances</p>
                     </div>
-                    <label className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl cursor-pointer transition-colors">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] hover:bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-xl cursor-pointer transition-colors shadow-sm text-[var(--color-text)]">
                         <Download className="rotate-180" size={18} />
                         <span className="text-sm font-bold">Importer</span>
                         <input
@@ -437,7 +437,7 @@ const Dashboard = () => {
                     <div className="flex gap-2">
                         <button
                             onClick={handleExport}
-                            className="bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg p-2 text-white transition-colors"
+                            className="bg-[var(--color-card)] hover:bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-2 text-[var(--color-text)] transition-colors shadow-sm"
                             title="Exporter les données (JSON)"
                         >
                             <Download size={20} />
@@ -445,7 +445,7 @@ const Dashboard = () => {
                         <select
                             value={selectedPlayerId}
                             onChange={(e) => setSelectedPlayerId(e.target.value)}
-                            className="bg-black/30 border border-white/10 rounded-lg p-2 text-white min-w-[200px] focus:outline-none focus:border-[var(--color-neon-blue)]"
+                            className="bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-2 text-[var(--color-text)] min-w-[200px] focus:outline-none focus:border-[var(--color-neon-blue)] shadow-sm"
                         >
                             <option value="all">Tous les joueurs</option>
                             {players.map(p => (
@@ -463,8 +463,8 @@ const Dashboard = () => {
                         <Trophy size={24} />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold font-mono">{totalGames}</div>
-                        <div className="text-xs text-gray-400 uppercase font-bold">Matchs</div>
+                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{totalGames}</div>
+                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Matchs</div>
                     </div>
                 </div>
                 <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
@@ -472,8 +472,8 @@ const Dashboard = () => {
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold font-mono">{avgPoints}</div>
-                        <div className="text-xs text-gray-400 uppercase font-bold">PTS / M</div>
+                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgPoints}</div>
+                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PTS / M</div>
                     </div>
                 </div>
                 <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
@@ -481,8 +481,8 @@ const Dashboard = () => {
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold font-mono">{avgRebounds}</div>
-                        <div className="text-xs text-gray-400 uppercase font-bold">REB / M</div>
+                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgRebounds}</div>
+                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">REB / M</div>
                     </div>
                 </div>
                 <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
@@ -490,8 +490,8 @@ const Dashboard = () => {
                         <Activity size={24} />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold font-mono">{avgAssists}</div>
-                        <div className="text-xs text-gray-400 uppercase font-bold">PAS / M</div>
+                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgAssists}</div>
+                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PAS / M</div>
                     </div>
                 </div>
             </div>
@@ -502,7 +502,7 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Line Chart */}
                         <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)] md:col-span-2">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
                                 <TrendingUp size={20} className="text-[var(--color-neon-blue)]" />
                                 Évolution des Points
                             </h3>
@@ -513,14 +513,14 @@ const Dashboard = () => {
 
                         {/* Doughnut Chart */}
                         <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
                                 <PieIcon size={20} className="text-[var(--color-neon-purple)]" />
                                 Répartition des Points
                             </h3>
                             <div className="h-[200px] flex justify-center">
                                 <Doughnut
                                     key={selectedPlayerId}
-                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ccc' } } } }}
+                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: 'var(--color-text)' } } } }}
                                     data={doughnutData}
                                 />
                             </div>
@@ -528,7 +528,7 @@ const Dashboard = () => {
 
                         {/* Bar Chart */}
                         <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
                                 <BarChart3 size={20} className="text-[var(--color-neon-green)]" />
                                 Performance Moyenne
                             </h3>
@@ -538,21 +538,21 @@ const Dashboard = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-12 glass-panel rounded-xl text-gray-500">
+                    <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)]">
                         Enregistrez des matchs pour voir apparaître les graphiques.
                     </div>
                 )
             }
 
             {/* Recent History */}
-            <h3 className="text-xl font-bold mt-8 flex items-center gap-2">
+            <h3 className="text-xl font-bold mt-8 flex items-center gap-2 text-[var(--color-text)]">
                 <History size={20} className="text-[var(--color-neon-blue)]" />
                 Historique Récent
             </h3>
 
             <div className="space-y-3">
                 {filteredHistory.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500 glass-panel rounded-xl">
+                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-panel rounded-xl">
                         Aucun match trouvé pour ce filtre.
                     </div>
                 ) : (
@@ -563,35 +563,35 @@ const Dashboard = () => {
                             <div
                                 key={game.id}
                                 onClick={() => setSelectedGame(game)}
-                                className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] hover:border-[var(--color-neon-blue)] hover:bg-white/5 cursor-pointer transition-all flex justify-between items-center group"
+                                className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] hover:border-[var(--color-neon-blue)] hover:bg-[var(--color-bg)]/50 cursor-pointer transition-all flex justify-between items-center group"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 rounded-full bg-white/5 group-hover:bg-[var(--color-neon-blue)] group-hover:text-black transition-colors">
+                                    <div className="p-3 rounded-full bg-[var(--color-bg)] group-hover:bg-[var(--color-neon-blue)] group-hover:text-black transition-colors text-[var(--color-text)]">
                                         <CalendarDays size={20} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-lg flex items-center gap-2">
+                                        <div className="font-bold text-lg flex items-center gap-2 text-[var(--color-text)]">
                                             {game.opponent || "Match d'entraînement"}
-                                            <span className="text-xs bg-white/10 px-2 py-0.5 rounded text-gray-400 font-normal">
+                                            <span className="text-xs bg-[var(--color-bg)] px-2 py-0.5 rounded text-[var(--color-text-dim)] font-normal border border-[var(--color-glass-border)]">
                                                 {player?.name || 'Inconnu'}
                                             </span>
                                         </div>
-                                        <div className="text-xs text-gray-400">{new Date(game.date).toLocaleDateString()}</div>
+                                        <div className="text-xs text-[var(--color-text-dim)]">{new Date(game.date).toLocaleDateString()}</div>
                                     </div>
                                 </div>
 
                                 <div className="flex gap-4 md:gap-8 text-right">
                                     <div>
                                         <div className="text-xl font-bold font-mono text-[var(--color-neon-blue)]">{pts}</div>
-                                        <div className="text-[10px] text-gray-500 font-bold">PTS</div>
+                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
                                     </div>
                                     <div>
                                         <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">{game.stats.rebounds}</div>
-                                        <div className="text-[10px] text-gray-500 font-bold">REB</div>
+                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
                                     </div>
                                     <div>
                                         <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
-                                        <div className="text-[10px] text-gray-500 font-bold">PAS</div>
+                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
                                     </div>
                                 </div>
                             </div>

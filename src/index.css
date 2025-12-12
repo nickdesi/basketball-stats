@@ -3,9 +3,11 @@
 :root {
   --font-sans: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
 
-  /* Premium Dark Base */
-  --color-dark-bg: #050505;
-  --color-dark-card: #0f0f13;
+  /* Premium Dark Base (Default) */
+  --color-bg: #050505;
+  --color-card: #0f0f13;
+  --color-text: #ffffff;
+  --color-text-dim: #9ca3af;
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-bg: rgba(20, 20, 25, 0.7);
 
@@ -18,11 +20,43 @@
 
   /* Safe Area Insets */
   --safe-bottom: env(safe-area-inset-bottom, 20px);
+
+  /* Navigation Vars (Dark Mode Default) */
+  --color-nav-text: #9ca3af;
+  /* gray-400 */
+  --color-nav-text-hover: #ffffff;
+  --color-nav-bg-hover: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Theme Overrides */
+:root.light {
+  --color-bg: #f5f5f7;
+  --color-card: #ffffff;
+  --color-text: #1d1d1f;
+  --color-text-dim: #86868b;
+  --color-glass-border: rgba(0, 0, 0, 0.12);
+  /* Slightly darker for visibility */
+  --color-glass-bg: rgba(255, 255, 255, 0.95);
+
+  /* Adjusted Neons for Light Mode (Darker/Richer) */
+  --color-neon-blue: #007aff;
+  --color-neon-purple: #af52de;
+  --color-neon-green: #34c759;
+  --color-neon-orange: #ff9500;
+  --color-neon-red: #ff3b30;
+
+  /* Navigation Vars (Light Mode) */
+  --color-nav-text: #6b7280;
+  /* gray-500, visible on white */
+  --color-nav-text-hover: #1d1d1f;
+  /* black */
+  --color-nav-bg-hover: rgba(0, 0, 0, 0.05);
+  /* faint gray */
 }
 
 body {
-  background-color: var(--color-dark-bg);
-  color: white;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -48,7 +82,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-dark-bg);
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
