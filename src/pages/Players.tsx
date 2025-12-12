@@ -62,7 +62,7 @@ const Players = () => {
                                     type="text"
                                     value={editingPlayer.name}
                                     onChange={(e) => setEditingPlayer({ ...editingPlayer, name: e.target.value })}
-                                    className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
+                                    className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
                                     required
                                 />
                             </div>
@@ -73,7 +73,7 @@ const Players = () => {
                                         type="number"
                                         value={editingPlayer.number}
                                         onChange={(e) => setEditingPlayer({ ...editingPlayer, number: e.target.value })}
-                                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
+                                        className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
                                         required
                                     />
                                 </div>
@@ -82,7 +82,7 @@ const Players = () => {
                                     <select
                                         value={editingPlayer.level}
                                         onChange={(e) => setEditingPlayer({ ...editingPlayer, level: e.target.value as 'U11' | 'U13' | 'U15' | 'U18' })}
-                                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
+                                        className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                                     >
                                         <option value="U11">U11 (Pas de 3 pts)</option>
                                         <option value="U13">U13</option>
@@ -96,7 +96,7 @@ const Players = () => {
                                 <select
                                     value={editingPlayer.position}
                                     onChange={(e) => setEditingPlayer({ ...editingPlayer, position: e.target.value })}
-                                    className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
+                                    className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                                 >
                                     <option value="Meneur">Meneur</option>
                                     <option value="Arrière">Arrière</option>
@@ -149,7 +149,7 @@ const Players = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Ex: Victor Wembanyama"
-                            className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
+                            className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
                             required
                         />
                     </div>
@@ -162,7 +162,7 @@ const Players = () => {
                                 value={number}
                                 onChange={(e) => setNumber(e.target.value)}
                                 placeholder="#"
-                                className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
+                                className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors"
                                 required
                             />
                         </div>
@@ -171,7 +171,7 @@ const Players = () => {
                             <select
                                 value={level}
                                 onChange={(e) => setLevel(e.target.value as 'U11' | 'U13' | 'U15' | 'U18')}
-                                className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
+                                className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                             >
                                 <option value="U11">U11 (Pas de 3 pts)</option>
                                 <option value="U13">U13</option>
@@ -186,7 +186,7 @@ const Players = () => {
                         <select
                             value={position}
                             onChange={(e) => setPosition(e.target.value)}
-                            className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
+                            className="w-full bg-[var(--color-bg)] border border-[var(--color-glass-border)] rounded-lg p-3 text-[var(--color-text)] focus:border-[var(--color-neon-blue)] focus:outline-none transition-colors appearance-none"
                         >
                             <option value="Meneur">Meneur</option>
                             <option value="Arrière">Arrière</option>
