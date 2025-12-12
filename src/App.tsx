@@ -1,9 +1,6 @@
 import { useState, lazy, Suspense, useEffect } from 'react';
 import Layout from './components/Layout';
 import { useThemeStore } from './store/themeStore';
-import { AnimatePresence } from 'framer-motion';
-import PageTransition from './components/PageTransition';
-
 // Lazy load pages for code splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const MatchRecorder = lazy(() => import('./pages/MatchRecorder'));
@@ -28,21 +25,13 @@ function App() {
   return (
     <Layout currentView={view} onNavigate={setView}>
       <Suspense fallback={<LoadingFallback />}>
-        <AnimatePresence mode="wait">
-          {view === 'dashboard' ? (
-            <PageTransition key="dashboard">
-              <Dashboard />
-            </PageTransition>
-          ) : view === 'players' ? (
-            <PageTransition key="players">
-              <Players />
-            </PageTransition>
-          ) : (
-            <PageTransition key="match">
-              <MatchRecorder />
-            </PageTransition>
-          )}
-        </AnimatePresence>
+        {view === 'dashboard' ? (
+          <Dashboard />
+        ) : view === 'players' ? (
+          <Players />
+        ) : (
+          <MatchRecorder />
+        )}
       </Suspense>
     </Layout>
   );
