@@ -41,13 +41,16 @@ const Dashboard = () => {
     const [editDate, setEditDate] = useState<string>('');
 
 
-    const startEditing = () => {
+    const startEditing = useCallback(() => {
         if (selectedGame) {
             setEditStats({ ...selectedGame.stats });
-            setEditDate(new Date(selectedGame.date).toISOString().slice(0, 16)); // Format for datetime-local
+            // Fix timezone: Convert UTC to Local time string for input
+            const date = new Date(selectedGame.date);
+            const localISOTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+            setEditDate(localISOTime);
             setIsEditing(true);
         }
-    };
+    }, [selectedGame]);
     // ...
     // Note: I'm skipping lines for brevity where unchanged, but ensure I replace the block correctly.
     // Wait, I should not skip lines in "ReplacementContent" unless I am matching a smaller chunk.
