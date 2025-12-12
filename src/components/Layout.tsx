@@ -96,6 +96,13 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                     <Play size={24} />
                     <span className="text-xs">Match</span>
                 </button>
+                <button
+                    onClick={toggleTheme}
+                    className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all text-[var(--color-nav-text)] active:scale-90"
+                >
+                    {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+                    <span className="text-xs">Thème</span>
+                </button>
             </nav>
         </div>
     );
