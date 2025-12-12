@@ -1,3 +1,9 @@
+{
+    auto_https off
+    admin off
+    persist_config off
+}
+
 :{$PORT} {
     root * dist
     file_server
