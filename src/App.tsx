@@ -30,7 +30,7 @@ function App() {
         ) : view === 'players' ? (
           <Players />
         ) : (
-          <MatchRecorder />
+          <MatchRecorder onNavigate={setView} />
         )}
       </Suspense>
     </Layout>
