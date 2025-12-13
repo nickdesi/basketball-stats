@@ -5,6 +5,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 ![Basketball Stats Preview](https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop)
 
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://basket.desimone.fr)
+[![Deploy with Coolify](https://coolify.io/images/deploy.svg)](https://coolify.io)
 
 ## ✨ Fonctionnalités
 
@@ -71,6 +72,14 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
     ```bash
     npm run build
     ```
+
+5. **Déployer sur Coolify :**
+
+    Ce projet est configuré pour **Coolify** (et tout autre hébergeur supportant Nixpacks) grâce aux fichiers `nixpacks.toml` et `Caddyfile`.
+    - Créez une nouvelle ressource "Git Repository".
+    - Sélectionnez ce repo.
+    - Build Pack : **Nixpacks** (détecté automatiquement).
+    - Port : **80** (configuré via Caddy).
 
 ## 📱 Utilisation
 
