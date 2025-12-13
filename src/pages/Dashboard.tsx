@@ -134,7 +134,7 @@ const Dashboard = () => {
         const totalGames = filteredHistory.length;
         const totalPoints = filteredHistory.reduce((acc, game) =>
             acc + (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3), 0);
-        const totalRebounds = filteredHistory.reduce((acc, game) => acc + game.stats.rebounds, 0);
+        const totalRebounds = filteredHistory.reduce((acc, game) => acc + (game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds), 0);
         const totalAssists = filteredHistory.reduce((acc, game) => acc + game.stats.assists, 0);
 
         const avgPoints = totalGames > 0 ? (totalPoints / totalGames).toFixed(1) : '0.0';
@@ -225,9 +225,10 @@ const Dashboard = () => {
 
     const handleShareGame = async (game: CompletedGame) => {
         const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
+        const reb = game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds;
         const player = players.find(p => p.id === game.playerId);
 
-        const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${game.stats.rebounds}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
+        const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${reb}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
 
         if (navigator.share) {
             try {
@@ -365,7 +366,8 @@ const Dashboard = () => {
                                                 points1: "1 Point",
                                                 points2: "2 Points",
                                                 points3: "3 Points",
-                                                rebounds: "Rebonds",
+                                                offensiveRebounds: "Reb. OFF",
+                                                defensiveRebounds: "Reb. DEF",
                                                 assists: "Passes",
                                                 steals: "Interceptions",
                                                 blocks: "Contres",
@@ -626,14 +628,16 @@ const Dashboard = () => {
                                         <div className="text-xl font-bold font-mono text-[var(--color-neon-blue)]">{pts}</div>
                                         <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
                                     </div>
-                                    <div>
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">{game.stats.rebounds}</div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
+                                </div>
+                                <div>
+                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">
+                                        {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
                                     </div>
-                                    <div>
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
-                                    </div>
+                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
+                                </div>
+                                <div>
+                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
+                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
                                 </div>
                             </div>
                         );
