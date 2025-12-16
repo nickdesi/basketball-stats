@@ -18,6 +18,8 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
         startGame,
         incrementStat,
         decrementStat,
+        undoLastAction,
+        canUndo,
         finishGame,
         resetGame
     } = useGameStore();
@@ -96,8 +98,8 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
         handleConfirmFinish();
     };
 
-    const [isCorrectionMode, setIsCorrectionMode] = useState(false);
     const [showEndMatchConfirm, setShowEndMatchConfirm] = useState(false);
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
 
     const handleConfirmFinish = () => {
         finishGame();
@@ -278,23 +280,32 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                                 color="#f97316"
                             />
 
-                            {/* Empty slot or other stat? Maybe a generic Undo? */}
+                            {/* Undo Button - Replaces old Correction Mode */}
                             <button
-                                onClick={() => { setIsCorrectionMode(!isCorrectionMode); if (navigator.vibrate) navigator.vibrate(50); }}
-                                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${isCorrectionMode ? 'bg-yellow-500/20 border-yellow-500 text-yellow-500' : 'border-white/5 opacity-50 hover:opacity-100'}`}
+                                onClick={() => { undoLastAction(); if (navigator.vibrate) navigator.vibrate(50); }}
+                                disabled={!canUndo()}
+                                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${canUndo() ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-white/5 opacity-30 cursor-not-allowed'}`}
                             >
                                 <Undo2 size={24} />
-                                <span className="text-[9px] font-bold uppercase mt-1">CORR.</span>
+                                <span className="text-[9px] font-bold uppercase mt-1">UNDO</span>
                             </button>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* FOOTER ACTIONS */}
-            <div className="grid grid-cols-2 gap-2 mt-2 shrink-0">
-                <button onClick={resetGame} className="py-3 rounded-xl bg-[var(--color-card)] border border-[var(--color-glass-border)] text-xs font-bold text-[var(--color-text-dim)] hover:bg-[var(--color-bg)] transition-colors">RESET</button>
-                <button onClick={() => setShowEndMatchConfirm(true)} className="py-3 rounded-xl bg-[var(--color-text)] text-[var(--color-bg)] text-xs font-black hover:scale-[1.02] transition-transform">TERMINER</button>
+            {/* FOOTER ACTIONS - Reorganized for safety */}
+            <div className="flex gap-2 mt-2 shrink-0">
+                <button
+                    onClick={() => setShowResetConfirm(true)}
+                    className="px-4 py-3 rounded-xl bg-[var(--color-card)] border border-[var(--color-glass-border)] text-xs font-bold text-[var(--color-text-dim)] hover:bg-[var(--color-bg)] transition-colors"
+                    title="Réinitialiser le match"
+                >
+                    RESET
+                </button>
+                <button onClick={() => setShowEndMatchConfirm(true)} className="flex-1 py-3 rounded-xl bg-[var(--color-neon-blue)] text-black text-sm font-black hover:brightness-110 transition-all shadow-lg shadow-blue-500/20">
+                    TERMINER LE MATCH
+                </button>
             </div>
 
             {/* ANIMATIONS LAYER */}
@@ -314,12 +325,7 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                 </div>
             ))}
 
-            {/* CORRECTION OVERLAY */}
-            {isCorrectionMode && (
-                <div className="absolute top-0 left-0 right-0 p-1 bg-yellow-500 text-black text-[10px] font-black uppercase text-center tracking-widest z-50 animate-pulse">
-                    MODE CORRECTION ACTIVÉ
-                </div>
-            )}
+
 
             {/* 5-FOUL CONFIRMATION MODAL */}
             {showFoulConfirm && (
@@ -377,6 +383,37 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                                 className="py-3 bg-[var(--color-neon-blue)] hover:brightness-110 text-black font-black rounded-xl transition-colors shadow-lg shadow-blue-500/20"
                             >
                                 CONFIRMER
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* RESET CONFIRMATION MODAL */}
+            {showResetConfirm && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
+                    <div className="glass-panel rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-red-500">
+                        <div className="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
+                            <Undo2 size={32} />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-[var(--color-text)] mb-2">Réinitialiser le match ?</h3>
+                            <p className="text-[var(--color-text-dim)] text-sm">
+                                Toutes les statistiques actuelles seront perdues. Cette action est irréversible.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <button
+                                onClick={() => setShowResetConfirm(false)}
+                                className="py-3 bg-[var(--color-card)] hover:bg-[var(--color-bg)] text-[var(--color-text)] font-bold rounded-xl transition-colors border border-[var(--color-glass-border)]"
+                            >
+                                ANNULER
+                            </button>
+                            <button
+                                onClick={() => { resetGame(); setShowResetConfirm(false); }}
+                                className="py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-red-500/20"
+                            >
+                                RESET
                             </button>
                         </div>
                     </div>

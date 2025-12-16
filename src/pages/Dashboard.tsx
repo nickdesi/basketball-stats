@@ -1,9 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
-
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
 import { useThemeStore } from '../store/themeStore';
-import SessionStats from '../components/SessionStats';
-import { Trophy, Activity, CalendarDays, History, TrendingUp, PieChart as PieIcon, BarChart3, Download, Share2, Trash2 } from 'lucide-react';
+import { Trophy, Activity, Download } from 'lucide-react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -16,7 +14,11 @@ import {
     Legend,
     ArcElement,
 } from 'chart.js';
-import { Line, Doughnut, Bar } from 'react-chartjs-2';
+
+// Import extracted components
+import DashboardCharts from '../components/DashboardCharts';
+import HistoryList from '../components/HistoryList';
+import GameDetailModal from '../components/GameDetailModal';
 
 ChartJS.register(
     CategoryScale,
@@ -36,91 +38,6 @@ const Dashboard = () => {
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editStats, setEditStats] = useState<GameStats | null>(null);
-    const [editDate, setEditDate] = useState<string>('');
-
-
-    const startEditing = useCallback(() => {
-        if (selectedGame) {
-            setEditStats({ ...selectedGame.stats });
-            // Fix timezone: Convert UTC to Local time string for input
-            const date = new Date(selectedGame.date);
-            const localISOTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-            setEditDate(localISOTime);
-            setIsEditing(true);
-        }
-    }, [selectedGame]);
-    // ...
-    // Note: I'm skipping lines for brevity where unchanged, but ensure I replace the block correctly.
-    // Wait, I should not skip lines in "ReplacementContent" unless I am matching a smaller chunk.
-    // I will do this in two chunks to be safe and clean, or one large chunk if contiguous.
-    // The state is at the top, the handler is in the middle, the button is in the JSX.
-    // The user wants me to use replace_file_content (single chunk) if contiguous? No, the tool says "use REPL_FILE_CONTENT ONLY when... SINGLE CONTIGUOUS block".
-    // These are NON-contiguous edits (State at top, Handler in middle, JSX at bottom).
-    // I MUST use multi_replace.
-    // ABORTING this tool call and switching to multi_replace.
-
-
-    const cancelEditing = () => {
-        setIsEditing(false);
-        setEditStats(null);
-        setEditDate('');
-    };
-
-    const saveEditing = useCallback(() => {
-        if (selectedGame && editStats && editDate) {
-            const isoDate = new Date(editDate).toISOString();
-
-            // Update store
-            updateGame(selectedGame.id, editStats, isoDate);
-
-            // Update local state to reflect changes immediately
-            setSelectedGame({
-                ...selectedGame,
-                stats: { ...editStats },
-                date: isoDate
-            });
-
-            setIsEditing(false);
-            setEditStats(null);
-            setEditDate('');
-        }
-    }, [selectedGame, editStats, editDate, updateGame]);
-
-    const handleEditStatChange = useCallback((stat: string, value: number) => {
-        setEditStats((prev) => {
-            if (!prev) return null;
-            return {
-                ...prev,
-                [stat]: Math.max(0, value)
-            };
-        });
-    }, []);
-
-    const handleExport = () => {
-        const dataStr = JSON.stringify(history, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `hoop-stats-export-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // ... (rest of helper functions) ...
-
-    const handleDeleteGame = useCallback((id: string) => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.")) {
-            deleteGame(id);
-            setSelectedGame(null);
-        }
-    }, [deleteGame]);
-
-    // ...
-
 
     // --- FILTER ---
     const filteredHistory = useMemo(() => {
@@ -145,64 +62,53 @@ const Dashboard = () => {
     }, [filteredHistory]);
 
     // --- CHART DATA ---
-
-    // 1. Line Chart: Points Evolution
     const lineData = useMemo(() => {
         const sortedHistory = [...filteredHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         return {
             labels: sortedHistory.map((_, i) => `Match ${i + 1}`),
-            datasets: [
-                {
-                    label: 'Points',
-                    data: sortedHistory.map(g => (g.stats.points1) + (g.stats.points2 * 2) + (g.stats.points3 * 3)),
-                    borderColor: '#00F3FF',
-                    backgroundColor: 'rgba(0, 243, 255, 0.2)',
-                    tension: 0.4,
-                    fill: true,
-                },
-            ],
+            datasets: [{
+                label: 'Points',
+                data: sortedHistory.map(g => (g.stats.points1) + (g.stats.points2 * 2) + (g.stats.points3 * 3)),
+                borderColor: '#00F3FF',
+                backgroundColor: 'rgba(0, 243, 255, 0.2)',
+                tension: 0.4,
+                fill: true,
+            }],
         };
     }, [filteredHistory]);
 
-    // 2. Doughnut Chart: Scoring Distribution
     const doughnutData = useMemo(() => {
         const totalP1 = filteredHistory.reduce((acc, g) => acc + g.stats.points1, 0);
         const totalP2 = filteredHistory.reduce((acc, g) => acc + (g.stats.points2 * 2), 0);
         const totalP3 = filteredHistory.reduce((acc, g) => acc + (g.stats.points3 * 3), 0);
 
-        // Check if we should show 3pts (if specific player selected and is U11, hide it)
         const activeFilterPlayer = players.find(p => p.id === selectedPlayerId);
         const isU11Filter = activeFilterPlayer?.level === 'U11';
 
         return {
             labels: isU11Filter ? ['1 Point', '2 Points'] : ['1 Point', '2 Points', '3 Points'],
-            datasets: [
-                {
-                    data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
-                    backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
-                    borderColor: '#111',
-                    borderWidth: 2,
-                },
-            ],
+            datasets: [{
+                data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
+                backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
+                borderColor: '#111',
+                borderWidth: 2,
+            }],
         };
     }, [filteredHistory, players, selectedPlayerId]);
 
-    // 3. Bar Chart: Stats Comparison
     const barData = useMemo(() => {
         return {
             labels: ['Rebonds', 'Passes', 'Interc.', 'Contres'],
-            datasets: [
-                {
-                    label: 'Moyenne',
-                    data: [
-                        totalGames ? (totalRebounds / totalGames) : 0,
-                        totalGames ? (totalAssists / totalGames) : 0,
-                        totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.steals, 0) / totalGames) : 0,
-                        totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.blocks, 0) / totalGames) : 0,
-                    ],
-                    backgroundColor: ['#00FF9D', '#BC13FE', '#00F3FF', '#FF0055'],
-                },
-            ],
+            datasets: [{
+                label: 'Moyenne',
+                data: [
+                    totalGames ? (totalRebounds / totalGames) : 0,
+                    totalGames ? (totalAssists / totalGames) : 0,
+                    totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.steals, 0) / totalGames) : 0,
+                    totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.blocks, 0) / totalGames) : 0,
+                ],
+                backgroundColor: ['#00FF9D', '#BC13FE', '#00F3FF', '#FF0055'],
+            }],
         };
     }, [filteredHistory, totalGames, totalRebounds, totalAssists]);
 
@@ -213,9 +119,7 @@ const Dashboard = () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: {
-                labels: { color: textColor, font: { family: 'ui-monospace, monospace' } }
-            }
+            legend: { labels: { color: textColor, font: { family: 'ui-monospace, monospace' } } }
         },
         scales: {
             y: { ticks: { color: textColor }, grid: { color: gridColor } },
@@ -223,36 +127,17 @@ const Dashboard = () => {
         }
     };
 
-    const handleShareGame = async (game: CompletedGame) => {
-        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
-        const reb = game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds;
-        const player = players.find(p => p.id === game.playerId);
-
-        const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${reb}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({ title: 'Statistiques du Match', text: text });
-            } catch {
-                // Share failed silently or user cancelled
-                // console.error(err);
-            }
-        } else {
-            await navigator.clipboard.writeText(text);
-            alert("Résumé copié dans le presse-papier !");
-        }
-    };
-
-    const handleExportGame = (game: CompletedGame) => {
-        const dataStr = JSON.stringify(game, null, 2);
+    // --- HANDLERS ---
+    const handleExport = () => {
+        const dataStr = JSON.stringify(history, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        const player = players.find(p => p.id === game.playerId);
-        link.download = `match-${player?.name || 'stats'}-${new Date(game.date).toISOString().split('T')[0]}.json`;
+        link.download = `hoop-stats-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
     };
 
     const handleImportGame = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,13 +148,10 @@ const Dashboard = () => {
         reader.onload = (event) => {
             try {
                 const json = JSON.parse(event.target?.result as string);
-
-                // basic validation
                 if (!json.stats || !json.playerId || !json.date) {
                     alert("Fichier invalide : structure incorrecte.");
                     return;
                 }
-
                 importGame(json as CompletedGame);
                 alert("Match importé avec succès !");
             } catch (err) {
@@ -278,182 +160,34 @@ const Dashboard = () => {
             }
         };
         reader.readAsText(file);
-        // Reset input
         e.target.value = '';
     };
 
-
-
-    // ... (rest of the component) ...
+    const handleUpdateGame = useCallback((gameId: string, updatedStats: GameStats, date?: string) => {
+        updateGame(gameId, updatedStats, date);
+        // Update local state to reflect changes immediately
+        if (selectedGame && selectedGame.id === gameId) {
+            setSelectedGame({
+                ...selectedGame,
+                stats: { ...updatedStats },
+                ...(date ? { date } : {})
+            });
+        }
+    }, [updateGame, selectedGame]);
 
     return (
         <div className="space-y-6 pb-24 relative">
 
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200" onClick={() => setSelectedGame(null)}>
-                    <div className="bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-
-                        {/* Modal Header */}
-                        <div className="p-6 border-b border-[var(--color-glass-border)] bg-[var(--color-bg)]/50 flex justify-between items-start">
-                            <div>
-                                <div className="text-xs text-[var(--color-neon-blue)] font-bold uppercase tracking-wider mb-1">
-                                    {isEditing ? 'Modification du Match' : 'Détails du Match'}
-                                </div>
-                                <h3 className="text-2xl font-bold text-[var(--color-text)] flex items-center gap-2">
-                                    {selectedGame.opponent || "Match d'entraînement"}
-                                </h3>
-                                <div className="text-[var(--color-text-dim)] text-sm mt-1">
-                                    {new Date(selectedGame.date).toLocaleDateString()} • {new Date(selectedGame.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                {!isEditing ? (
-                                    <>
-                                        <button onClick={startEditing} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[#facc15]" title="Modifier">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                        </button>
-                                        <button onClick={() => handleDeleteGame(selectedGame.id)} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-[#ef4444]" title="Supprimer">
-                                            <Trash2 size={20} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleShareGame(selectedGame)}
-                                            className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[var(--color-neon-blue)]"
-                                            title="Partager"
-                                        >
-                                            <Share2 size={20} />
-                                        </button>
-                                        <button onClick={() => handleExportGame(selectedGame)} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors text-[var(--color-text)]" title="Exporter JSON">
-                                            <Download size={20} />
-                                        </button>
-                                        <button onClick={() => setSelectedGame(null)} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors ml-2 text-[var(--color-text)]">
-                                            <span className="text-2xl leading-none">&times;</span>
-                                        </button>
-                                    </>
-                                ) : (
-                                    <button onClick={cancelEditing} className="p-2 hover:bg-[var(--color-bg)] rounded-full transition-colors ml-2 text-[var(--color-text)]">
-                                        <span className="text-2xl leading-none">&times;</span>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Modal Body - Scrollable */}
-                        {/* Modal Body - Scrollable */}
-                        <div className="p-6 overflow-y-auto space-y-6">
-
-                            {isEditing ? (
-                                // --- EDIT MODE ---
-                                <div className="space-y-6">
-                                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-yellow-600 dark:text-yellow-400 text-sm mb-4">
-                                        Vous modifiez les statistiques de ce match.
-                                    </div>
-
-                                    {/* Edit Date */}
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Date et Heure</label>
-                                        <input
-                                            type="datetime-local"
-                                            value={editDate}
-                                            onChange={(e) => setEditDate(e.target.value)}
-                                            className="bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-glass-border)] rounded-lg p-3 focus:outline-none focus:border-[var(--color-neon-blue)]"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {Object.entries(editStats || {}).map(([key, value]) => {
-                                            const labels: Record<string, string> = {
-                                                points1: "1 Point",
-                                                points2: "2 Points",
-                                                points3: "3 Points",
-                                                offensiveRebounds: "Reb. OFF",
-                                                defensiveRebounds: "Reb. DEF",
-                                                assists: "Passes",
-                                                steals: "Interceptions",
-                                                blocks: "Contres",
-                                                turnovers: "Balles Perdues",
-                                                fouls: "Fautes"
-                                            };
-                                            if (!labels[key]) return null;
-
-                                            // Hide 3 Points for U11
-                                            const player = players.find(p => p.id === selectedGame.playerId);
-                                            if (player?.level === 'U11' && key === 'points3') return null;
-
-                                            return (
-                                                <div key={key} className="p-3 rounded-lg bg-[var(--color-bg)] border border-[var(--color-glass-border)] flex flex-col items-center">
-                                                    <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold mb-2">{labels[key]}</label>
-                                                    <div className="flex items-center gap-3">
-                                                        <button
-                                                            onClick={() => handleEditStatChange(key, (value as number) - 1)}
-                                                            className="w-8 h-8 rounded-full bg-[var(--color-card)] border border-[var(--color-glass-border)] hover:bg-[var(--color-glass-bg)] flex items-center justify-center text-[var(--color-text)] transition-colors"
-                                                        >
-                                                            -
-                                                        </button>
-                                                        <span className="text-xl font-mono font-bold w-8 text-center text-[var(--color-text)]">{value as number}</span>
-                                                        <button
-                                                            onClick={() => handleEditStatChange(key, (value as number) + 1)}
-                                                            className="w-8 h-8 rounded-full bg-[var(--color-card)] border border-[var(--color-glass-border)] hover:bg-[var(--color-glass-bg)] flex items-center justify-center text-[var(--color-text)] transition-colors"
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ) : (
-                                // --- VIEW MODE ---
-                                <>
-                                    {/* Score Recap */}
-                                    <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--color-bg)] border border-[var(--color-glass-border)]">
-                                        <div>
-                                            <div className="text-sm text-[var(--color-text-dim)] uppercase font-bold">Joueur</div>
-                                            <div className="text-xl font-bold text-[var(--color-neon-blue)]">
-                                                {players.find(p => p.id === selectedGame.playerId)?.name || 'Inconnu'}
-                                            </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-4xl font-black font-mono text-[var(--color-text)]">
-                                                {(selectedGame.stats.points1 * 1) + (selectedGame.stats.points2 * 2) + (selectedGame.stats.points3 * 3)}
-                                            </div>
-                                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold uppercase">Points Totaux</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Stats Grid - Updated to Match SessionStats Layout */}
-                                    <div>
-                                        <SessionStats
-                                            stats={selectedGame.stats}
-                                            playerLevel={players.find(p => p.id === selectedGame.playerId)?.level}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="p-4 border-t border-[var(--color-glass-border)] bg-[var(--color-bg)]/50 flex justify-end gap-3">
-                            {isEditing ? (
-                                <>
-                                    <button onClick={cancelEditing} className="px-6 py-2 bg-[var(--color-bg)] hover:bg-[var(--color-glass-border)] text-[var(--color-text)] rounded-lg font-bold transition-colors">
-                                        Annuler
-                                    </button>
-                                    <button onClick={saveEditing} className="px-6 py-2 bg-[var(--color-neon-green)] hover:brightness-110 text-white rounded-lg font-bold transition-colors">
-                                        Terminer
-                                    </button>
-                                </>
-                            ) : (
-                                <button onClick={() => setSelectedGame(null)} className="px-6 py-2 bg-[var(--color-bg)] hover:bg-[var(--color-glass-border)] text-[var(--color-text)] rounded-lg font-bold transition-colors">
-                                    Fermer
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )
-            }
+                <GameDetailModal
+                    game={selectedGame}
+                    players={players}
+                    onClose={() => setSelectedGame(null)}
+                    onDelete={deleteGame}
+                    onUpdate={handleUpdateGame}
+                />
+            )}
 
             {/* Header & Filters */}
             <div className="flex flex-col gap-4">
@@ -540,111 +274,28 @@ const Dashboard = () => {
             </div>
 
             {/* CHARTS SECTION */}
-            {
-                totalGames > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Line Chart */}
-                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)] md:col-span-2">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
-                                <TrendingUp size={20} className="text-[var(--color-neon-blue)]" />
-                                Évolution des Points
-                            </h3>
-                            <div className="h-[250px]">
-                                <Line options={chartOptions} data={lineData} />
-                            </div>
-                        </div>
-
-                        {/* Doughnut Chart */}
-                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
-                                <PieIcon size={20} className="text-[var(--color-neon-purple)]" />
-                                Répartition des Points
-                            </h3>
-                            <div className="h-[200px] flex justify-center">
-                                <Doughnut
-                                    key={selectedPlayerId}
-                                    options={{ maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: textColor } } } }}
-                                    data={doughnutData}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Bar Chart */}
-                        <div className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)]">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[var(--color-text)]">
-                                <BarChart3 size={20} className="text-[var(--color-neon-green)]" />
-                                Performance Moyenne
-                            </h3>
-                            <div className="h-[200px]">
-                                <Bar options={chartOptions} data={barData} />
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)]">
-                        Enregistrez des matchs pour voir apparaître les graphiques.
-                    </div>
-                )
-            }
+            {totalGames > 0 ? (
+                <DashboardCharts
+                    lineData={lineData}
+                    doughnutData={doughnutData}
+                    barData={barData}
+                    chartOptions={chartOptions}
+                    textColor={textColor}
+                    selectedPlayerId={selectedPlayerId}
+                />
+            ) : (
+                <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)]">
+                    Enregistrez des matchs pour voir apparaître les graphiques.
+                </div>
+            )}
 
             {/* Recent History */}
-            <h3 className="text-xl font-bold mt-8 flex items-center gap-2 text-[var(--color-text)]">
-                <History size={20} className="text-[var(--color-neon-blue)]" />
-                Historique Récent
-            </h3>
-
-            <div className="space-y-3">
-                {filteredHistory.length === 0 ? (
-                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-panel rounded-xl">
-                        Aucun match trouvé pour ce filtre.
-                    </div>
-                ) : (
-                    filteredHistory.slice().reverse().map((game) => {
-                        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
-                        const player = players.find(p => p.id === game.playerId);
-                        return (
-                            <div
-                                key={game.id}
-                                onClick={() => setSelectedGame(game)}
-                                className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] hover:border-[var(--color-neon-blue)] hover:bg-[var(--color-bg)]/50 cursor-pointer transition-all flex justify-between items-center group"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 rounded-full bg-[var(--color-bg)] group-hover:bg-[var(--color-neon-blue)] group-hover:text-black transition-colors text-[var(--color-text)]">
-                                        <CalendarDays size={20} />
-                                    </div>
-                                    <div>
-                                        <div className="font-bold text-lg flex items-center gap-2 text-[var(--color-text)]">
-                                            {game.opponent || "Match d'entraînement"}
-                                            <span className="text-xs bg-[var(--color-bg)] px-2 py-0.5 rounded text-[var(--color-text-dim)] font-normal border border-[var(--color-glass-border)]">
-                                                {player?.name || 'Inconnu'}
-                                            </span>
-                                        </div>
-                                        <div className="text-xs text-[var(--color-text-dim)]">{new Date(game.date).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-4 md:gap-8 text-right">
-                                    <div>
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-blue)]">{pts}</div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">
-                                        {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
-                                    </div>
-                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
-                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
-                                </div>
-                            </div>
-                        );
-                    })
-                )}
-            </div>
-        </div >
+            <HistoryList
+                filteredHistory={filteredHistory}
+                players={players}
+                onSelectGame={setSelectedGame}
+            />
+        </div>
     );
 };
 

@@ -27,6 +27,13 @@ export type GameStats = {
     missedFreeThrows: number; // Redundant if we have missedPoints1 but explicit is nice. Actually missedPoints1 covers it. I will stick to missedPoints1.
 };
 
+// Action log entry for undo functionality
+export type StatAction = {
+    type: 'increment' | 'decrement';
+    stat: keyof GameStats;
+    timestamp: number;
+};
+
 export type CompletedGame = {
     id: string;
     date: string;
@@ -47,6 +54,9 @@ export type GameState = {
     isGameActive: boolean;
     currentStats: GameStats;
 
+    // Undo Stack (last 50 actions)
+    actionStack: StatAction[];
+
     // History
     history: CompletedGame[];
 
@@ -59,6 +69,8 @@ export type GameState = {
     startGame: () => void;
     incrementStat: (stat: keyof GameStats) => void;
     decrementStat: (stat: keyof GameStats) => void;
+    undoLastAction: () => void;
+    canUndo: () => boolean;
     resetGame: () => void;
     finishGame: () => void;
     deleteGame: (id: string) => void;
@@ -86,12 +98,13 @@ const initialStats: GameStats = {
 
 export const useGameStore = create<GameState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             players: [],
             activePlayerId: null,
             activeOpponent: '',
             isGameActive: false,
             currentStats: { ...initialStats },
+            actionStack: [],
             history: [],
 
             addPlayer: (name, number, position, level) => set((state) => ({
@@ -114,28 +127,58 @@ export const useGameStore = create<GameState>()(
 
             startGame: () => set({
                 isGameActive: true,
-                currentStats: { ...initialStats }
+                currentStats: { ...initialStats },
+                actionStack: []
             }),
 
             incrementStat: (stat) => set((state) => ({
                 currentStats: {
                     ...state.currentStats,
                     [stat]: state.currentStats[stat] + 1
-                }
+                },
+                actionStack: [
+                    ...state.actionStack.slice(-49),
+                    { type: 'increment', stat, timestamp: Date.now() }
+                ]
             })),
 
             decrementStat: (stat) => set((state) => ({
                 currentStats: {
                     ...state.currentStats,
                     [stat]: Math.max(0, state.currentStats[stat] - 1)
-                }
+                },
+                actionStack: [
+                    ...state.actionStack.slice(-49),
+                    { type: 'decrement', stat, timestamp: Date.now() }
+                ]
             })),
+
+            undoLastAction: () => set((state) => {
+                if (state.actionStack.length === 0) return state;
+                const lastAction = state.actionStack[state.actionStack.length - 1];
+                const newStack = state.actionStack.slice(0, -1);
+
+                // Reverse the action
+                const delta = lastAction.type === 'increment' ? -1 : 1;
+                const newValue = Math.max(0, state.currentStats[lastAction.stat] + delta);
+
+                return {
+                    currentStats: {
+                        ...state.currentStats,
+                        [lastAction.stat]: newValue
+                    },
+                    actionStack: newStack
+                };
+            }),
+
+            canUndo: () => get().actionStack.length > 0,
 
 
 
             resetGame: () => set({
                 isGameActive: false,
-                currentStats: { ...initialStats }
+                currentStats: { ...initialStats },
+                actionStack: []
             }),
 
             finishGame: () => set((state) => {
@@ -154,6 +197,7 @@ export const useGameStore = create<GameState>()(
                     activePlayerId: null,
                     activeOpponent: '',
                     currentStats: { ...initialStats },
+                    actionStack: [],
                 };
             }),
 
