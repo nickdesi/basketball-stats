@@ -9,6 +9,14 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 ## ✨ Fonctionnalités
 
+### ☁️ Synchronisation Cloud (Firebase)
+
+- **Données Privées :** Chaque utilisateur a ses propres joueurs et matchs isolés.
+- **Multi-Appareils :** Synchronisation en temps réel entre tous vos appareils.
+- **Authentification :** Inscription par email/mot de passe ou connexion Google.
+- **Mode Hors-Ligne :** Les données sont mises en cache localement et synchronisées automatiquement au retour de la connexion.
+- **Migration Automatique :** Les données locales existantes sont uploadées vers le cloud à la première connexion.
+
 ### 🎮 Enregistrement de Match (Mode Arcade)
 
 - **Interface Intuitive & Ergonomique :** Saisie ultra-rapide avec un design "Zéro Scroll". Boutons compacts (cercle cliquable pour incrémenter) et labels positionnés intelligemment (en haut pour la ligne 1, en bas pour la ligne 2).
@@ -44,6 +52,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Langage :** [TypeScript](https://www.typescriptlang.org/)
 - **Styles :** [Tailwind CSS v4](https://tailwindcss.com/)
 - **État :** [Zustand](https://github.com/pmndrs/zustand) (avec persistance locale)
+- **Backend :** [Firebase](https://firebase.google.com/) (Firestore + Authentication)
 - **Graphiques :** [Chart.js](https://www.chartjs.org/) + [React-Chartjs-2](https://react-chartjs-2.js.org/)
 - **Icônes :** [Lucide React](https://lucide.dev/)
 
