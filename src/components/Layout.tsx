@@ -1,5 +1,6 @@
-import { LayoutDashboard, Play, Users, Moon, Sun, WifiOff } from 'lucide-react';
+import { LayoutDashboard, Play, Users, Moon, Sun, WifiOff, LogOut } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
+import { useAuthStore } from '../store/authStore';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface LayoutProps {
@@ -17,6 +18,7 @@ interface LayoutProps {
 
 const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
     const { theme, toggleTheme } = useThemeStore();
+    const { logout } = useAuthStore();
     const { isOnline } = useOnlineStatus();
     const isMobileMatch = currentView === 'match';
 
@@ -70,6 +72,15 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                     >
                         {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
+
+                    <button
+                        onClick={logout}
+                        className="p-2 rounded-lg text-[var(--color-nav-text)] hover:text-red-400 hover:bg-red-500/10 transition-all"
+                        aria-label="Déconnexion"
+                        title="Déconnexion"
+                    >
+                        <LogOut size={20} />
+                    </button>
                 </nav>
 
                 {/* Mobile Theme Toggle (Absolute Top Right if Header hidden?) or in Nav? */}
@@ -115,6 +126,13 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                 >
                     {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
                     <span className="text-xs">Thème</span>
+                </button>
+                <button
+                    onClick={logout}
+                    className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all text-[var(--color-nav-text)] active:scale-90 hover:text-red-400"
+                >
+                    <LogOut size={24} />
+                    <span className="text-xs">Sortir</span>
                 </button>
             </nav>
         </div>

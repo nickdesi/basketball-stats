@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 import { useThemeStore } from '../store/themeStore';
 import { Trophy, Activity, Download } from 'lucide-react';
 import {
@@ -35,7 +36,8 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-    const { history, players, deleteGame, updateGame, importGame } = useGameStore();
+    const { history, players, importGame } = useGameStore();
+    const { deleteGameFromFirestore, updateGameInFirestore } = useFirebaseSync();
     const theme = useThemeStore((state) => state.theme);
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
@@ -165,17 +167,30 @@ const Dashboard = () => {
         e.target.value = '';
     };
 
-    const handleUpdateGame = useCallback((gameId: string, updatedStats: GameStats, date?: string) => {
-        updateGame(gameId, updatedStats, date);
-        // Update local state to reflect changes immediately
-        if (selectedGame && selectedGame.id === gameId) {
-            setSelectedGame({
-                ...selectedGame,
-                stats: { ...updatedStats },
-                ...(date ? { date } : {})
-            });
+    const handleUpdateGame = useCallback(async (gameId: string, updatedStats: GameStats, date?: string) => {
+        try {
+            await updateGameInFirestore(gameId, updatedStats, date);
+            // Update local state to reflect changes immediately
+            if (selectedGame && selectedGame.id === gameId) {
+                setSelectedGame({
+                    ...selectedGame,
+                    stats: { ...updatedStats },
+                    ...(date ? { date } : {})
+                });
+            }
+        } catch (error) {
+            console.error('Error updating game:', error);
         }
-    }, [updateGame, selectedGame]);
+    }, [updateGameInFirestore, selectedGame]);
+
+    const handleDeleteGame = useCallback(async (gameId: string) => {
+        try {
+            await deleteGameFromFirestore(gameId);
+            setSelectedGame(null);
+        } catch (error) {
+            console.error('Error deleting game:', error);
+        }
+    }, [deleteGameFromFirestore]);
 
     return (
         <div className="space-y-6 pb-24 relative">
@@ -186,7 +201,7 @@ const Dashboard = () => {
                     game={selectedGame}
                     players={players}
                     onClose={() => setSelectedGame(null)}
-                    onDelete={deleteGame}
+                    onDelete={handleDeleteGame}
                     onUpdate={handleUpdateGame}
                 />
             )}

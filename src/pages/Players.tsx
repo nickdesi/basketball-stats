@@ -1,24 +1,34 @@
 import { useState } from 'react';
 import { useGameStore, type Player } from '../store/gameStore';
+import { useFirebaseSync } from '../hooks/useFirebaseSync';
 import { UserPlus, Trash2, Users } from 'lucide-react';
 
 const Players = () => {
-    const { players, addPlayer, deletePlayer, updatePlayer } = useGameStore();
+    const { players } = useGameStore();
+    const { addPlayerToFirestore, deletePlayerFromFirestore, updatePlayerInFirestore } = useFirebaseSync();
 
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
     const [position, setPosition] = useState('Meneur');
     const [level, setLevel] = useState<'U11' | 'U13' | 'U15' | 'U18'>('U15');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Edit State
     const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
-    const handleAdd = (e: React.FormEvent) => {
+    const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (name && number) {
-            addPlayer(name, number, position, level);
-            setName('');
-            setNumber('');
+        if (name && number && !isSubmitting) {
+            setIsSubmitting(true);
+            try {
+                await addPlayerToFirestore({ name, number, position, level });
+                setName('');
+                setNumber('');
+            } catch (error) {
+                console.error('Error adding player:', error);
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -26,16 +36,31 @@ const Players = () => {
         setEditingPlayer({ ...player });
     };
 
-    const saveEdit = (e: React.FormEvent) => {
+    const saveEdit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (editingPlayer && editingPlayer.name && editingPlayer.number) {
-            updatePlayer(editingPlayer.id, {
-                name: editingPlayer.name,
-                number: editingPlayer.number,
-                level: editingPlayer.level,
-                position: editingPlayer.position
-            });
-            setEditingPlayer(null);
+        if (editingPlayer && editingPlayer.name && editingPlayer.number && !isSubmitting) {
+            setIsSubmitting(true);
+            try {
+                await updatePlayerInFirestore(editingPlayer.id, {
+                    name: editingPlayer.name,
+                    number: editingPlayer.number,
+                    level: editingPlayer.level,
+                    position: editingPlayer.position
+                });
+                setEditingPlayer(null);
+            } catch (error) {
+                console.error('Error updating player:', error);
+            } finally {
+                setIsSubmitting(false);
+            }
+        }
+    };
+
+    const handleDelete = async (playerId: string) => {
+        try {
+            await deletePlayerFromFirestore(playerId);
+        } catch (error) {
+            console.error('Error deleting player:', error);
         }
     };
 
@@ -234,7 +259,7 @@ const Players = () => {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                                 </button>
                                 <button
-                                    onClick={() => deletePlayer(player.id)}
+                                    onClick={() => handleDelete(player.id)}
                                     className="p-3 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                                     title="Supprimer"
                                 >

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { useGameStore, type GameStats, type Player } from '../store/gameStore';
+import { useGameStore, type GameStats, type Player, type CompletedGame } from '../store/gameStore';
+import { useFirebaseSync } from './useFirebaseSync';
 
 export interface FloatingAnimation {
     id: string;
@@ -63,15 +64,17 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         isGameActive,
         players,
         activePlayerId,
+        activeOpponent,
         setupGame,
         startGame,
         incrementStat,
         decrementStat,
         undoLastAction,
         canUndo,
-        finishGame,
         resetGame
     } = useGameStore();
+
+    const { saveGameToFirestore } = useFirebaseSync();
 
     // Local state
     const [viewMode, setViewMode] = useState<'input' | 'stats'>('input');
@@ -134,13 +137,34 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         triggerAnimation(e, label, color);
     }, [isFouledOut, currentStats.fouls, incrementStat, triggerAnimation]);
 
-    const handleConfirmFinish = useCallback(() => {
-        finishGame();
+    // Finish game and save to Firebase
+    const handleConfirmFinish = useCallback(async () => {
+        if (!activePlayerId) return;
+
+        // Create the game object
+        const newGame: CompletedGame = {
+            id: crypto.randomUUID(),
+            date: new Date().toISOString(),
+            playerId: activePlayerId,
+            opponent: activeOpponent || opponentName || 'Opponent',
+            stats: { ...currentStats },
+        };
+
+        // Save to Firebase (Firestore will update local state via listener)
+        try {
+            await saveGameToFirestore(newGame);
+        } catch (error) {
+            console.error('Error saving game to Firebase:', error);
+        }
+
+        // Reset local game state
+        resetGame();
         setShowEndMatchConfirm(false);
+
         if (onNavigate) {
             onNavigate('dashboard');
         }
-    }, [finishGame, onNavigate]);
+    }, [activePlayerId, activeOpponent, opponentName, currentStats, saveGameToFirestore, resetGame, onNavigate]);
 
     const confirmFoulOut = useCallback(() => {
         incrementStat('fouls');

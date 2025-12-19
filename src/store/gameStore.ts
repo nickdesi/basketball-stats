@@ -76,6 +76,10 @@ export type GameState = {
     deleteGame: (id: string) => void;
     updateGame: (gameId: string, updatedStats: GameStats, date?: string) => void;
     importGame: (game: CompletedGame) => void;
+
+    // Sync actions for Firebase
+    setPlayers: (players: Player[]) => void;
+    setHistory: (games: CompletedGame[]) => void;
 };
 
 const initialStats: GameStats = {
@@ -216,6 +220,10 @@ export const useGameStore = create<GameState>()(
             importGame: (game) => set((state) => ({
                 history: [{ ...game, id: crypto.randomUUID() }, ...state.history]
             })),
+
+            // Sync actions for Firebase - replace local state with Firestore data
+            setPlayers: (players) => set({ players }),
+            setHistory: (games) => set({ history: games }),
         }),
         {
             name: 'hoop-stats-storage',
