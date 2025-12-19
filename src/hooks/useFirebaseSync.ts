@@ -14,27 +14,42 @@ import { useGameStore } from '../store/gameStore';
 import { useAuthStore } from '../store/authStore';
 import type { Player, CompletedGame, GameStats } from '../store/gameStore';
 
-// Collection names in Firestore
-const PLAYERS_COLLECTION = 'players';
-const GAMES_COLLECTION = 'games';
-
 /**
  * Hook to synchronize Zustand store with Firebase Firestore.
- * - Listens to Firestore collections and updates local state
- * - Provides functions to write changes to Firestore
+ * Each user has their own isolated data stored under users/{userId}/
  */
 export function useFirebaseSync() {
     const { user } = useAuthStore();
     const { setPlayers, setHistory } = useGameStore();
     const isListeningRef = useRef(false);
+    const currentUserIdRef = useRef<string | null>(null);
 
-    // Subscribe to Players collection
+    // Get user-specific collection paths
+    const getPlayersPath = useCallback((userId: string) => `users/${userId}/players`, []);
+    const getGamesPath = useCallback((userId: string) => `users/${userId}/games`, []);
+
+    // Subscribe to user-specific collections
     useEffect(() => {
+        // Reset if user changed
+        if (user?.uid !== currentUserIdRef.current) {
+            isListeningRef.current = false;
+            currentUserIdRef.current = user?.uid || null;
+
+            // Clear data when user logs out
+            if (!user) {
+                setPlayers([]);
+                setHistory([]);
+            }
+        }
+
         if (!user || isListeningRef.current) return;
         isListeningRef.current = true;
 
+        const userId = user.uid;
+
+        // Subscribe to user's Players collection
         const playersQuery = query(
-            collection(db, PLAYERS_COLLECTION),
+            collection(db, getPlayersPath(userId)),
             orderBy('name')
         );
 
@@ -52,9 +67,9 @@ export function useFirebaseSync() {
             }
         );
 
-        // Subscribe to Games collection
+        // Subscribe to user's Games collection
         const gamesQuery = query(
-            collection(db, GAMES_COLLECTION),
+            collection(db, getGamesPath(userId)),
             orderBy('date', 'desc')
         );
 
@@ -77,54 +92,62 @@ export function useFirebaseSync() {
             unsubscribeGames();
             isListeningRef.current = false;
         };
-    }, [user, setPlayers, setHistory]);
+    }, [user, setPlayers, setHistory, getPlayersPath, getGamesPath]);
 
-    // Write functions for Firestore operations
+    // Write functions for Firestore operations (user-specific)
 
     const addPlayerToFirestore = useCallback(async (player: Omit<Player, 'id'>): Promise<string> => {
+        if (!user) throw new Error('User not authenticated');
         const id = crypto.randomUUID();
-        await setDoc(doc(db, PLAYERS_COLLECTION, id), {
+        await setDoc(doc(db, getPlayersPath(user.uid), id), {
             ...player,
         });
         return id;
-    }, []);
+    }, [user, getPlayersPath]);
 
     const updatePlayerInFirestore = useCallback(async (id: string, updates: Partial<Player>) => {
-        const playerRef = doc(db, PLAYERS_COLLECTION, id);
+        if (!user) throw new Error('User not authenticated');
+        const playerRef = doc(db, getPlayersPath(user.uid), id);
         await setDoc(playerRef, updates, { merge: true });
-    }, []);
+    }, [user, getPlayersPath]);
 
     const deletePlayerFromFirestore = useCallback(async (id: string) => {
-        await deleteDoc(doc(db, PLAYERS_COLLECTION, id));
-    }, []);
+        if (!user) throw new Error('User not authenticated');
+        await deleteDoc(doc(db, getPlayersPath(user.uid), id));
+    }, [user, getPlayersPath]);
 
     const saveGameToFirestore = useCallback(async (game: CompletedGame) => {
-        await setDoc(doc(db, GAMES_COLLECTION, game.id), {
+        if (!user) throw new Error('User not authenticated');
+        await setDoc(doc(db, getGamesPath(user.uid), game.id), {
             date: game.date,
             playerId: game.playerId,
             opponent: game.opponent || '',
             stats: game.stats,
         });
-    }, []);
+    }, [user, getGamesPath]);
 
     const updateGameInFirestore = useCallback(async (gameId: string, updatedStats: GameStats, date?: string) => {
-        const gameRef = doc(db, GAMES_COLLECTION, gameId);
+        if (!user) throw new Error('User not authenticated');
+        const gameRef = doc(db, getGamesPath(user.uid), gameId);
         const updates: Partial<CompletedGame> = { stats: updatedStats };
         if (date) updates.date = date;
         await setDoc(gameRef, updates, { merge: true });
-    }, []);
+    }, [user, getGamesPath]);
 
     const deleteGameFromFirestore = useCallback(async (id: string) => {
-        await deleteDoc(doc(db, GAMES_COLLECTION, id));
-    }, []);
+        if (!user) throw new Error('User not authenticated');
+        await deleteDoc(doc(db, getGamesPath(user.uid), id));
+    }, [user, getGamesPath]);
 
-    // Batch migration for uploading local data to Firestore
+    // Batch migration for uploading local data to user's Firestore
     const migrateLocalDataToFirestore = useCallback(async (players: Player[], games: CompletedGame[]) => {
+        if (!user) throw new Error('User not authenticated');
         const batch = writeBatch(db);
+        const userId = user.uid;
 
         // Add all players
         for (const player of players) {
-            const playerRef = doc(db, PLAYERS_COLLECTION, player.id);
+            const playerRef = doc(db, getPlayersPath(userId), player.id);
             batch.set(playerRef, {
                 name: player.name,
                 number: player.number,
@@ -135,7 +158,7 @@ export function useFirebaseSync() {
 
         // Add all games
         for (const game of games) {
-            const gameRef = doc(db, GAMES_COLLECTION, game.id);
+            const gameRef = doc(db, getGamesPath(userId), game.id);
             batch.set(gameRef, {
                 date: game.date,
                 playerId: game.playerId,
@@ -145,7 +168,7 @@ export function useFirebaseSync() {
         }
 
         await batch.commit();
-    }, []);
+    }, [user, getPlayersPath, getGamesPath]);
 
     return {
         addPlayerToFirestore,
