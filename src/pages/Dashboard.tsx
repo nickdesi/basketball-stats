@@ -13,6 +13,7 @@ import {
     Tooltip,
     Legend,
     ArcElement,
+    Filler,
 } from 'chart.js';
 
 // Import extracted components
@@ -29,7 +30,8 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    ArcElement
+    ArcElement,
+    Filler
 );
 
 const Dashboard = () => {
