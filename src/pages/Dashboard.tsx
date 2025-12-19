@@ -36,8 +36,8 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-    const { history, players, importGame } = useGameStore();
-    const { deleteGameFromFirestore, updateGameInFirestore } = useFirebaseSync();
+    const { history, players } = useGameStore();
+    const { deleteGameFromFirestore, updateGameInFirestore, saveGameToFirestore } = useFirebaseSync();
     const theme = useThemeStore((state) => state.theme);
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
@@ -144,20 +144,45 @@ const Dashboard = () => {
         document.body.removeChild(link);
     };
 
-    const handleImportGame = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImportGame = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             try {
                 const json = JSON.parse(event.target?.result as string);
-                if (!json.stats || !json.playerId || !json.date) {
+
+                // Helper to validate a single game
+                const isValidGame = (g: unknown): g is CompletedGame => {
+                    return typeof g === 'object' && g !== null &&
+                        'stats' in g && 'playerId' in g && 'date' in g;
+                };
+
+                // Handle single game or array of games
+                const games: CompletedGame[] = Array.isArray(json) ? json : [json];
+
+                // Validate all games
+                if (!games.every(isValidGame)) {
                     alert("Fichier invalide : structure incorrecte.");
                     return;
                 }
-                importGame(json as CompletedGame);
-                alert("Match importé avec succès !");
+
+                // Import each game to Firebase
+                let imported = 0;
+                for (const game of games) {
+                    try {
+                        await saveGameToFirestore({
+                            ...game,
+                            id: game.id || crypto.randomUUID()
+                        });
+                        imported++;
+                    } catch (err) {
+                        console.error("Error importing game:", err);
+                    }
+                }
+
+                alert(`${imported} match(s) importé(s) avec succès !`);
             } catch (err) {
                 console.error("Import error", err);
                 alert("Erreur lors de l'importation du fichier.");
