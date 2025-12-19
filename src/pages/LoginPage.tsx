@@ -61,13 +61,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             <div className="glass-panel rounded-2xl p-8 w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[var(--color-neon-blue)] to-[var(--color-neon-purple)] flex items-center justify-center">
-                        {mode === 'login' ? (
-                            <LogIn className="w-10 h-10 text-white" />
-                        ) : (
-                            <UserPlus className="w-10 h-10 text-white" />
-                        )}
-                    </div>
+                    <img
+                        src="/pwa-192x192.png"
+                        alt="HoopStats Logo"
+                        className="w-20 h-20 mx-auto mb-4 rounded-2xl"
+                    />
                     <h1 className="text-2xl font-bold text-[var(--color-text)]">HoopStats</h1>
                     <p className="text-[var(--color-text-dim)] mt-2">
                         {mode === 'login' ? 'Connexion à votre compte' : 'Créer un compte'}
