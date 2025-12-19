@@ -22,6 +22,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
   - **Zéro Zoom :** Saisie stable sans zoom intempestif sur iPhone.
   - **Plein Écran :** Support "Safe Area" (encoches) et masquage des barres navigateur.
   - **Icône :** Prêt à être ajouté sur l'écran d'accueil.
+  - **Mode Hors-Ligne :** Bandeau indicateur quand vous êtes déconnecté, données locales préservées.
 
 ### 📊 Tableau de Bord (Dashboard)
 

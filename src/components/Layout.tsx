@@ -1,5 +1,6 @@
-import { LayoutDashboard, Play, Users, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Play, Users, Moon, Sun, WifiOff } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface LayoutProps {
     // children removed as it handles view switching internally now/or we revert to external control?
@@ -16,12 +17,24 @@ interface LayoutProps {
 
 const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
     const { theme, toggleTheme } = useThemeStore();
+    const { isOnline } = useOnlineStatus();
     const isMobileMatch = currentView === 'match';
+
+    // Banner height for offsetting fixed elements
+    const bannerOffset = isOnline ? '' : 'top-10';
 
     return (
         <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-sans selection:bg-[var(--color-neon-blue)] selection:text-black pb-20 md:pb-0 transition-colors duration-300">
+            {/* Offline Banner */}
+            {!isOnline && (
+                <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-black py-2 px-4 flex items-center justify-center gap-2 text-sm font-bold animate-in slide-in-from-top duration-300">
+                    <WifiOff size={16} />
+                    <span>Mode hors-ligne – Données locales</span>
+                </div>
+            )}
+
             {/* Header - Hidden on Mobile Match View to save space */}
-            <header className={`fixed top-0 left-0 w-full z-50 glass-panel border-b border-[var(--color-glass-border)] px-6 py-4 flex items-center justify-between transition-transform duration-300 ${isMobileMatch ? '-translate-y-full md:translate-y-0' : 'translate-y-0'}`}>
+            <header className={`fixed ${bannerOffset || 'top-0'} left-0 w-full z-50 glass-panel border-b border-[var(--color-glass-border)] px-6 py-4 flex items-center justify-between transition-all duration-300 ${isMobileMatch ? '-translate-y-full md:translate-y-0' : 'translate-y-0'}`}>
                 <h1 className="text-2xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-[var(--color-neon-blue)] to-[var(--color-neon-purple)]">
                     HOOP.STATS
                 </h1>
@@ -69,7 +82,7 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                 </button>
             </header>
 
-            <main className={`transition-all duration-300 px-4 md:px-8 max-w-7xl mx-auto ${isMobileMatch ? 'pt-4 md:pt-24' : 'pt-24'}`}>
+            <main className={`transition-all duration-300 px-4 md:px-8 max-w-7xl mx-auto ${isMobileMatch ? 'pt-4 md:pt-24' : 'pt-24'} ${!isOnline ? 'mt-10' : ''}`}>
                 {children}
             </main>
 
