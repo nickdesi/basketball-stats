@@ -1,8 +1,10 @@
 # 🏀 HoopStats - Suivi de Stats de Basket
 
-Une application web moderne et futuriste pour suivre les statistiques de matchs de basket-ball, conçue pour les parents et les coachs. Créez des joueurs, choisissez votre équipe, et enregistrez les performances en temps réel !
+<p align="center">
+  <img src="public/pwa-512x512.png" alt="HoopStats Logo" width="150" />
+</p>
 
-![Basketball Stats Preview](https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop)
+Une application web moderne et futuriste pour suivre les statistiques de matchs de basket-ball, conçue pour les parents et les coachs. Créez des joueurs, choisissez votre équipe, et enregistrez les performances en temps réel !
 
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://basket.desimone.fr)
 [![Deploy with Coolify](https://img.shields.io/badge/Deploy%20with-Coolify-purple?style=flat&logo=rocket)](https://coolify.io)
