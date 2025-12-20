@@ -46,21 +46,21 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame }: HistoryLis
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 md:gap-8 text-right">
-                                    <div>
+                                <div className="flex gap-4 md:gap-8 text-center">
+                                    <div className="w-12 md:w-16">
                                         <div className="text-xl font-bold font-mono text-[var(--color-neon-blue)]">{pts}</div>
                                         <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
                                     </div>
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">
-                                        {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
+                                    <div className="w-12 md:w-16">
+                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">
+                                            {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
+                                        </div>
+                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
                                     </div>
-                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
-                                    <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
+                                    <div className="w-12 md:w-16">
+                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
+                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
+                                    </div>
                                 </div>
                             </div>
                         );
