@@ -317,7 +317,7 @@ const Dashboard = () => {
             </div>
 
             {/* CHARTS SECTION */}
-            {totalGames > 0 ? (
+            {selectedPlayerId !== 'all' && totalGames > 0 ? (
                 <DashboardCharts
                     lineData={lineData}
                     doughnutData={doughnutData}
@@ -326,6 +326,11 @@ const Dashboard = () => {
                     textColor={textColor}
                     selectedPlayerId={selectedPlayerId}
                 />
+            ) : selectedPlayerId === 'all' && totalGames > 0 ? (
+                <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)] border border-[var(--color-glass-border)]">
+                    <div className="text-lg mb-2">📊</div>
+                    Sélectionnez un joueur pour afficher ses graphiques de performance.
+                </div>
             ) : (
                 <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)]">
                     Enregistrez des matchs pour voir apparaître les graphiques.
