@@ -276,45 +276,47 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Main Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
-                        <Trophy size={24} />
+            {/* Main Stats Cards - Only show when a specific player is selected */}
+            {selectedPlayerId !== 'all' && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
+                        <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
+                            <Trophy size={24} />
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{totalGames}</div>
+                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Matchs</div>
+                        </div>
                     </div>
-                    <div>
-                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{totalGames}</div>
-                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Matchs</div>
+                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
+                        <div className="p-3 rounded-lg bg-[var(--color-neon-blue)]/10 text-[var(--color-neon-blue)]">
+                            <Activity size={24} />
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgPoints}</div>
+                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PTS / M</div>
+                        </div>
+                    </div>
+                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
+                        <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)]">
+                            <Activity size={24} />
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgRebounds}</div>
+                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">REB / M</div>
+                        </div>
+                    </div>
+                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
+                        <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 text-[var(--color-neon-purple)]">
+                            <Activity size={24} />
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgAssists}</div>
+                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PAS / M</div>
+                        </div>
                     </div>
                 </div>
-                <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-[var(--color-neon-blue)]/10 text-[var(--color-neon-blue)]">
-                        <Activity size={24} />
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgPoints}</div>
-                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PTS / M</div>
-                    </div>
-                </div>
-                <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)]">
-                        <Activity size={24} />
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgRebounds}</div>
-                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">REB / M</div>
-                    </div>
-                </div>
-                <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 text-[var(--color-neon-purple)]">
-                        <Activity size={24} />
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgAssists}</div>
-                        <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PAS / M</div>
-                    </div>
-                </div>
-            </div>
+            )}
 
             {/* CHARTS SECTION */}
             {selectedPlayerId !== 'all' && totalGames > 0 ? (
