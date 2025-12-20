@@ -74,7 +74,7 @@ export type GameState = {
     resetGame: () => void;
     finishGame: () => void;
     deleteGame: (id: string) => void;
-    updateGame: (gameId: string, updatedStats: GameStats, date?: string) => void;
+    updateGame: (gameId: string, updatedStats: GameStats, date?: string, playerId?: string) => void;
     importGame: (game: CompletedGame) => void;
 
     // Sync actions for Firebase
@@ -209,10 +209,10 @@ export const useGameStore = create<GameState>()(
                 history: state.history.filter(g => g.id !== id)
             })),
 
-            updateGame: (gameId, updatedStats, date) => set((state) => ({
+            updateGame: (gameId, updatedStats, date, playerId) => set((state) => ({
                 history: state.history.map(g =>
                     g.id === gameId
-                        ? { ...g, stats: { ...updatedStats }, ...(date ? { date } : {}) }
+                        ? { ...g, stats: { ...updatedStats }, ...(date ? { date } : {}), ...(playerId ? { playerId } : {}) }
                         : g
                 )
             })),

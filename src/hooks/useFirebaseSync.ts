@@ -126,11 +126,12 @@ export function useFirebaseSync() {
         });
     }, [user, getGamesPath]);
 
-    const updateGameInFirestore = useCallback(async (gameId: string, updatedStats: GameStats, date?: string) => {
+    const updateGameInFirestore = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string) => {
         if (!user) throw new Error('User not authenticated');
         const gameRef = doc(db, getGamesPath(user.uid), gameId);
         const updates: Partial<CompletedGame> = { stats: updatedStats };
         if (date) updates.date = date;
+        if (playerId) updates.playerId = playerId;
         await setDoc(gameRef, updates, { merge: true });
     }, [user, getGamesPath]);
 

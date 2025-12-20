@@ -192,15 +192,16 @@ const Dashboard = () => {
         e.target.value = '';
     };
 
-    const handleUpdateGame = useCallback(async (gameId: string, updatedStats: GameStats, date?: string) => {
+    const handleUpdateGame = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string) => {
         try {
-            await updateGameInFirestore(gameId, updatedStats, date);
+            await updateGameInFirestore(gameId, updatedStats, date, playerId);
             // Update local state to reflect changes immediately
             if (selectedGame && selectedGame.id === gameId) {
                 setSelectedGame({
                     ...selectedGame,
                     stats: { ...updatedStats },
-                    ...(date ? { date } : {})
+                    ...(date ? { date } : {}),
+                    ...(playerId ? { playerId } : {})
                 });
             }
         } catch (error) {
