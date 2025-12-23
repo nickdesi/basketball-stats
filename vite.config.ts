@@ -45,4 +45,15 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split heavy libraries into separate chunks
+          'chart': ['chart.js', 'react-chartjs-2'],
+          'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+        }
+      }
+    }
+  }
 })

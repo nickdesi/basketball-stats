@@ -11,6 +11,14 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 ## ✨ Fonctionnalités
 
+### 📈 Stats Avancées (V2 - Nouveau !)
+
+- **Évaluation (PIR)** : Calcul automatique de l'indice de performance FIBA/Euroleague affiché en temps réel.
+- **True Shooting % (TS%)** : Efficacité réelle aux tirs (inclut les lancers-francs).
+- **Effective FG% (eFG%)** : Valorise les tirs à 3 points.
+- **Affichage Live** : L'évaluation s'affiche en direct dans le header du match.
+- **Carte de Partage Premium** : Visuel exportable avec Points + Évaluation pour les réseaux sociaux.
+
 ### ☁️ Synchronisation Cloud (Firebase)
 
 - **Données Privées :** Chaque utilisateur a ses propres joueurs et matchs isolés.
@@ -18,6 +26,7 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Authentification :** Inscription par email/mot de passe ou connexion Google.
 - **Mode Hors-Ligne :** Les données sont mises en cache localement et synchronisées automatiquement au retour de la connexion.
 - **Migration Automatique :** Les données locales existantes sont uploadées vers le cloud à la première connexion.
+- **Sync Optimisée :** Chargement limité aux 20 derniers matchs pour des performances optimales.
 
 ### 🎮 Enregistrement de Match (Mode Arcade)
 
@@ -47,6 +56,40 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Profils Joueurs :** Gestion complète (Nom, Numéro, Poste, Niveau U11-U18).
 - **Partage Résumé :** Copiez un résumé texte complet du match à partager (WhatsApp, Notes, etc.).
 - **Correction & Édition :** Mode correction pour annuler les erreurs de saisie et **possibilité de modifier la date** et les stats complètes après le match.
+- **UI Optimiste :** L'ajout et la suppression de joueurs sont instantanés (pas d'attente réseau).
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    subgraph Client["📱 Client (React PWA)"]
+        UI[Interface Utilisateur]
+        Store[Zustand Store]
+        Hooks[Hooks Personnalisés]
+    end
+
+    subgraph Firebase["☁️ Firebase"]
+        Auth[Authentication]
+        Firestore[(Firestore DB)]
+    end
+
+    UI --> Store
+    UI --> Hooks
+    Hooks --> Store
+    Hooks --> Firestore
+    Store --> |"Persistance Locale"| LocalStorage[(LocalStorage)]
+    Firestore --> |"onSnapshot"| Store
+    Auth --> |"User Context"| Hooks
+```
+
+## ⚡ Performance
+
+| Métrique | Avant | Après Optimisation |
+|----------|-------|---------------------|
+| Bundle Principal | 772 kB | **210 kB** (-73%) |
+| Dashboard | 228 kB | **43 kB** (-81%) |
+| Chart.js | Bloquant | Lazy-loaded |
+| Firebase SDK | Bloquant | Lazy-loaded |
 
 ## 🛠 Technologies
 

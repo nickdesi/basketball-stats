@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { Download, Share2, X } from 'lucide-react';
-import type { CompletedGame, Player } from '../store/gameStore';
+import { getAdvancedStats, type CompletedGame, type Player } from '../store/gameStore';
 
 interface ShareableStatsProps {
     game: CompletedGame;
@@ -15,9 +15,9 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
 
     const totalPoints = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
     const totalRebounds = game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds;
-    const fgAttempts = game.stats.points2 + game.stats.points3 + game.stats.missedPoints2 + game.stats.missedPoints3;
-    const fgMakes = game.stats.points2 + game.stats.points3;
-    const fgPercent = fgAttempts > 0 ? Math.round((fgMakes / fgAttempts) * 100) : 0;
+
+    // Advanced Stats
+    const advancedStats = getAdvancedStats(game.stats);
 
     const generateImage = useCallback(async () => {
         if (!cardRef.current) return null;
@@ -116,13 +116,22 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                             vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span>
                         </div>
 
-                        {/* Main Stats */}
-                        <div className="flex-1 flex items-center justify-center">
+                        {/* Main Stats - Dual Display */}
+                        <div className="flex-1 flex items-center justify-center gap-6">
+                            {/* Points */}
                             <div className="text-center">
-                                <div className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 leading-none">
+                                <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 leading-none">
                                     {totalPoints}
                                 </div>
-                                <div className="text-white/60 text-sm font-bold tracking-[0.2em] uppercase mt-2">Points</div>
+                                <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">Points</div>
+                            </div>
+
+                            {/* Evaluation Badge */}
+                            <div className="text-center border-l border-white/20 pl-6">
+                                <div className="text-5xl font-black text-orange-400 leading-none">
+                                    {advancedStats.evaluation}
+                                </div>
+                                <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">EVAL</div>
                             </div>
                         </div>
 
@@ -141,8 +150,8 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                                 <div className="text-[10px] text-white/40 font-bold uppercase">STL</div>
                             </div>
                             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 text-center border border-white/5">
-                                <div className="text-2xl font-bold text-cyan-400">{fgPercent}%</div>
-                                <div className="text-[10px] text-white/40 font-bold uppercase">FG%</div>
+                                <div className="text-2xl font-bold text-cyan-400">{advancedStats.trueShooting}%</div>
+                                <div className="text-[10px] text-white/40 font-bold uppercase">TS%</div>
                             </div>
                         </div>
 

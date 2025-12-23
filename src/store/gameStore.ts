@@ -230,3 +230,49 @@ export const useGameStore = create<GameState>()(
         }
     )
 );
+
+// Selector for Advanced Stats
+export const getAdvancedStats = (stats: GameStats) => {
+    // Basic Calculations
+    const points = stats.points1 + (stats.points2 * 2) + (stats.points3 * 3);
+    const fga = stats.points2 + stats.points3 + stats.missedPoints2 + stats.missedPoints3;
+    const fta = stats.points1 + stats.missedPoints1;
+    const fgm = stats.points2 + stats.points3;
+
+    // 1. Evaluation (PIR) - Standard FIBA/Euroleague Formula
+    // (Pts + Reb + Ast + Stl + Blk + FoulsDrawn) - (MissedFG + MissedFT + TO + FoulsCommited)
+    // Note: FoulsDrawn is not currently tracked, so it's omitted (conceptually 0).
+    const totalRebounds = stats.offensiveRebounds + stats.defensiveRebounds || stats.rebounds; // Fallback to legacy rebounds if specific ones are 0
+    const missedFG = stats.missedPoints2 + stats.missedPoints3;
+    const missedFT = stats.missedPoints1 || stats.missedFreeThrows; // Fallback
+
+    const evaluation = (
+        points +
+        totalRebounds +
+        stats.assists +
+        stats.steals +
+        stats.blocks
+    ) - (
+            missedFG +
+            missedFT +
+            stats.turnovers +
+            stats.fouls
+        );
+
+    // 2. True Shooting % (TS%)
+    // Pts / (2 * (FGA + 0.44 * FTA))
+    const tsDenominator = 2 * (fga + (0.44 * fta));
+    const trueShooting = tsDenominator > 0 ? (points / tsDenominator) * 100 : 0;
+
+    // 3. Effective FG% (eFG%)
+    // (FGM + 0.5 * 3PM) / FGA
+    const effectiveFg = fga > 0 ? ((fgm + (0.5 * stats.points3)) / fga) * 100 : 0;
+
+    return {
+        evaluation: Math.round(evaluation),
+        trueShooting: Math.round(trueShooting),
+        effectiveFg: Math.round(effectiveFg),
+        fieldGoalPercentage: fga > 0 ? Math.round((fgm / fga) * 100) : 0,
+        freeThrowPercentage: fta > 0 ? Math.round((stats.points1 / fta) * 100) : 0
+    };
+};

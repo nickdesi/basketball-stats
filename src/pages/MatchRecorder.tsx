@@ -1,5 +1,6 @@
 import { UserCircle } from 'lucide-react';
 import { useMatchRecorder } from '../hooks/useMatchRecorder';
+import { getAdvancedStats } from '../store/gameStore';
 import SessionStats from '../components/SessionStats';
 import ScoringButtons from '../components/match/ScoringButtons';
 import StatGrid from '../components/match/StatGrid';
@@ -71,6 +72,7 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                 activePlayer={activePlayer}
                 viewMode={state.viewMode}
                 onViewModeChange={actions.setViewMode}
+                evaluation={getAdvancedStats(currentStats).evaluation}
             />
 
             {/* CONTENT */}

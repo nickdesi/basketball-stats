@@ -4,7 +4,7 @@ import { useFirebaseSync } from '../hooks/useFirebaseSync';
 import { UserPlus, Trash2, Users } from 'lucide-react';
 
 const Players = () => {
-    const { players } = useGameStore();
+    const { players, addPlayer, deletePlayer } = useGameStore();
     const { addPlayerToFirestore, deletePlayerFromFirestore, updatePlayerInFirestore } = useFirebaseSync();
 
     const [name, setName] = useState('');
@@ -20,12 +20,25 @@ const Players = () => {
         e.preventDefault();
         if (name && number && !isSubmitting) {
             setIsSubmitting(true);
+
+            // Optimistic Update: Add to local state immediately
+            addPlayer(name, number, position, level);
+
+            // Clear form immediately for snappy UX
+            const savedName = name;
+            const savedNumber = number;
+            const savedPosition = position;
+            const savedLevel = level;
+            setName('');
+            setNumber('');
+
             try {
-                await addPlayerToFirestore({ name, number, position, level });
-                setName('');
-                setNumber('');
+                // Sync to Firebase in background
+                await addPlayerToFirestore({ name: savedName, number: savedNumber, position: savedPosition, level: savedLevel });
             } catch (error) {
-                console.error('Error adding player:', error);
+                console.error('Error adding player to Firebase:', error);
+                // Note: The local optimistic update will be overwritten by onSnapshot sync
+                // In a more robust implementation, we'd rollback here
             } finally {
                 setIsSubmitting(false);
             }
@@ -57,10 +70,15 @@ const Players = () => {
     };
 
     const handleDelete = async (playerId: string) => {
+        // Optimistic Update: Remove from local state immediately
+        deletePlayer(playerId);
+
         try {
+            // Sync deletion to Firebase in background
             await deletePlayerFromFirestore(playerId);
         } catch (error) {
-            console.error('Error deleting player:', error);
+            console.error('Error deleting player from Firebase:', error);
+            // Note: onSnapshot will re-add if Firebase deletion failed
         }
     };
 

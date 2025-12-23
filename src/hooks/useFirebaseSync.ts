@@ -7,7 +7,8 @@ import {
     deleteDoc,
     writeBatch,
     query,
-    orderBy
+    orderBy,
+    limit
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useGameStore } from '../store/gameStore';
@@ -67,10 +68,11 @@ export function useFirebaseSync() {
             }
         );
 
-        // Subscribe to user's Games collection
+        // Subscribe to user's Games collection (LIMITED to recent 20 for scalability)
         const gamesQuery = query(
             collection(db, getGamesPath(userId)),
-            orderBy('date', 'desc')
+            orderBy('date', 'desc'),
+            limit(20)
         );
 
         const unsubscribeGames = onSnapshot(
