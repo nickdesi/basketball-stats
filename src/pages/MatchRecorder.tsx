@@ -30,13 +30,13 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
     if (!isGameActive) {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] p-4 animate-in fade-in zoom-in">
-                <div className="glass-panel p-6 rounded-3xl w-full max-w-sm space-y-6 text-center">
-                    <UserCircle size={48} className="mx-auto text-[var(--color-neon-blue)]" />
-                    <h2 className="text-2xl font-black">NOUVEAU MATCH</h2>
+                <div className="glass-card p-8 rounded-3xl w-full max-w-sm space-y-6 text-center">
+                    <UserCircle size={56} className="mx-auto text-[var(--color-neon-purple)]" />
+                    <h2 className="text-2xl font-black text-[var(--color-text)]">NOUVEAU MATCH</h2>
                     <select
                         value={state.selectedPlayer}
                         onChange={(e) => actions.setSelectedPlayer(e.target.value)}
-                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold text-[var(--color-text)]"
+                        className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold text-[var(--color-text)] focus:outline-none focus:border-[var(--color-neon-purple)]"
                     >
                         <option value="">Sélectionner Joueur</option>
                         {players.map((p: { id: string; name: string }) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -47,13 +47,13 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                         placeholder="Nom de l'adversaire (Optionnel)"
                         value={state.opponentName}
                         onChange={(e) => actions.setOpponentName(e.target.value)}
-                        className="w-full bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold placeholder:text-gray-600 focus:outline-none focus:border-[var(--color-neon-blue)] text-[var(--color-text)]"
+                        className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] rounded-xl p-3 font-bold placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-neon-purple)] text-[var(--color-text)]"
                     />
 
                     <button
                         onClick={actions.startMatch}
                         disabled={!state.selectedPlayer}
-                        className="w-full py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
+                        className="w-full py-4 bg-[var(--color-neon-purple)] text-white font-black rounded-xl hover:scale-105 transition-transform disabled:opacity-50 shadow-[var(--glow-purple)]"
                     >
                         START
                     </button>

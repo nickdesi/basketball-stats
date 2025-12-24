@@ -28,13 +28,13 @@ const MatchModals = ({
             {/* 5-FOUL CONFIRMATION MODAL */}
             {showFoulConfirm && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-                    <div className="bg-[#1a1a1a] border border-red-500 rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center">
+                    <div className="glass-card rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-red-500">
                         <div className="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
                             <span className="text-3xl font-black">5</span>
                         </div>
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">5ème Faute !</h3>
-                            <p className="text-gray-400 text-sm">
+                            <h3 className="text-2xl font-bold text-[var(--color-text)] mb-2">5ème Faute !</h3>
+                            <p className="text-[var(--color-text-dim)] text-sm">
                                 Attention, cette action va valider la 5ème faute et <span className="text-white font-bold">terminer le match</span> pour ce joueur.
                             </p>
                         </div>
@@ -59,7 +59,7 @@ const MatchModals = ({
             {/* END MATCH CONFIRMATION MODAL */}
             {showEndMatchConfirm && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-                    <div className="glass-panel rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-[var(--color-neon-blue)]">
+                    <div className="glass-card rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-[var(--color-neon-blue)]">
                         <div className="mx-auto w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center text-[var(--color-neon-blue)]">
                             <BarChart3 size={32} />
                         </div>
@@ -90,7 +90,7 @@ const MatchModals = ({
             {/* RESET CONFIRMATION MODAL */}
             {showResetConfirm && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-                    <div className="glass-panel rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-red-500">
+                    <div className="glass-card rounded-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 space-y-4 text-center border-2 border-red-500">
                         <div className="mx-auto w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
                             <Undo2 size={32} />
                         </div>

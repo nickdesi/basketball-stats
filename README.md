@@ -19,6 +19,15 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Affichage Live** : L'évaluation s'affiche en direct dans le header du match.
 - **Carte de Partage Premium** : Visuel exportable avec Points + Évaluation pour les réseaux sociaux.
 
+### 🎨 Interface "Quantum Court" (V1.4 - Nouveau !)
+
+- **Design Premium** : Fond noir profond (`#030303`) avec effet "flottant dans le vide".
+- **Navigation Floating Island** : Barre de navigation mobile en capsule arrondie avec FAB central.
+- **Glass Cards Optimisées** : Panneaux translucides avec animations 3D au survol (`scale` + `translateY`).
+- **Graphiques Animés** : Charts Chart.js avec entrées progressives (800ms), gradients dynamiques, et hover interactif.
+- **Typographie Stats** : Police monospace dédiée (`.font-stats`) pour les scores et statistiques.
+- **Performance** : CSS containment, blur réduit, animations GPU-accelerated.
+
 ### ☁️ Synchronisation Cloud (Firebase)
 
 - **Données Privées :** Chaque utilisateur a ses propres joueurs et matchs isolés.

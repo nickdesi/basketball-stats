@@ -97,42 +97,56 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                 {children}
             </main>
 
-            {/* Mobile Navigation */}
-            <nav className="fixed bottom-0 left-0 w-full glass-panel border-t border-[var(--color-glass-border)] flex justify-around md:hidden z-50 pb-[var(--safe-bottom)] pt-2 md:pb-4">
+            {/* Mobile Navigation - Floating Island */}
+            <nav className="fixed bottom-4 left-4 right-4 floating-island rounded-full flex items-center justify-around md:hidden z-50 py-2 px-1">
+                {/* Left Navigation Items */}
                 <button
                     onClick={() => onNavigate('dashboard')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${currentView === 'dashboard' ? 'text-[var(--color-neon-blue)]' : 'text-[var(--color-nav-text)]'}`}
+                    className={`flex flex-col items-center gap-0.5 p-3 rounded-full transition-all ${currentView === 'dashboard' ? 'text-[var(--color-neon-blue)] bg-[var(--color-neon-blue)]/10' : 'text-[var(--color-nav-text)]'}`}
+                    aria-label="Statistiques"
                 >
-                    <LayoutDashboard size={24} />
-                    <span className="text-xs">Stats</span>
+                    <LayoutDashboard size={22} />
+                    <span className="text-[10px] font-medium">Stats</span>
                 </button>
+
                 <button
                     onClick={() => onNavigate('players')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${currentView === 'players' ? 'text-[var(--color-neon-green)]' : 'text-[var(--color-nav-text)]'}`}
+                    className={`flex flex-col items-center gap-0.5 p-3 rounded-full transition-all ${currentView === 'players' ? 'text-[var(--color-neon-green)] bg-[var(--color-neon-green)]/10' : 'text-[var(--color-nav-text)]'}`}
+                    aria-label="Joueurs"
                 >
-                    <Users size={24} />
-                    <span className="text-xs">Joueurs</span>
+                    <Users size={22} />
+                    <span className="text-[10px] font-medium">Joueurs</span>
                 </button>
+
+                {/* Central FAB - New Match */}
                 <button
                     onClick={() => onNavigate('match')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${currentView === 'match' ? 'text-[var(--color-neon-purple)]' : 'text-[var(--color-nav-text)]'}`}
+                    className={`relative -mt-8 flex items-center justify-center w-16 h-16 rounded-full transition-all ${currentView === 'match'
+                            ? 'bg-[var(--color-neon-purple)] text-white shadow-[var(--glow-purple)]'
+                            : 'bg-[var(--color-neon-purple)]/80 text-white animate-pulse-glow'
+                        }`}
+                    aria-label="Nouveau Match"
                 >
-                    <Play size={24} />
-                    <span className="text-xs">Match</span>
+                    <Play size={28} fill="currentColor" />
                 </button>
+
+                {/* Right Navigation Items */}
                 <button
                     onClick={toggleTheme}
-                    className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all text-[var(--color-nav-text)] active:scale-90"
+                    className="flex flex-col items-center gap-0.5 p-3 rounded-full transition-all text-[var(--color-nav-text)] active:scale-90"
+                    aria-label="Thème"
                 >
-                    {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
-                    <span className="text-xs">Thème</span>
+                    {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
+                    <span className="text-[10px] font-medium">Thème</span>
                 </button>
+
                 <button
                     onClick={logout}
-                    className="flex flex-col items-center gap-1 p-2 rounded-lg transition-all text-[var(--color-nav-text)] active:scale-90 hover:text-red-400"
+                    className="flex flex-col items-center gap-0.5 p-3 rounded-full transition-all text-[var(--color-nav-text)] active:scale-90 hover:text-red-400"
+                    aria-label="Déconnexion"
                 >
-                    <LogOut size={24} />
-                    <span className="text-xs">Sortir</span>
+                    <LogOut size={22} />
+                    <span className="text-[10px] font-medium">Sortir</span>
                 </button>
             </nav>
         </div>

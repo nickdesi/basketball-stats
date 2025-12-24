@@ -11,16 +11,16 @@ interface MatchHeaderProps {
 
 const MatchHeader = ({ totalPoints, activePlayer, viewMode, onViewModeChange, evaluation }: MatchHeaderProps) => {
     return (
-        <div className="flex items-center justify-between p-2 glass-panel rounded-b-2xl mb-2 shrink-0">
+        <div className="flex items-center justify-between p-3 floating-island rounded-2xl mb-2 shrink-0">
             <div className="flex items-center gap-4">
                 {/* Score */}
                 <div className="flex items-center gap-2">
-                    <div className="font-numeric text-3xl font-black text-[var(--color-neon-blue)] leading-none">
+                    <div className="font-stats text-4xl text-[var(--color-neon-blue)] leading-none">
                         {totalPoints}
                     </div>
                     <div className="flex flex-col leading-none">
-                        <span className="text-xs text-[var(--color-text-dim)] font-bold uppercase">Points</span>
-                        <span className="text-xs font-bold truncate max-w-[100px]">
+                        <span className="label-stat">Points</span>
+                        <span className="text-xs font-bold truncate max-w-[100px] text-[var(--color-text)]">
                             {activePlayer?.name}
                             <span className="ml-1 text-[var(--color-neon-blue)] opacity-70 text-[10px]">
                                 {activePlayer?.level || '(N/A)'}
@@ -29,15 +29,15 @@ const MatchHeader = ({ totalPoints, activePlayer, viewMode, onViewModeChange, ev
                     </div>
                 </div>
 
-                {/* Evaluation Badge (New) */}
+                {/* Evaluation Badge */}
                 {evaluation !== undefined && (
                     <div className="flex items-center gap-2 border-l border-white/10 pl-4">
-                        <div className="font-numeric text-2xl font-black text-[var(--color-neon-orange)] leading-none">
+                        <div className="font-stats text-3xl text-[var(--color-neon-orange)] leading-none">
                             {evaluation}
                         </div>
                         <div className="flex flex-col leading-none">
-                            <span className="text-[10px] text-[var(--color-text-dim)] font-bold uppercase tracking-wider">EVAL</span>
-                            <span className="text-[9px] opacity-60">PIR</span>
+                            <span className="label-stat">EVAL</span>
+                            <span className="text-[9px] opacity-60 text-[var(--color-text-muted)]">PIR</span>
                         </div>
                     </div>
                 )}

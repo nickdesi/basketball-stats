@@ -1,57 +1,79 @@
 @import "tailwindcss";
 
 :root {
+  /* Typography - Quantum Court */
   --font-sans: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', ui-monospace, monospace;
 
-  /* Premium Dark Base (Default) */
-  --color-bg: #050505;
+  /* ═══════════════════════════════════════════════════════════════════════════
+     QUANTUM COURT THEME - Deep Void Dark Mode
+     ═══════════════════════════════════════════════════════════════════════════*/
+
+  /* Deep Void Background - Absolute black for floating content effect */
+  --color-bg: #030303;
+  --color-bg-elevated: #0a0a0c;
   --color-card: #0f0f13;
   --color-text: #ffffff;
-  --color-text-dim: #9ca3af;
-  --color-glass-border: rgba(255, 255, 255, 0.08);
-  --color-glass-bg: rgba(20, 20, 25, 0.7);
+  --color-text-dim: #71717a;
+  /* zinc-500 */
+  --color-text-muted: #52525b;
+  /* zinc-600 */
 
-  /* Neon Accents - Refined */
+  /* Invisible Glass - Ultra transparent for floating effect */
+  --color-glass-border: rgba(255, 255, 255, 0.04);
+  --color-glass-border-hover: rgba(255, 255, 255, 0.12);
+  --color-glass-bg: rgba(15, 15, 20, 0.5);
+  --color-glass-bg-solid: rgba(20, 20, 25, 0.85);
+
+  /* Neon Accents - Functional use only */
   --color-neon-blue: #00f3ff;
   --color-neon-purple: #bc13fe;
   --color-neon-green: #0aff68;
   --color-neon-orange: #ff8c00;
   --color-neon-red: #ff3344;
 
+  /* Glow Effects */
+  --glow-blue: 0 0 20px rgba(0, 243, 255, 0.4);
+  --glow-purple: 0 0 20px rgba(188, 19, 254, 0.4);
+  --glow-green: 0 0 20px rgba(10, 255, 104, 0.4);
+
   /* Safe Area Insets */
   --safe-bottom: env(safe-area-inset-bottom, 20px);
 
-  /* Navigation Vars (Dark Mode Default) */
-  --color-nav-text: #9ca3af;
-  /* gray-400 */
+  /* Navigation Vars */
+  --color-nav-text: #71717a;
   --color-nav-text-hover: #ffffff;
-  --color-nav-bg-hover: rgba(255, 255, 255, 0.1);
+  --color-nav-bg-hover: rgba(255, 255, 255, 0.06);
 }
 
 /* Light Theme Overrides */
 :root.light {
-  --color-bg: #f5f5f7;
+  --color-bg: #fafafa;
+  --color-bg-elevated: #ffffff;
   --color-card: #ffffff;
-  --color-text: #1d1d1f;
-  --color-text-dim: #86868b;
-  --color-glass-border: rgba(0, 0, 0, 0.12);
-  /* Slightly darker for visibility */
-  --color-glass-bg: rgba(255, 255, 255, 0.95);
+  --color-text: #18181b;
+  --color-text-dim: #71717a;
+  --color-text-muted: #a1a1aa;
+  --color-glass-border: rgba(0, 0, 0, 0.06);
+  --color-glass-border-hover: rgba(0, 0, 0, 0.15);
+  --color-glass-bg: rgba(255, 255, 255, 0.7);
+  --color-glass-bg-solid: rgba(255, 255, 255, 0.95);
 
-  /* Adjusted Neons for Light Mode (Darker/Richer) */
-  --color-neon-blue: #007aff;
-  --color-neon-purple: #af52de;
-  --color-neon-green: #34c759;
-  --color-neon-orange: #ff9500;
-  --color-neon-red: #ff3b30;
+  /* Adjusted Neons for Light Mode */
+  --color-neon-blue: #0891b2;
+  --color-neon-purple: #9333ea;
+  --color-neon-green: #16a34a;
+  --color-neon-orange: #ea580c;
+  --color-neon-red: #dc2626;
 
-  /* Navigation Vars (Light Mode) */
-  --color-nav-text: #6b7280;
-  /* gray-500, visible on white */
-  --color-nav-text-hover: #1d1d1f;
-  /* black */
-  --color-nav-bg-hover: rgba(0, 0, 0, 0.05);
-  /* faint gray */
+  /* Subtle glows for light mode */
+  --glow-blue: 0 0 15px rgba(8, 145, 178, 0.2);
+  --glow-purple: 0 0 15px rgba(147, 51, 234, 0.2);
+  --glow-green: 0 0 15px rgba(22, 163, 74, 0.2);
+
+  --color-nav-text: #71717a;
+  --color-nav-text-hover: #18181b;
+  --color-nav-bg-hover: rgba(0, 0, 0, 0.04);
 }
 
 body {
@@ -60,7 +82,7 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  /* Prevent bounce scroll on mobile if needed, though overflow-hidden on container is better */
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 
@@ -76,25 +98,28 @@ body {
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Minimal */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Animations */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS - Quantum Court
+   ═══════════════════════════════════════════════════════════════════════════*/
+
 @keyframes popUp {
   0% {
     transform: translateY(0) scale(0.5) rotate(var(--rot));
@@ -112,8 +137,40 @@ body {
   }
 }
 
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: var(--glow-purple);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(188, 19, 254, 0.6);
+  }
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-arcade-pop {
   animation: popUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float-in {
+  animation: float-in 0.3s ease-out forwards;
 }
 
 .btn-press-effect:active {
@@ -122,19 +179,83 @@ body {
   box-shadow: 0 0 15px currentColor;
 }
 
-/* Glassmorphism Utility Class */
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS PANELS - Quantum Court
+   ═══════════════════════════════════════════════════════════════════════════*/
+
+/* Standard Glass Panel - For Nav/Header */
 .glass-panel {
-  background: var(--color-glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--color-glass-bg-solid);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--color-glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Typography Utilities */
+/* Invisible Glass Card - Ultra-optimized with containment */
+.glass-card {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(8px);
+  /* Reduced for performance */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  will-change: transform;
+  contain: layout style;
+  /* CSS containment for perf */
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--color-glass-border-hover);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Chart container optimization */
+.glass-card canvas {
+  contain: strict;
+  /* Isolate canvas repaints */
+}
+
+/* Floating Island - For Mobile Nav */
+.floating-island {
+  background: var(--color-glass-bg-solid);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES - Quantum Court
+   ═══════════════════════════════════════════════════════════════════════════*/
+
 .font-numeric {
   font-feature-settings: "tnum" on, "lnum" on;
 }
+
+/* Monospace Stats - For scoreboard effect */
+.font-stats {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum" on, "lnum" on;
+}
+
+/* Labels - Uppercase tracking */
+.label-stat {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAILWIND THEME EXTENSIONS
+   ═══════════════════════════════════════════════════════════════════════════*/
 
 @theme {
   --color-neon-blue: #00f3ff;
@@ -142,5 +263,5 @@ body {
   --color-neon-green: #0aff68;
   --color-neon-orange: #ff8c00;
   --color-neon-red: #ff3344;
-  --color-glass-bg: rgba(20, 20, 25, 0.7);
+  --color-glass-bg: rgba(15, 15, 20, 0.5);
 }

@@ -58,7 +58,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-bg)]">
-            <div className="glass-panel rounded-2xl p-8 w-full max-w-md">
+            <div className="glass-card rounded-2xl p-8 w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <img

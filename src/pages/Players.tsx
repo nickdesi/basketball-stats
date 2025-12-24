@@ -178,7 +178,7 @@ const Players = () => {
             </div>
 
             {/* Add Player Form */}
-            <form onSubmit={handleAdd} className="glass-panel p-6 rounded-xl border border-[var(--color-glass-border)] space-y-4">
+            <form onSubmit={handleAdd} className="glass-card p-6 rounded-2xl space-y-4">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                     <UserPlus size={20} className="text-[var(--color-neon-green)]" />
                     Nouveau Joueur
@@ -252,19 +252,19 @@ const Players = () => {
             <h3 className="text-xl font-bold mt-8">Effectif Actuel</h3>
             <div className="grid gap-4">
                 {players.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500 glass-panel rounded-xl">
+                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-card rounded-2xl">
                         Aucun joueur dans l'équipe.
                     </div>
                 ) : (
                     players.map((player) => (
-                        <div key={player.id} className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex justify-between items-center group hover:border-[var(--color-neon-purple)] transition-all">
+                        <div key={player.id} className="glass-card p-4 rounded-2xl flex justify-between items-center group">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center font-bold text-xl font-mono text-[var(--color-neon-purple)] border border-white/10">
+                                <div className="w-12 h-12 rounded-xl bg-[var(--color-bg-elevated)] flex items-center justify-center font-stats text-xl text-[var(--color-neon-purple)] border border-[var(--color-glass-border)]">
                                     {player.number}
                                 </div>
                                 <div>
                                     <div className="font-bold text-lg">{player.name}</div>
-                                    <div className="text-xs text-gray-400 uppercase">{player.position} • <span className="text-[var(--color-neon-blue)]">{player.level}</span></div>
+                                    <div className="text-xs text-[var(--color-text-dim)] uppercase">{player.position} • <span className="text-[var(--color-neon-blue)]">{player.level}</span></div>
                                 </div>
                             </div>
 

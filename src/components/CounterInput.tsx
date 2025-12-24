@@ -20,8 +20,8 @@ const CounterInput = React.memo(({ label, value, onIncrement, onDecrement, color
     if (orientation === 'horizontal') {
         return (
             <div className="flex flex-col items-center justify-center gap-1">
-                <div className="flex items-center gap-2 bg-white/5 rounded-full p-1 border border-white/5">
-                    <button onClick={(e) => handleAction(e, onDecrement)} disabled={value <= min} className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all disabled:opacity-30">
+                <div className="flex items-center gap-2 bg-[var(--color-bg-elevated)] rounded-full p-1 border border-[var(--color-glass-border)]">
+                    <button onClick={(e) => handleAction(e, onDecrement)} disabled={value <= min} className="p-2 rounded-full text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-nav-bg-hover)] active:scale-90 transition-all disabled:opacity-30">
                         <ChevronDown size={20} className="rotate-90" strokeWidth={3} />
                     </button>
 
@@ -29,11 +29,11 @@ const CounterInput = React.memo(({ label, value, onIncrement, onDecrement, color
                         {value}
                     </div>
 
-                    <button onClick={(e) => handleAction(e, onIncrement)} className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all">
+                    <button onClick={(e) => handleAction(e, onIncrement)} className="p-2 rounded-full text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-nav-bg-hover)] active:scale-90 transition-all">
                         <ChevronUp size={20} className="rotate-90" strokeWidth={3} />
                     </button>
                 </div>
-                <span className="text-[9px] font-bold uppercase text-gray-500 tracking-wider truncate max-w-[80px]">{label}</span>
+                <span className="text-[9px] font-bold uppercase text-[var(--color-text-muted)] tracking-wider truncate max-w-[80px]">{label}</span>
             </div>
         );
     }

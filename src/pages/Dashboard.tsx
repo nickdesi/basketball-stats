@@ -74,9 +74,23 @@ const Dashboard = () => {
                 label: 'Points',
                 data: sortedHistory.map(g => (g.stats.points1) + (g.stats.points2 * 2) + (g.stats.points3 * 3)),
                 borderColor: '#00F3FF',
-                backgroundColor: 'rgba(0, 243, 255, 0.2)',
+                backgroundColor: (context: { chart: { ctx: CanvasRenderingContext2D; chartArea: { top: number; bottom: number } } }) => {
+                    const ctx = context.chart.ctx;
+                    const area = context.chart.chartArea;
+                    if (!area) return 'rgba(0, 243, 255, 0.1)';
+                    const gradient = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+                    gradient.addColorStop(0, 'rgba(0, 243, 255, 0.4)');
+                    gradient.addColorStop(0.5, 'rgba(0, 243, 255, 0.1)');
+                    gradient.addColorStop(1, 'rgba(0, 243, 255, 0)');
+                    return gradient;
+                },
                 tension: 0.4,
                 fill: true,
+                pointBackgroundColor: '#00F3FF',
+                pointBorderColor: '#000',
+                pointBorderWidth: 2,
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#00F3FF',
             }],
         };
     }, [filteredHistory]);
@@ -93,9 +107,13 @@ const Dashboard = () => {
             labels: isU11Filter ? ['1 Point', '2 Points'] : ['1 Point', '2 Points', '3 Points'],
             datasets: [{
                 data: isU11Filter ? [totalP1, totalP2] : [totalP1, totalP2, totalP3],
-                backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#00FF9D'],
-                borderColor: '#111',
+                backgroundColor: isU11Filter ? ['#00F3FF', '#BC13FE'] : ['#00F3FF', '#BC13FE', '#0aff68'],
+                borderColor: '#030303',
                 borderWidth: 2,
+                hoverBackgroundColor: isU11Filter ? ['#66F8FF', '#D946FF'] : ['#66F8FF', '#D946FF', '#66FF9D'],
+                hoverBorderColor: '#ffffff',
+                hoverBorderWidth: 2,
+                // No hoverOffset to keep chart within bounds
             }],
         };
     }, [filteredHistory, players, selectedPlayerId]);
@@ -111,25 +129,99 @@ const Dashboard = () => {
                     totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.steals, 0) / totalGames) : 0,
                     totalGames ? (filteredHistory.reduce((a, g) => a + g.stats.blocks, 0) / totalGames) : 0,
                 ],
-                backgroundColor: ['#00FF9D', '#BC13FE', '#00F3FF', '#FF0055'],
+                backgroundColor: ['#0aff68', '#bc13fe', '#00f3ff', '#ff3344'],
+                hoverBackgroundColor: ['#33FF85', '#D946FF', '#33F6FF', '#FF5566'],
+                borderRadius: 8,
+                borderSkipped: false, // Rounded on all corners
+                hoverBorderWidth: 2,
+                hoverBorderColor: '#ffffff',
             }],
         };
     }, [filteredHistory, totalGames, totalRebounds, totalAssists]);
 
     const textColor = theme === 'dark' ? '#ffffff' : '#1a1a1a';
-    const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
 
-    const chartOptions = {
+    // Memoized chart options for performance
+    const chartOptions = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
+        // Snappy animations
+        animation: {
+            duration: 800, // Faster, snappier
+            easing: 'easeOutCubic' as const,
+            delay: (context: { type: string; dataIndex: number }) => {
+                if (context.type === 'data') {
+                    return context.dataIndex * 60; // Faster stagger
+                }
+                return 0;
+            },
+        },
+        transitions: {
+            active: { animation: { duration: 150 } } // Instant feedback
+        },
+        interaction: {
+            mode: 'index' as const,
+            intersect: false,
+        },
         plugins: {
-            legend: { labels: { color: textColor, font: { family: 'ui-monospace, monospace' } } }
+            legend: {
+                labels: {
+                    color: textColor,
+                    font: { family: 'var(--font-mono)', weight: 600, size: 11 },
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    boxWidth: 8,
+                    padding: 12,
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(3, 3, 3, 0.95)',
+                titleFont: { family: 'var(--font-mono)', weight: 700, size: 12 },
+                bodyFont: { family: 'var(--font-sans)', size: 11 },
+                padding: 10,
+                cornerRadius: 6,
+                displayColors: true,
+                animation: { duration: 100 } // Instant tooltips
+            }
         },
         scales: {
-            y: { ticks: { color: textColor }, grid: { color: gridColor } },
-            x: { ticks: { color: textColor }, grid: { color: gridColor } },
+            y: {
+                ticks: {
+                    color: textColor,
+                    font: { family: 'var(--font-mono)', size: 10 },
+                    padding: 8,
+                },
+                grid: { color: gridColor, lineWidth: 1, drawTicks: false },
+                border: { display: false },
+            },
+            x: {
+                ticks: {
+                    color: textColor,
+                    font: { family: 'var(--font-mono)', size: 10 },
+                    padding: 4,
+                },
+                grid: { display: false },
+                border: { display: false },
+            },
+        },
+        elements: {
+            point: {
+                radius: 5,
+                hoverRadius: 9,
+                hitRadius: 16,
+                hoverBorderWidth: 2,
+                borderWidth: 2,
+            },
+            line: {
+                tension: 0.35, // Slightly less curved for cleaner look
+                borderWidth: 2.5,
+            },
+            bar: {
+                borderRadius: 6,
+            }
         }
-    };
+    }), [textColor, gridColor]);
 
     // --- HANDLERS ---
     const handleExport = () => {
@@ -279,40 +371,40 @@ const Dashboard = () => {
             {/* Main Stats Cards - Only show when a specific player is selected */}
             {selectedPlayerId !== 'all' && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                        <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
+                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
                             <Trophy size={24} />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{totalGames}</div>
-                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Matchs</div>
+                            <div className="font-stats text-2xl text-[var(--color-text)]">{totalGames}</div>
+                            <div className="label-stat">Matchs</div>
                         </div>
                     </div>
-                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                        <div className="p-3 rounded-lg bg-[var(--color-neon-blue)]/10 text-[var(--color-neon-blue)]">
+                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-[var(--color-neon-blue)]/10 text-[var(--color-neon-blue)]">
                             <Activity size={24} />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgPoints}</div>
-                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PTS / M</div>
+                            <div className="font-stats text-2xl text-[var(--color-neon-blue)]">{avgPoints}</div>
+                            <div className="label-stat">PTS / M</div>
                         </div>
                     </div>
-                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                        <div className="p-3 rounded-lg bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)]">
+                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)]">
                             <Activity size={24} />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgRebounds}</div>
-                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">REB / M</div>
+                            <div className="font-stats text-2xl text-[var(--color-neon-green)]">{avgRebounds}</div>
+                            <div className="label-stat">REB / M</div>
                         </div>
                     </div>
-                    <div className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] flex items-center gap-4">
-                        <div className="p-3 rounded-lg bg-[var(--color-neon-purple)]/10 text-[var(--color-neon-purple)]">
+                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-[var(--color-neon-purple)]/10 text-[var(--color-neon-purple)]">
                             <Activity size={24} />
                         </div>
                         <div>
-                            <div className="text-2xl font-bold font-mono text-[var(--color-text)]">{avgAssists}</div>
-                            <div className="text-xs text-[var(--color-text-dim)] uppercase font-bold">PAS / M</div>
+                            <div className="font-stats text-2xl text-[var(--color-neon-purple)]">{avgAssists}</div>
+                            <div className="label-stat">PAS / M</div>
                         </div>
                     </div>
                 </div>
@@ -329,12 +421,12 @@ const Dashboard = () => {
                     selectedPlayerId={selectedPlayerId}
                 />
             ) : selectedPlayerId === 'all' && totalGames > 0 ? (
-                <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)] border border-[var(--color-glass-border)]">
-                    <div className="text-lg mb-2">📊</div>
+                <div className="text-center py-12 glass-card rounded-2xl text-[var(--color-text-dim)]">
+                    <div className="text-3xl mb-3">📊</div>
                     Sélectionnez un joueur pour afficher ses graphiques de performance.
                 </div>
             ) : (
-                <div className="text-center py-12 glass-panel rounded-xl text-[var(--color-text-dim)]">
+                <div className="text-center py-12 glass-card rounded-2xl text-[var(--color-text-dim)]">
                     Enregistrez des matchs pour voir apparaître les graphiques.
                 </div>
             )}

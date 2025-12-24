@@ -18,7 +18,7 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame }: HistoryLis
 
             <div className="space-y-3">
                 {filteredHistory.length === 0 ? (
-                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-panel rounded-xl">
+                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-card rounded-2xl">
                         Aucun match trouvé pour ce filtre.
                     </div>
                 ) : (
@@ -29,37 +29,37 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame }: HistoryLis
                             <div
                                 key={game.id}
                                 onClick={() => onSelectGame(game)}
-                                className="glass-panel p-4 rounded-xl border border-[var(--color-glass-border)] hover:border-[var(--color-neon-blue)] hover:bg-[var(--color-bg)]/50 cursor-pointer transition-all flex justify-between items-center group"
+                                className="glass-card p-4 rounded-2xl cursor-pointer transition-all flex justify-between items-center group animate-float-in"
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 rounded-full bg-[var(--color-bg)] group-hover:bg-[var(--color-neon-blue)] group-hover:text-black transition-colors text-[var(--color-text)]">
-                                        <CalendarDays size={20} />
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2.5 rounded-xl bg-[var(--color-bg-elevated)] group-hover:bg-[var(--color-neon-blue)]/20 transition-colors text-[var(--color-text-dim)] group-hover:text-[var(--color-neon-blue)]">
+                                        <CalendarDays size={18} />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-lg flex items-center gap-2 text-[var(--color-text)]">
-                                            {game.opponent || "Match d'entraînement"}
-                                            <span className="text-xs bg-[var(--color-bg)] px-2 py-0.5 rounded text-[var(--color-text-dim)] font-normal border border-[var(--color-glass-border)]">
+                                        <div className="font-bold text-base flex items-center gap-2 text-[var(--color-text)]">
+                                            {game.opponent || "Entraînement"}
+                                            <span className="text-[10px] bg-[var(--color-bg-elevated)] px-2 py-0.5 rounded-md text-[var(--color-text-dim)] font-medium">
                                                 {player?.name || 'Inconnu'}
                                             </span>
                                         </div>
-                                        <div className="text-xs text-[var(--color-text-dim)]">{new Date(game.date).toLocaleDateString()}</div>
+                                        <div className="text-[11px] text-[var(--color-text-muted)]">{new Date(game.date).toLocaleDateString()}</div>
                                     </div>
                                 </div>
 
-                                <div className="flex gap-4 md:gap-8 text-center">
-                                    <div className="w-12 md:w-16">
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-blue)]">{pts}</div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
+                                <div className="flex gap-2 sm:gap-4 md:gap-6 text-center flex-shrink-0">
+                                    <div className="w-10 sm:w-12 md:w-14">
+                                        <div className="font-stats text-lg sm:text-xl text-[var(--color-neon-blue)]">{pts}</div>
+                                        <div className="label-stat">PTS</div>
                                     </div>
-                                    <div className="w-12 md:w-16">
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-green)]">
+                                    <div className="w-10 sm:w-12 md:w-14">
+                                        <div className="font-stats text-lg sm:text-xl text-[var(--color-neon-green)]">
                                             {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
                                         </div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
+                                        <div className="label-stat">REB</div>
                                     </div>
-                                    <div className="w-12 md:w-16">
-                                        <div className="text-xl font-bold font-mono text-[var(--color-neon-purple)]">{game.stats.assists}</div>
-                                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
+                                    <div className="w-10 sm:w-12 md:w-14">
+                                        <div className="font-stats text-lg sm:text-xl text-[var(--color-neon-purple)]">{game.stats.assists}</div>
+                                        <div className="label-stat">PAS</div>
                                     </div>
                                 </div>
                             </div>
