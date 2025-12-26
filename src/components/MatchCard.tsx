@@ -196,10 +196,12 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                             <div className="text-lg font-bold font-stats text-white">{tsPercent}%</div>
                             <div className="text-[10px] text-[var(--color-text-dim)] font-bold">TS%</div>
                         </div>
-                        <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                            <div className="text-lg font-bold font-stats text-white">{efgPercent}%</div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">eFG%</div>
-                        </div>
+                        {player?.level !== 'U11' && (
+                            <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
+                                <div className="text-lg font-bold font-stats text-white">{efgPercent}%</div>
+                                <div className="text-[10px] text-[var(--color-text-dim)] font-bold">eFG%</div>
+                            </div>
+                        )}
                         <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
                             <div className="text-lg font-bold font-stats text-red-400">{game.stats.turnovers}</div>
                             <div className="text-[10px] text-[var(--color-text-dim)] font-bold">BP</div>

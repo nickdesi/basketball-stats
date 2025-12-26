@@ -70,8 +70,8 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
             <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] overflow-hidden shadow-sm">
                 {/* Row 1: Shooting */}
                 <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)] bg-[var(--color-bg)]/50`}>
-                    <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} />
-                    <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'var(--color-text)'} />
+                    <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} tooltip="Tirs de champ (2 pts + 3 pts)" />
+                    <StatBox label="FG%" value={fgPercent} isPercent color={fgPercent >= 50 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="% Réussite aux tirs (hors lancers-francs)" />
                     {playerLevel !== 'U11' && (
                         <>
                             <StatBox label="3P" value={`${p3Makes}/${p3Attempts}`} />
@@ -82,7 +82,7 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
 
                 {/* Row 2: FT & Rebounds */}
                 <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)]">
-                    <StatBox label="FT%" value={ftPercent} isPercent />
+                    <StatBox label="FT%" value={ftPercent} isPercent tooltip="% Réussite aux Lancers-Francs" />
                     <StatBox label="RB OFF" value={stats.offensiveRebounds} />
                     <StatBox label="RB DEF" value={stats.defensiveRebounds} />
                     <StatBox label="RB TOT" value={totalReb} color="var(--color-neon-purple)" />
@@ -103,9 +103,11 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
                     Statistiques avancées
                 </h4>
                 <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] shadow-sm">
-                    <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)]">
+                    <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-3' : 'grid-cols-4'} divide-x divide-[var(--color-glass-border)]`}>
                         <StatBox label="POINTS" value={totalPoints} color="var(--color-neon-blue)" />
-                        <StatBox label="eFG%" value={efgPercent} isPercent tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !" />
+                        {playerLevel !== 'U11' && (
+                            <StatBox label="eFG%" value={efgPercent} isPercent tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !" />
+                        )}
                         <StatBox label="TS%" value={tsPercent} isPercent tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%." />
                         <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="Évaluation globale du match (formule FIBA). Inclut points, rebonds, passes, moins les erreurs. Plus c'est haut, meilleur est le match !" />
                     </div>

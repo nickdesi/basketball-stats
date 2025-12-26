@@ -5,7 +5,8 @@
 ### ✨ Nouvelles Fonctionnalités
 
 - **Standardisation FFBB** : Adoption des abréviations officielles (RB, PD, INT, CTR, BP, F) sur toute l'application.
-- **Tooltips Éducatifs** : Ajout d'infobulles explicatives pour les stats avancées (TS%, eFG%, Evaluation) sur mobile (tap) et desktop (hover).
+- **Tooltips Éducatifs** : Ajout d'infobulles pour eFG%, TS%, Eval, et FT% (Lancers-Francs).
+- **Logique U11** : Masquage automatique de l'eFG% (non pertinent sans 3 points) pour les joueurs U11.
 - **Soft-Delete & Undo** : Suppression non-destructive avec possibilité d'annuler (Toast) pendant 5 secondes.
 - **Carte de Partage V2** : Nouvelle disposition en 5 colonnes incluant désormais les Contres (CTR).
 
