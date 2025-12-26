@@ -1,4 +1,4 @@
-import { UserCircle } from 'lucide-react';
+import { UserCircle, ChevronLeft } from 'lucide-react';
 import { useMatchRecorder } from '../hooks/useMatchRecorder';
 import { getAdvancedStats } from '../store/gameStore';
 import SessionStats from '../components/SessionStats';
@@ -29,8 +29,15 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
     // --- RENDER: Setup Screen ---
     if (!isGameActive) {
         return (
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] p-4 animate-in fade-in zoom-in">
-                <div className="glass-card p-8 rounded-3xl w-full max-w-sm space-y-6 text-center">
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] p-4 animate-in fade-in zoom-in relative">
+                <button
+                    onClick={() => onNavigate?.('dashboard')}
+                    className="absolute top-4 left-4 p-2 text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors flex items-center gap-2"
+                >
+                    <ChevronLeft size={24} />
+                    <span className="hidden md:inline font-bold text-sm">Retour</span>
+                </button>
+                <div className="glass-card p-8 rounded-3xl w-full max-w-sm space-y-6 text-center mt-8">
                     <UserCircle size={56} className="mx-auto text-[var(--color-neon-purple)]" />
                     <h2 className="text-2xl font-black text-[var(--color-text)]">NOUVEAU MATCH</h2>
                     <select

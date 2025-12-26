@@ -42,6 +42,12 @@ const Dashboard = () => {
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
     const [selectedGame, setSelectedGame] = useState<CompletedGame | null>(null);
+    const [initialModalEditMode, setInitialModalEditMode] = useState(false);
+
+    const handleSelectGame = useCallback((game: CompletedGame, editMode: boolean = false) => {
+        setInitialModalEditMode(editMode);
+        setSelectedGame(game);
+    }, []);
 
     // --- FILTER ---
     const filteredHistory = useMemo(() => {
@@ -318,9 +324,10 @@ const Dashboard = () => {
                 <GameDetailModal
                     game={selectedGame}
                     players={players}
-                    onClose={() => setSelectedGame(null)}
+                    onClose={() => { setSelectedGame(null); setInitialModalEditMode(false); }}
                     onDelete={handleDeleteGame}
                     onUpdate={handleUpdateGame}
+                    initialIsEditing={initialModalEditMode}
                 />
             )}
 
@@ -435,7 +442,8 @@ const Dashboard = () => {
             <HistoryList
                 filteredHistory={filteredHistory}
                 players={players}
-                onSelectGame={setSelectedGame}
+                onSelectGame={handleSelectGame}
+                onDeleteGame={handleDeleteGame}
             />
         </div>
     );

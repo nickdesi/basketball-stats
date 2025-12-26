@@ -12,10 +12,11 @@ interface GameDetailModalProps {
     onClose: () => void;
     onDelete: (id: string) => void;
     onUpdate: (gameId: string, stats: GameStats, date?: string, playerId?: string) => void;
+    initialIsEditing?: boolean;
 }
 
-const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate }: GameDetailModalProps) => {
-    const [isEditing, setIsEditing] = useState(false);
+const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, initialIsEditing = false }: GameDetailModalProps) => {
+    const [isEditing, setIsEditing] = useState(initialIsEditing);
     const [editStats, setEditStats] = useState<GameStats | null>(null);
     const [editDate, setEditDate] = useState<string>('');
     const [editPlayerId, setEditPlayerId] = useState<string>('');
