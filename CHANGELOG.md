@@ -9,6 +9,7 @@
 - **Logique U11** : Masquage automatique de l'eFG% (non pertinent sans 3 points) pour les joueurs U11.
 - **Soft-Delete & Undo** : Suppression non-destructive avec possibilité d'annuler (Toast) pendant 5 secondes.
 - **Carte de Partage V2** : Nouvelle disposition en 5 colonnes incluant désormais les Contres (CTR).
+- **Historique Enrichi** : Ajout du FG% et des Interceptions (INT) directement sur la carte de résumé des matchs.
 
 ### 🎨 UX & UI Polish
 
