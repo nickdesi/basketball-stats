@@ -35,6 +35,8 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 
 ### 🎯 UX Polish & Accessibilité (V1.8 - Nouveau !)
 
+- **Standards FFBB** : Abréviations officielles (RB, PD, INT, CTR, BP, F) harmonisées partout.
+- **Pédagogie** : Infobulles explicatives sur les métriques avancées (eFG%, TS%, Eval).
 - **Soft-Delete avec Undo** : Suppression de match avec toast "Annuler" pendant 5 secondes avant suppression définitive.
 - **Système de Toast** : Notifications visuelles avec types (succès/erreur/info), icônes, et barre de progression.
 - **4 Thèmes** : Mode Sombre, Clair, Système (auto), et Contraste Élevé pour l'accessibilité extérieure.
