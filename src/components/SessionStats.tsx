@@ -67,7 +67,7 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
             {/* Header omitted to keep it clean like the screenshot, just the grid */}
 
             {/* MAIN STATS GRID - Mimicking the Reference Image */}
-            <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] overflow-hidden shadow-sm">
+            <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] shadow-sm">
                 {/* Row 1: Shooting */}
                 <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-2' : 'grid-cols-4'} divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)] bg-[var(--color-bg)]/50`}>
                     <StatBox label="FG" value={`${fgMakes}/${fgAttempts}`} tooltip="Tirs de champ (2 pts + 3 pts)" />
