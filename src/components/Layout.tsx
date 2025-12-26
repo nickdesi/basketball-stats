@@ -137,6 +137,15 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
 
                 {/* Right Navigation Items */}
                 <button
+                    onClick={toggleContrastMode}
+                    className={`flex flex-col items-center gap-0.5 p-3 rounded-full transition-all active:scale-90 ${contrastMode === 'high' ? 'text-yellow-400 bg-yellow-500/10' : 'text-[var(--color-nav-text)]'}`}
+                    aria-label="Contraste"
+                >
+                    <Eye size={22} />
+                    <span className="text-[10px] font-medium">Contraste</span>
+                </button>
+
+                <button
                     onClick={toggleTheme}
                     className="flex flex-col items-center gap-0.5 p-3 rounded-full transition-all text-[var(--color-nav-text)] active:scale-90"
                     aria-label="Thème"
