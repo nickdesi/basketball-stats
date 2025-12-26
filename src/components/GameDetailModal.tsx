@@ -17,10 +17,17 @@ interface GameDetailModalProps {
 
 const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, initialIsEditing = false }: GameDetailModalProps) => {
     const [isEditing, setIsEditing] = useState(initialIsEditing);
-    const [editStats, setEditStats] = useState<GameStats | null>(null);
-    const [editDate, setEditDate] = useState<string>('');
-    const [editPlayerId, setEditPlayerId] = useState<string>('');
-    const [editOpponent, setEditOpponent] = useState<string>('');
+
+    // Pre-compute initial values for edit mode
+    const getInitialDate = () => {
+        const date = new Date(game.date);
+        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+    };
+
+    const [editStats, setEditStats] = useState<GameStats | null>(initialIsEditing ? { ...game.stats } : null);
+    const [editDate, setEditDate] = useState<string>(initialIsEditing ? getInitialDate() : '');
+    const [editPlayerId, setEditPlayerId] = useState<string>(initialIsEditing ? game.playerId : '');
+    const [editOpponent, setEditOpponent] = useState<string>(initialIsEditing ? (game.opponent || '') : '');
     const [showShareCard, setShowShareCard] = useState(false);
 
     const startEditing = useCallback(() => {
