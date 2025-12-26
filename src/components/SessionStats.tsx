@@ -102,7 +102,7 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
                 <h4 className="text-[var(--color-neon-orange)] font-bold text-lg mb-3 flex items-center gap-2">
                     Statistiques avancées
                 </h4>
-                <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] overflow-hidden shadow-sm">
+                <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] shadow-sm">
                     <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)]">
                         <StatBox label="POINTS" value={totalPoints} color="var(--color-neon-blue)" />
                         <StatBox label="eFG%" value={efgPercent} isPercent tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !" />
