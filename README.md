@@ -26,6 +26,13 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Affichage Contextuel** : Badges visibles dans l'historique des matchs ET sur la carte de partage.
 - **Design Premium** : Badges animés avec couleurs distinctives et icônes Lucide.
 
+### 🚀 Landing Page "Quantum" (V1.6 - Nouveau !)
+
+- **Vitrine Professionnelle** : Page d'accueil immersive style "ESPN/NBA" pour présenter l'application.
+- **Animations Hooks** : Effets de parallaxe, ticker défilant, et bento grid interactif.
+- **Branding** : Identité visuelle forte "Hoop.Stats" dès la première seconde.
+- **Accessibilité** : Point d'entrée clair pour les nouveaux utilisateurs avant la connexion.
+
 ### 🎨 Interface "Quantum Court" (V1.4 - Nouveau !)
 
 - **Design Premium** : Fond noir profond (`#030303`) avec effet "flottant dans le vide".
@@ -74,28 +81,36 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Correction & Édition :** Mode correction pour annuler les erreurs de saisie et **possibilité de modifier la date** et les stats complètes après le match.
 - **UI Optimiste :** L'ajout et la suppression de joueurs sont instantanés (pas d'attente réseau).
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Flux Standard
 
 ```mermaid
-graph TB
-    subgraph Client["📱 Client (React PWA)"]
-        UI[Interface Utilisateur]
+graph TD
+    subgraph Public ["🌍 Zone Publique"]
+        Landing[Landing Page V1.6]
+        Login[Page de Connexion]
+    end
+
+    subgraph Secured ["🔒 Zone Sécurisée"]
+        Dashboard[Tableau de Bord]
+        Recorder[Mode Match]
+        Players[Gestion Joueurs]
+    end
+
+    subgraph Data ["☁️ Data & Sync"]
         Store[Zustand Store]
-        Hooks[Hooks Personnalisés]
+        Firebase[(Firebase Firestore)]
+        Cache[(LocalStorage Cache)]
     end
 
-    subgraph Firebase["☁️ Firebase"]
-        Auth[Authentication]
-        Firestore[(Firestore DB)]
-    end
+    Landing --> |"Commencer"| Login
+    Login --> |"Auth Success"| Dashboard
+    
+    Dashboard <--> Store
+    Recorder <--> Store
+    Players <--> Store
 
-    UI --> Store
-    UI --> Hooks
-    Hooks --> Store
-    Hooks --> Firestore
-    Store --> |"Persistance Locale"| LocalStorage[(LocalStorage)]
-    Firestore --> |"onSnapshot"| Store
-    Auth --> |"User Context"| Hooks
+    Store <--> |"Real-time Sync"| Firebase
+    Store <--> |"Offline Mode"| Cache
 ```
 
 ## ⚡ Performance
