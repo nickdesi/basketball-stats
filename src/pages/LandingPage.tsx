@@ -58,10 +58,10 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-2xl text-[var(--color-text-dim)] max-w-2xl mx-auto mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                        L'outil de statistiques ultime pour les coachs exigeants.
+                    <h2 className="text-lg md:text-2xl text-[var(--color-text-dim)] max-w-2xl mx-auto mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                        L'application de statistiques de basket ultime pour les coachs.
                         Calcul du PIR en temps réel, Shot Charts et Badges MVP pour propulser vos joueurs au niveau supérieur.
-                    </p>
+                    </h2>
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
                         <button
