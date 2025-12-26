@@ -14,13 +14,13 @@ interface StatGridProps {
 }
 
 const STAT_CONFIG = [
-    { key: 'offensiveRebounds' as const, label: 'Reb. OFF', animLabel: 'REB OFF', color: 'var(--color-neon-purple)', labelTop: true }, // was #a855f7
-    { key: 'defensiveRebounds' as const, label: 'Reb. DEF', animLabel: 'REB DEF', color: 'var(--color-neon-purple)', labelTop: true }, // was #c084fc
-    { key: 'assists' as const, label: 'Passe', animLabel: 'PASSE', color: 'var(--color-neon-green)', labelTop: true }, // was #22c55e
-    { key: 'steals' as const, label: 'Intercep', animLabel: 'INTER', color: 'var(--color-neon-blue)', labelTop: true }, // was #3b82f6
-    { key: 'blocks' as const, label: 'Contre', animLabel: 'CONTRE', color: 'var(--color-neon-orange)', labelTop: false }, // was #eab308
-    { key: 'fouls' as const, label: 'Faute', animLabel: 'FAUTE', color: '#ef4444', labelTop: false }, // Keep red for faults
-    { key: 'turnovers' as const, label: 'Perte', animLabel: 'PERTE', color: '#f97316', labelTop: false }, // Keep orange for turnovers
+    { key: 'offensiveRebounds' as const, label: 'RB OFF', animLabel: 'RB OFF', color: 'var(--color-neon-purple)', labelTop: true },
+    { key: 'defensiveRebounds' as const, label: 'RB DEF', animLabel: 'RB DEF', color: 'var(--color-neon-purple)', labelTop: true },
+    { key: 'assists' as const, label: 'PD', animLabel: 'PD', color: 'var(--color-neon-green)', labelTop: true },
+    { key: 'steals' as const, label: 'INT', animLabel: 'INT', color: 'var(--color-neon-blue)', labelTop: true },
+    { key: 'blocks' as const, label: 'CTR', animLabel: 'CTR', color: 'var(--color-neon-orange)', labelTop: false },
+    { key: 'fouls' as const, label: 'Faute', animLabel: 'FAUTE', color: '#ef4444', labelTop: false }, // "Faute" is clearer than "F" for a button
+    { key: 'turnovers' as const, label: 'BP', animLabel: 'BP', color: '#f97316', labelTop: false },
 ];
 
 const StatGrid = memo(({ currentStats, onStat, onDecrement, onUndo, canUndo }: StatGridProps) => {
