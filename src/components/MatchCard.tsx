@@ -45,6 +45,9 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
 
     // Advanced Stats (Calculated on the fly for expanded view)
     const fga = (game.stats.points2 + (game.stats.missedPoints2 || 0)) + (game.stats.points3 + (game.stats.missedPoints3 || 0));
+    const fgMakes = game.stats.points2 + game.stats.points3;
+    const fgPercent = fga > 0 ? Math.round((fgMakes / fga) * 100) : 0;
+
     const fta = game.stats.points1 + (game.stats.missedPoints1 || 0);
     const tsa = fga + 0.44 * fta;
     const tsPercent = tsa > 0 ? ((totalPoints / (2 * tsa)) * 100).toFixed(1) : '0.0';
@@ -156,10 +159,14 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                 </div>
 
                 {/* 2. Key Metrics Grid (Always Visible) */}
-                <div className="grid grid-cols-4 border-t border-[var(--color-glass-border)] bg-[var(--color-bg)]/30 backdrop-blur-sm divide-x divide-[var(--color-glass-border)]">
+                <div className="grid grid-cols-6 border-t border-[var(--color-glass-border)] bg-[var(--color-bg)]/30 backdrop-blur-sm divide-x divide-[var(--color-glass-border)]">
                     <div className="p-3 text-center">
                         <div className="text-xl font-black font-stats text-[var(--color-neon-blue)]">{totalPoints}</div>
                         <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PTS</div>
+                    </div>
+                    <div className="p-3 text-center hidden active-metric">
+                        <div className={`text-xl font-black font-stats ${fgPercent >= 50 ? 'text-[var(--color-neon-green)]' : 'text-white'}`}>{fgPercent}<span className="text-xs ml-0.5 opacity-60">%</span></div>
+                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">FG%</div>
                     </div>
                     <div className="p-3 text-center">
                         <div className="text-xl font-black font-stats text-[var(--color-neon-green)]">{totalRebounds}</div>
@@ -168,6 +175,10 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                     <div className="p-3 text-center">
                         <div className="text-xl font-black font-stats text-[var(--color-neon-purple)]">{totalAssists}</div>
                         <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PD</div>
+                    </div>
+                    <div className="p-3 text-center">
+                        <div className="text-xl font-black font-stats text-[var(--color-neon-orange)]">{game.stats.steals}</div>
+                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">INT</div>
                     </div>
                     <button
                         onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
