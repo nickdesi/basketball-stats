@@ -85,6 +85,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Smooth Theme Transitions */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}
+
+/* Disable transitions for animations and transforms to keep them snappy */
+*[class*="animate-"],
+*[class*="transition-"] {
+  transition-property: none;
+}
+
+/* Re-enable specific transitions on elements that need them */
+button,
+a,
+input,
+select,
+.glass-card,
+.floating-island {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}
+
 /* 
   MOBILE OPTIMIZATION:
   Force 16px font size on inputs to prevent iOS Safari from zooming in on focus.
