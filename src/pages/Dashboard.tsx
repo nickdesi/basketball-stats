@@ -149,8 +149,9 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         };
     }, [filteredHistory, totalGames, totalRebounds, totalAssists]);
 
-    const textColor = theme === 'dark' ? '#ffffff' : '#1a1a1a';
-    const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+    // Chart colors - Only 'light' theme uses dark text, all others use white
+    const textColor = theme === 'light' ? '#1a1a1a' : '#ffffff';
+    const gridColor = theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
 
     // Memoized chart options for performance
     const chartOptions = useMemo(() => ({
