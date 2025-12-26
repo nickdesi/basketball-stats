@@ -19,21 +19,31 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Affichage Live** : L'évaluation s'affiche en direct dans le header du match.
 - **Carte de Partage Premium** : Visuel exportable avec Points + Évaluation pour les réseaux sociaux.
 
-### 🏆 Gamification & Badges (V1.5 - Nouveau !)
+### 🏆 Gamification & Badges (V1.5)
 
 - **7 Badges Exclusifs** : Sniper (TS%), The Wall (Blocks), Pickpocket (Steals), Maestro (Assists), Cleaner (Rebounds), MVP Perf (PIR), Energizer (0 TO).
 - **Calcul Automatique** : Les badges sont attribués en fonction des performances réelles du match.
 - **Affichage Contextuel** : Badges visibles dans l'historique des matchs ET sur la carte de partage.
 - **Design Premium** : Badges animés avec couleurs distinctives et icônes Lucide.
 
-### 🚀 Landing Page "Quantum" (V1.6 - Nouveau !)
+### 🚀 Landing Page "Quantum" (V1.6)
 
 - **Vitrine Professionnelle** : Page d'accueil immersive style "ESPN/NBA" pour présenter l'application.
 - **Animations Hooks** : Effets de parallaxe, ticker défilant, et bento grid interactif.
 - **Branding** : Identité visuelle forte "Hoop.Stats" dès la première seconde.
 - **Accessibilité** : Point d'entrée clair pour les nouveaux utilisateurs avant la connexion.
 
-### 🎨 Interface "Quantum Court" (V1.4 - Nouveau !)
+### 🎯 UX Polish & Accessibilité (V1.8 - Nouveau !)
+
+- **Soft-Delete avec Undo** : Suppression de match avec toast "Annuler" pendant 5 secondes avant suppression définitive.
+- **Système de Toast** : Notifications visuelles avec types (succès/erreur/info), icônes, et barre de progression.
+- **4 Thèmes** : Mode Sombre, Clair, Système (auto), et Contraste Élevé pour l'accessibilité extérieure.
+- **Haptic Feedback** : Vibrations tactiles sur les boutons de score (mobile).
+- **Édition Match Améliorée** : Date optionnelle + modification du nom d'adversaire.
+- **Empty States** : Illustrations animées sur les pages vides (Dashboard, Joueurs).
+- **WCAG 2.2 / RGAA 4** : Focus visible, `prefers-reduced-motion`, contrastes validés, `aria-label` sur les icônes.
+
+### 🎨 Interface "Quantum Court" (V1.4)
 
 - **Design Premium** : Fond noir profond (`#030303`) avec effet "flottant dans le vide".
 - **Navigation Floating Island** : Barre de navigation mobile en capsule arrondie avec FAB central.
