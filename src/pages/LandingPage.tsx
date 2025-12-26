@@ -22,9 +22,7 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
             <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black/80 backdrop-blur-md border-b border-white/5 py-4' : 'py-6 bg-transparent'}`}>
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[var(--color-neon-blue)] to-[var(--color-neon-purple)] flex items-center justify-center text-black font-black text-xl shadow-[0_0_20px_rgba(0,243,255,0.3)]">
-                            H
-                        </div>
+                        <img src="/favicon.png" alt="Hoop.Stats Logo" className="w-10 h-10 rounded-xl shadow-[0_0_20px_rgba(0,243,255,0.3)]" />
                         <span className="font-stats text-2xl tracking-tighter font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                             HOOP.STATS
                         </span>
@@ -50,19 +48,19 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-neon-green)] opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-neon-green)]"></span>
                         </span>
-                        <span className="text-xs font-medium tracking-wide uppercase text-[var(--color-text-dim)]">V1.5 Live : Gamification Update</span>
+                        <span className="text-xs font-medium tracking-wide uppercase text-[var(--color-text-dim)]">V1.6 Live : Mise à jour Marketing</span>
                     </div>
 
                     <h1 className="text-5xl md:text-8xl font-black tracking-tight mb-8 leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                        DON'T JUST WATCH.<br />
+                        NE REGARDEZ PLUS.<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-neon-blue)] via-white to-[var(--color-neon-purple)] drop-shadow-[0_0_30px_rgba(0,243,255,0.3)]">
-                            ANALYZE IT.
+                            ANALYSEZ.
                         </span>
                     </h1>
 
                     <p className="text-lg md:text-2xl text-[var(--color-text-dim)] max-w-2xl mx-auto mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                        L'outil de statistiques professionnel pour les coachs exigeants.
-                        Calcul du PIR en temps réel, Shot Charts et Gamification pour propulser vos joueurs au niveau supérieur.
+                        L'outil de statistiques ultime pour les coachs exigeants.
+                        Calcul du PIR en temps réel, Shot Charts et Badges MVP pour propulser vos joueurs au niveau supérieur.
                     </p>
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
@@ -71,10 +69,10 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                             className="w-full md:w-auto px-8 py-4 rounded-full bg-white text-black font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2"
                         >
                             <Play size={20} fill="currentColor" />
-                            Lancer le Match
+                            Commencer
                         </button>
                         <button className="w-full md:w-auto px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
-                            Voir la Démo
+                            En savoir plus
                         </button>
                     </div>
                 </div>
@@ -83,16 +81,16 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
             {/* ════════ TICKER (ESPN STYLE) ════════ */}
             <div className="w-full border-y border-white/5 bg-black/50 backdrop-blur-sm py-3 overflow-hidden flex relative z-20">
                 <div className="animate-ticker flex whitespace-nowrap gap-12 text-sm font-mono text-[var(--color-text-dim)] uppercase tracking-widest items-center">
-                    <span className="flex items-center gap-2"><Activity size={14} className="text-[var(--color-neon-green)]" /> LIVE PIR TRACKING</span>
-                    <span className="flex items-center gap-2"><Zap size={14} className="text-[var(--color-neon-orange)]" /> TRUE SHOOTING %</span>
-                    <span className="flex items-center gap-2"><Wifi size={14} className="text-[var(--color-neon-blue)]" /> OFFLINE FIRST</span>
-                    <span className="flex items-center gap-2"><Lock size={14} className="text-[var(--color-neon-purple)]" /> SECURE CLOUD SYNC</span>
-                    <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-500" /> MVP BADGES SYSTEM</span>
-                    <span className="flex items-center gap-2"><Activity size={14} className="text-[var(--color-neon-green)]" /> LIVE PIR TRACKING</span>
-                    <span className="flex items-center gap-2"><Zap size={14} className="text-[var(--color-neon-orange)]" /> TRUE SHOOTING %</span>
-                    <span className="flex items-center gap-2"><Wifi size={14} className="text-[var(--color-neon-blue)]" /> OFFLINE FIRST</span>
-                    <span className="flex items-center gap-2"><Lock size={14} className="text-[var(--color-neon-purple)]" /> SECURE CLOUD SYNC</span>
-                    <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-500" /> MVP BADGES SYSTEM</span>
+                    <span className="flex items-center gap-2"><Activity size={14} className="text-[var(--color-neon-green)]" /> SUIVI PIR EN DIRECT</span>
+                    <span className="flex items-center gap-2"><Zap size={14} className="text-[var(--color-neon-orange)]" /> % DE RÉUSSITE RÉEL</span>
+                    <span className="flex items-center gap-2"><Wifi size={14} className="text-[var(--color-neon-blue)]" /> MODE HORS-LIGNE</span>
+                    <span className="flex items-center gap-2"><Lock size={14} className="text-[var(--color-neon-purple)]" /> CLOUD SÉCURISÉ</span>
+                    <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-500" /> SYSTÈME BADGES MVP</span>
+                    <span className="flex items-center gap-2"><Activity size={14} className="text-[var(--color-neon-green)]" /> SUIVI PIR EN DIRECT</span>
+                    <span className="flex items-center gap-2"><Zap size={14} className="text-[var(--color-neon-orange)]" /> % DE RÉUSSITE RÉEL</span>
+                    <span className="flex items-center gap-2"><Wifi size={14} className="text-[var(--color-neon-blue)]" /> MODE HORS-LIGNE</span>
+                    <span className="flex items-center gap-2"><Lock size={14} className="text-[var(--color-neon-purple)]" /> CLOUD SÉCURISÉ</span>
+                    <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-500" /> SYSTÈME BADGES MVP</span>
                 </div>
             </div>
 
@@ -100,8 +98,8 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
             <section className="py-24 px-6 relative z-10">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-16">
-                        <span className="text-[var(--color-neon-blue)] font-bold tracking-widest uppercase text-sm">PRO FEATURES</span>
-                        <h2 className="text-4xl md:text-5xl font-black mt-2">THE ANALYTICS ADVANTAGE</h2>
+                        <span className="text-[var(--color-neon-blue)] font-bold tracking-widest uppercase text-sm">FONCTIONNALITÉS PRO</span>
+                        <h2 className="text-4xl md:text-5xl font-black mt-2">L'AVANTAGE ANALYTIQUE</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -130,7 +128,7 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                             <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-neon-purple)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="p-8">
                                 <Wifi className="w-12 h-12 text-[var(--color-neon-purple)] mb-6" />
-                                <h3 className="text-2xl font-bold mb-2">Gym Mode (Offline)</h3>
+                                <h3 className="text-2xl font-bold mb-2">Mode Hors-Ligne (Gym)</h3>
                                 <p className="text-[var(--color-text-dim)]">
                                     Pas de réseau ? Pas de problème. HoopStats stocke tout en local et synchronise dès le retour du Wi-Fi.
                                 </p>
@@ -142,9 +140,9 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                             <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-neon-orange)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="p-8">
                                 <BarChart3 className="w-12 h-12 text-[var(--color-neon-orange)] mb-6" />
-                                <h3 className="text-2xl font-bold mb-2">Moneyball Analytics</h3>
+                                <h3 className="text-2xl font-bold mb-2">Stats Avancées</h3>
                                 <p className="text-[var(--color-text-dim)]">
-                                    Calcul automatique du PIR, True Shooting % et Effective FG%. Vos joueurs méritent des stats pro.
+                                    Calcul automatique du PIR, % aux tirs réels. Vos joueurs méritent des stats de pro.
                                 </p>
                             </div>
                         </div>
@@ -156,9 +154,9 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                                 <div>
                                     <div className="flex items-center gap-3 mb-6">
                                         <Trophy className="w-12 h-12 text-[var(--color-neon-green)]" />
-                                        <span className="px-2 py-1 rounded bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)] text-xs font-bold border border-[var(--color-neon-green)]/20">NEW IN V1.5</span>
+                                        <span className="px-2 py-1 rounded bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)] text-xs font-bold border border-[var(--color-neon-green)]/20">NOUVEAU EN V1.5</span>
                                     </div>
-                                    <h3 className="text-2xl font-bold mb-2">Gamification System</h3>
+                                    <h3 className="text-2xl font-bold mb-2">Gamification & Badges</h3>
                                     <p className="text-[var(--color-text-dim)] max-w-sm mb-6">
                                         Motivez vos joueurs avec des badges de performance uniques générés automatiquement après chaque match.
                                     </p>
@@ -191,7 +189,7 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
 
                 <div className="max-w-4xl mx-auto text-center relative z-10">
                     <h2 className="text-5xl md:text-7xl font-black mb-8">
-                        READY TO <span className="text-outline-white">DOMINATE?</span>
+                        PRÊT À <span className="text-outline-white">DOMINER ?</span>
                     </h2>
                     <p className="text-xl text-[var(--color-text-dim)] mb-12">
                         Rejoignez les coachs qui ont déjà transformé leurs données en victoires.
@@ -205,13 +203,13 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                         </span>
                         <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
                     </button>
-                    <p className="mt-6 text-sm text-[var(--color-text-dim)]">Start. Analyze. Win. — v1.5.0</p>
+                    <p className="mt-6 text-sm text-[var(--color-text-dim)]">Start. Analyze. Win. — v1.6.0</p>
                 </div>
             </section>
 
             {/* ════════ FOOTER ════════ */}
             <footer className="border-t border-white/5 py-12 text-center text-[var(--color-text-dim)] text-sm">
-                <p>© 2025 HoopStats Elite. Built for the love of the game.</p>
+                <p>© 2025 Hoop.Stats Elite. Built for the love of the game.</p>
             </footer>
 
             {/* Custom Styles for Ticker */}
