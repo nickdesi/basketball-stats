@@ -3,15 +3,17 @@ import { History } from 'lucide-react';
 import type { CompletedGame, Player } from '../store/gameStore';
 
 import MatchCard from './MatchCard';
+import EmptyState from './EmptyState';
 
 interface HistoryListProps {
     filteredHistory: CompletedGame[];
     players: Player[];
     onSelectGame: (game: CompletedGame, editMode?: boolean) => void;
     onDeleteGame?: (gameId: string) => void;
+    onNavigateToMatch?: () => void;
 }
 
-const HistoryList = memo(({ filteredHistory, players, onSelectGame, onDeleteGame }: HistoryListProps) => {
+const HistoryList = memo(({ filteredHistory, players, onSelectGame, onDeleteGame, onNavigateToMatch }: HistoryListProps) => {
     return (
         <>
             <h3 className="text-xl font-bold mt-8 flex items-center gap-2 text-[var(--color-text)]">
@@ -21,9 +23,13 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame, onDeleteGame
 
             <div className="space-y-3">
                 {filteredHistory.length === 0 ? (
-                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-card rounded-2xl">
-                        Aucun match trouvé pour ce filtre.
-                    </div>
+                    <EmptyState
+                        icon="basketball"
+                        title="Aucun match enregistré"
+                        message="Lance ton premier match pour commencer à suivre tes stats !"
+                        actionLabel="Nouveau Match"
+                        onAction={onNavigateToMatch}
+                    />
                 ) : (
                     filteredHistory.slice().reverse().map((game) => {
                         const player = players.find(p => p.id === game.playerId);

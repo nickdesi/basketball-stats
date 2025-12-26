@@ -1,4 +1,4 @@
-import { LayoutDashboard, Play, Users, Moon, Sun, LogOut } from 'lucide-react';
+import { LayoutDashboard, Play, Users, Moon, Sun, LogOut, Eye } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
@@ -18,7 +18,7 @@ interface LayoutProps {
 }
 
 const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
-    const { theme, toggleTheme } = useThemeStore();
+    const { theme, toggleTheme, contrastMode, toggleContrastMode } = useThemeStore();
     const { logout } = useAuthStore();
     const { isOnline } = useOnlineStatus();
     const isMobileMatch = currentView === 'match';
@@ -67,6 +67,15 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                         aria-label="Changer de thème"
                     >
                         {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                    </button>
+
+                    <button
+                        onClick={toggleContrastMode}
+                        className={`p-2 rounded-lg transition-all ${contrastMode === 'high' ? 'bg-yellow-500/20 text-yellow-400' : 'text-[var(--color-nav-text)] hover:text-[var(--color-nav-text-hover)] hover:bg-[var(--color-nav-bg-hover)]'}`}
+                        aria-label="Mode contraste élevé"
+                        title="Mode contraste élevé (extérieur)"
+                    >
+                        <Eye size={20} />
                     </button>
 
                     <button

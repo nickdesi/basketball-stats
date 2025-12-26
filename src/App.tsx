@@ -44,7 +44,7 @@ function AuthenticatedApp({
     <Layout currentView={view} onNavigate={setView}>
       <Suspense fallback={<LoadingSpinner />}>
         {view === 'dashboard' ? (
-          <Dashboard />
+          <Dashboard onNavigate={setView} />
         ) : view === 'players' ? (
           <Players />
         ) : (
@@ -58,7 +58,7 @@ function AuthenticatedApp({
 function App() {
   const [view, setView] = useState<'dashboard' | 'match' | 'players'>('dashboard');
   const [showLanding, setShowLanding] = useState(true);
-  const { theme } = useThemeStore();
+  const { theme, contrastMode } = useThemeStore();
   const { user, loading, initialized, initAuth } = useAuthStore();
 
   // Initialize Firebase auth listener
@@ -67,11 +67,14 @@ function App() {
     return () => unsubscribe();
   }, [initAuth]);
 
-  // Apply theme
+  // Apply theme and contrast mode
   useEffect(() => {
-    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.remove('light', 'dark', 'high-contrast');
     document.documentElement.classList.add(theme);
-  }, [theme]);
+    if (contrastMode === 'high') {
+      document.documentElement.classList.add('high-contrast');
+    }
+  }, [theme, contrastMode]);
 
   // Show loading while initializing auth
   if (!initialized || loading) {

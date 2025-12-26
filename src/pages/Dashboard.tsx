@@ -35,7 +35,11 @@ ChartJS.register(
     Filler
 );
 
-const Dashboard = () => {
+interface DashboardProps {
+    onNavigate?: (view: 'dashboard' | 'match' | 'players') => void;
+}
+
+const Dashboard = ({ onNavigate }: DashboardProps) => {
     const { history, players } = useGameStore();
     const { deleteGameFromFirestore, updateGameInFirestore, saveGameToFirestore } = useFirebaseSync();
     const theme = useThemeStore((state) => state.theme);
@@ -444,6 +448,7 @@ const Dashboard = () => {
                 players={players}
                 onSelectGame={handleSelectGame}
                 onDeleteGame={handleDeleteGame}
+                onNavigateToMatch={() => onNavigate?.('match')}
             />
         </div>
     );
