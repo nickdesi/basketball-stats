@@ -205,13 +205,13 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, init
                                         points1: "1 Point",
                                         points2: "2 Points",
                                         points3: "3 Points",
-                                        offensiveRebounds: "Reb. OFF",
-                                        defensiveRebounds: "Reb. DEF",
-                                        assists: "Passes",
-                                        steals: "Interceptions",
-                                        blocks: "Contres",
-                                        turnovers: "Balles Perdues",
-                                        fouls: "Fautes"
+                                        offensiveRebounds: "RB OFF",
+                                        defensiveRebounds: "RB DEF",
+                                        assists: "PD",
+                                        steals: "INT",
+                                        blocks: "CTR",
+                                        turnovers: "BP",
+                                        fouls: "F"
                                     };
                                     if (!labels[key]) return null;
 

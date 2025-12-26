@@ -83,16 +83,16 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
                 {/* Row 2: FT & Rebounds */}
                 <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)]">
                     <StatBox label="FT%" value={ftPercent} isPercent />
-                    <StatBox label="REB OFF" value={stats.offensiveRebounds} />
-                    <StatBox label="REB DEF" value={stats.defensiveRebounds} />
-                    <StatBox label="REB TOT" value={totalReb} color="var(--color-neon-purple)" />
+                    <StatBox label="RB OFF" value={stats.offensiveRebounds} />
+                    <StatBox label="RB DEF" value={stats.defensiveRebounds} />
+                    <StatBox label="RB TOT" value={totalReb} color="var(--color-neon-purple)" />
                 </div>
 
                 {/* Row 3: Playmaking & Defense */}
                 <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)]">
-                    <StatBox label="PASSES" value={stats.assists} color="var(--color-neon-blue)" />
-                    <StatBox label="CONTRES" value={stats.blocks} />
-                    <StatBox label="INTERCEP" value={stats.steals} />
+                    <StatBox label="PD" value={stats.assists} color="var(--color-neon-blue)" tooltip="Passes Décisives" />
+                    <StatBox label="CTR" value={stats.blocks} tooltip="Contres" />
+                    <StatBox label="INT" value={stats.steals} tooltip="Interceptions" />
                     <StatBox label="MIN" value="-" />
                 </div>
             </div>
@@ -115,11 +115,11 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
             {/* NEGATIVE STATS (Optional but good to have) */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="bg-red-900/10 border border-red-500/20 rounded-xl p-3 flex items-center justify-between px-6">
-                    <span className="text-red-400 font-bold text-xs uppercase">BALLES PERDUES</span>
+                    <span className="text-red-400 font-bold text-xs uppercase">BP</span>
                     <span className="text-2xl font-black text-red-500">{stats.turnovers}</span>
                 </div>
                 <div className="bg-red-900/10 border border-red-500/20 rounded-xl p-3 flex items-center justify-between px-6">
-                    <span className="text-red-400 font-bold text-xs uppercase">FAUTES</span>
+                    <span className="text-red-400 font-bold text-xs uppercase">F</span>
                     <span className="text-2xl font-black text-red-500">{stats.fouls}</span>
                 </div>
             </div>

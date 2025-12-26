@@ -163,11 +163,11 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                     </div>
                     <div className="p-3 text-center">
                         <div className="text-xl font-black font-stats text-[var(--color-neon-green)]">{totalRebounds}</div>
-                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">REB</div>
+                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">RB</div>
                     </div>
                     <div className="p-3 text-center">
                         <div className="text-xl font-black font-stats text-[var(--color-neon-purple)]">{totalAssists}</div>
-                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PAS</div>
+                        <div className="text-[10px] text-[var(--color-text-dim)] font-bold">PD</div>
                     </div>
                     <button
                         onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
@@ -191,11 +191,11 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                         </div>
                         <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
                             <div className="text-lg font-bold font-stats text-red-400">{game.stats.turnovers}</div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">BALLES PERDUES</div>
+                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">BP</div>
                         </div>
                         <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
                             <div className="text-lg font-bold font-stats text-yellow-400">{game.stats.fouls}</div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">FAUTES</div>
+                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">F</div>
                         </div>
                     </div>
                 )}

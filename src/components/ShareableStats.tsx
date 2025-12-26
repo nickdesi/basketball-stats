@@ -141,15 +141,15 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                         <div className="grid grid-cols-4 gap-2 mt-4">
                             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 text-center border border-white/5">
                                 <div className="text-2xl font-bold text-white">{totalRebounds}</div>
-                                <div className="text-[10px] text-white/40 font-bold uppercase">REB</div>
+                                <div className="text-[10px] text-white/40 font-bold uppercase">RB</div>
                             </div>
                             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 text-center border border-white/5">
                                 <div className="text-2xl font-bold text-white">{game.stats.assists}</div>
-                                <div className="text-[10px] text-white/40 font-bold uppercase">AST</div>
+                                <div className="text-[10px] text-white/40 font-bold uppercase">PD</div>
                             </div>
                             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 text-center border border-white/5">
                                 <div className="text-2xl font-bold text-white">{game.stats.steals}</div>
-                                <div className="text-[10px] text-white/40 font-bold uppercase">STL</div>
+                                <div className="text-[10px] text-white/40 font-bold uppercase">INT</div>
                             </div>
                             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 text-center border border-white/5">
                                 <div className="text-2xl font-bold text-cyan-400">{advancedStats.trueShooting}%</div>
