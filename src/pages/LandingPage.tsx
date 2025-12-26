@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from 'react';
-import { Play, Shield, Wifi, Zap, Trophy, ChevronRight, Activity, BarChart3, Lock } from 'lucide-react';
+import { Play, Shield, Wifi, Zap, Trophy, ChevronRight, Activity, BarChart3, Lock, Github } from 'lucide-react';
 
 interface LandingPageProps {
     onStart: () => void;
@@ -71,9 +71,15 @@ const LandingPage = memo(({ onStart }: LandingPageProps) => {
                             <Play size={20} fill="currentColor" />
                             Commencer
                         </button>
-                        <button className="w-full md:w-auto px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
-                            En savoir plus
-                        </button>
+                        <a
+                            href="https://github.com/nickdesi/basketball-stats"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full md:w-auto px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm flex items-center justify-center gap-2"
+                        >
+                            <Github size={20} />
+                            GitHub
+                        </a>
                     </div>
                 </div>
             </header>
