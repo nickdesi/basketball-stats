@@ -54,8 +54,8 @@ const Dashboard = () => {
     const { totalGames, totalRebounds, totalAssists, avgPoints, avgRebounds, avgAssists } = useMemo(() => {
         const totalGames = filteredHistory.length;
         const totalPoints = filteredHistory.reduce((acc, game) =>
-            acc + (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3), 0);
-        const totalRebounds = filteredHistory.reduce((acc, game) => acc + (game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds), 0);
+            acc + game.stats.points1 + (game.stats.points2 * 2) + (game.stats.points3 * 3), 0);
+        const totalRebounds = filteredHistory.reduce((acc, game) => acc + ((game.stats.offensiveRebounds + game.stats.defensiveRebounds) || game.stats.rebounds), 0);
         const totalAssists = filteredHistory.reduce((acc, game) => acc + game.stats.assists, 0);
 
         const avgPoints = totalGames > 0 ? (totalPoints / totalGames).toFixed(1) : '0.0';

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import type { GameStats } from '../store/gameStore';
 import StatBox from './StatBox';
 
@@ -7,7 +7,7 @@ interface SessionStatsProps {
     playerLevel?: 'U11' | 'U13' | 'U15' | 'U18';
 }
 
-const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
+const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
 
     // --- CALCULATIONS ---
     const computedStats = useMemo(() => {
@@ -28,7 +28,7 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
         const ftPercent = ftAttempts > 0 ? Math.round((ftMakes / ftAttempts) * 100) : 0;
 
         // 4. TS% (True Shooting Percentage)
-        const totalPoints = (stats.points1 * 1) + (stats.points2 * 2) + (stats.points3 * 3);
+        const totalPoints = stats.points1 + (stats.points2 * 2) + (stats.points3 * 3);
         const tsDenominator = 2 * (fgAttempts + (0.44 * ftAttempts));
         const tsPercent = tsDenominator > 0 ? Math.round((totalPoints / tsDenominator) * 100) : 0;
 
@@ -36,12 +36,13 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
         const efgPercent = fgAttempts > 0 ? Math.round(((fgMakes + 0.5 * p3Makes) / fgAttempts) * 100) : 0;
 
         // 6. Game Score / Evaluation
+        const totalReb = (stats.offensiveRebounds + stats.defensiveRebounds) || stats.rebounds;
         const evaluation = totalPoints
-            + stats.rebounds + stats.offensiveRebounds + stats.defensiveRebounds
+            + totalReb
             + stats.assists + stats.steals + stats.blocks
             - fgMisses - stats.missedPoints1 - stats.turnovers;
 
-        const totalReb = stats.offensiveRebounds + stats.defensiveRebounds;
+
 
         return {
             fgMakes, fgAttempts, fgPercent,
@@ -124,6 +125,9 @@ const SessionStats = ({ stats, playerLevel }: SessionStatsProps) => {
             </div>
         </div>
     );
-};
+});
+
+SessionStats.displayName = 'SessionStats';
 
 export default SessionStats;
+

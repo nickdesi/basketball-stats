@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GripHorizontal, BarChart3 } from 'lucide-react';
 import type { Player } from '../../store/gameStore';
 
@@ -9,7 +10,7 @@ interface MatchHeaderProps {
     evaluation?: number;
 }
 
-const MatchHeader = ({ totalPoints, activePlayer, viewMode, onViewModeChange, evaluation }: MatchHeaderProps) => {
+const MatchHeader = memo(({ totalPoints, activePlayer, viewMode, onViewModeChange, evaluation }: MatchHeaderProps) => {
     return (
         <div className="flex items-center justify-between p-3 floating-island rounded-2xl mb-2 shrink-0">
             <div className="flex items-center gap-4">
@@ -59,6 +60,8 @@ const MatchHeader = ({ totalPoints, activePlayer, viewMode, onViewModeChange, ev
             </div>
         </div>
     );
-};
+});
+
+MatchHeader.displayName = 'MatchHeader';
 
 export default MatchHeader;

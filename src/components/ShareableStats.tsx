@@ -2,6 +2,8 @@ import { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { Download, Share2, X } from 'lucide-react';
 import { getAdvancedStats, type CompletedGame, type Player } from '../store/gameStore';
+import BadgeList from './badges/BadgeList';
+import { calculateBadges } from './badges/badgeUtils';
 
 interface ShareableStatsProps {
     game: CompletedGame;
@@ -13,8 +15,8 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
-    const totalPoints = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
-    const totalRebounds = game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds;
+    const totalPoints = game.stats.points1 + (game.stats.points2 * 2) + (game.stats.points3 * 3);
+    const totalRebounds = (game.stats.offensiveRebounds + game.stats.defensiveRebounds) || game.stats.rebounds;
 
     // Advanced Stats
     const advancedStats = getAdvancedStats(game.stats);
@@ -153,6 +155,11 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                                 <div className="text-2xl font-bold text-cyan-400">{advancedStats.trueShooting}%</div>
                                 <div className="text-[10px] text-white/40 font-bold uppercase">TS%</div>
                             </div>
+                        </div>
+
+                        {/* Badges */}
+                        <div className="mt-4">
+                            <BadgeList badges={calculateBadges(game.stats)} size="sm" />
                         </div>
 
                         {/* Branding */}

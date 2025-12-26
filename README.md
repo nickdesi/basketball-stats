@@ -19,6 +19,13 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Affichage Live** : L'évaluation s'affiche en direct dans le header du match.
 - **Carte de Partage Premium** : Visuel exportable avec Points + Évaluation pour les réseaux sociaux.
 
+### 🏆 Gamification & Badges (V1.5 - Nouveau !)
+
+- **7 Badges Exclusifs** : Sniper (TS%), The Wall (Blocks), Pickpocket (Steals), Maestro (Assists), Cleaner (Rebounds), MVP Perf (PIR), Energizer (0 TO).
+- **Calcul Automatique** : Les badges sont attribués en fonction des performances réelles du match.
+- **Affichage Contextuel** : Badges visibles dans l'historique des matchs ET sur la carte de partage.
+- **Design Premium** : Badges animés avec couleurs distinctives et icônes Lucide.
+
 ### 🎨 Interface "Quantum Court" (V1.4 - Nouveau !)
 
 - **Design Premium** : Fond noir profond (`#030303`) avec effet "flottant dans le vide".

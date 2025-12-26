@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Undo2 } from 'lucide-react';
 import type { GameStats } from '../../store/gameStore';
 import CounterInput from '../CounterInput';
@@ -12,16 +13,16 @@ interface StatGridProps {
 }
 
 const STAT_CONFIG = [
-    { key: 'offensiveRebounds' as const, label: 'Reb. OFF', animLabel: 'REB OFF', color: '#a855f7', labelTop: true },
-    { key: 'defensiveRebounds' as const, label: 'Reb. DEF', animLabel: 'REB DEF', color: '#c084fc', labelTop: true },
-    { key: 'assists' as const, label: 'Passe', animLabel: 'PASSE', color: '#22c55e', labelTop: true },
-    { key: 'steals' as const, label: 'Intercep', animLabel: 'INTER', color: '#3b82f6', labelTop: true },
-    { key: 'blocks' as const, label: 'Contre', animLabel: 'CONTRE', color: '#eab308', labelTop: false },
-    { key: 'fouls' as const, label: 'Faute', animLabel: 'FAUTE', color: '#ef4444', labelTop: false },
-    { key: 'turnovers' as const, label: 'Perte', animLabel: 'PERTE', color: '#f97316', labelTop: false },
+    { key: 'offensiveRebounds' as const, label: 'Reb. OFF', animLabel: 'REB OFF', color: 'var(--color-neon-purple)', labelTop: true }, // was #a855f7
+    { key: 'defensiveRebounds' as const, label: 'Reb. DEF', animLabel: 'REB DEF', color: 'var(--color-neon-purple)', labelTop: true }, // was #c084fc
+    { key: 'assists' as const, label: 'Passe', animLabel: 'PASSE', color: 'var(--color-neon-green)', labelTop: true }, // was #22c55e
+    { key: 'steals' as const, label: 'Intercep', animLabel: 'INTER', color: 'var(--color-neon-blue)', labelTop: true }, // was #3b82f6
+    { key: 'blocks' as const, label: 'Contre', animLabel: 'CONTRE', color: 'var(--color-neon-orange)', labelTop: false }, // was #eab308
+    { key: 'fouls' as const, label: 'Faute', animLabel: 'FAUTE', color: '#ef4444', labelTop: false }, // Keep red for faults
+    { key: 'turnovers' as const, label: 'Perte', animLabel: 'PERTE', color: '#f97316', labelTop: false }, // Keep orange for turnovers
 ];
 
-const StatGrid = ({ currentStats, onStat, onDecrement, onUndo, canUndo }: StatGridProps) => {
+const StatGrid = memo(({ currentStats, onStat, onDecrement, onUndo, canUndo }: StatGridProps) => {
     return (
         <div className="grid grid-cols-4 gap-2 flex-1 min-h-0 content-start">
             {STAT_CONFIG.map((stat) => (
@@ -47,6 +48,8 @@ const StatGrid = ({ currentStats, onStat, onDecrement, onUndo, canUndo }: StatGr
             </button>
         </div>
     );
-};
+});
+
+StatGrid.displayName = 'StatGrid';
 
 export default StatGrid;

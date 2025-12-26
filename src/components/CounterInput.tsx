@@ -76,4 +76,6 @@ const CounterInput = React.memo(({ label, value, onIncrement, onDecrement, color
     );
 });
 
+CounterInput.displayName = 'CounterInput';
+
 export default CounterInput;

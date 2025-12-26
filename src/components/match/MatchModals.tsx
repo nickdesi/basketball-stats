@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { BarChart3, Undo2 } from 'lucide-react';
 
 interface MatchModalsProps {
@@ -12,7 +13,7 @@ interface MatchModalsProps {
     onResetCancel: () => void;
 }
 
-const MatchModals = ({
+const MatchModals = memo(({
     showFoulConfirm,
     showEndMatchConfirm,
     showResetConfirm,
@@ -119,6 +120,8 @@ const MatchModals = ({
             )}
         </>
     );
-};
+});
+
+MatchModals.displayName = 'MatchModals';
 
 export default MatchModals;

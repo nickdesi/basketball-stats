@@ -242,7 +242,7 @@ export const getAdvancedStats = (stats: GameStats) => {
     // 1. Evaluation (PIR) - Standard FIBA/Euroleague Formula
     // (Pts + Reb + Ast + Stl + Blk + FoulsDrawn) - (MissedFG + MissedFT + TO + FoulsCommited)
     // Note: FoulsDrawn is not currently tracked, so it's omitted (conceptually 0).
-    const totalRebounds = stats.offensiveRebounds + stats.defensiveRebounds || stats.rebounds; // Fallback to legacy rebounds if specific ones are 0
+    const totalRebounds = (stats.offensiveRebounds + stats.defensiveRebounds) || stats.rebounds; // Fallback to legacy rebounds if specific ones are 0
     const missedFG = stats.missedPoints2 + stats.missedPoints3;
     const missedFT = stats.missedPoints1 || stats.missedFreeThrows; // Fallback
 

@@ -23,7 +23,7 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame }: HistoryLis
                     </div>
                 ) : (
                     filteredHistory.slice().reverse().map((game) => {
-                        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
+                        const pts = game.stats.points1 + (game.stats.points2 * 2) + (game.stats.points3 * 3);
                         const player = players.find(p => p.id === game.playerId);
                         return (
                             <div
@@ -53,7 +53,7 @@ const HistoryList = memo(({ filteredHistory, players, onSelectGame }: HistoryLis
                                     </div>
                                     <div className="w-10 sm:w-12 md:w-14">
                                         <div className="font-stats text-lg sm:text-xl text-[var(--color-neon-green)]">
-                                            {game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds}
+                                            {(game.stats.offensiveRebounds + game.stats.defensiveRebounds) || game.stats.rebounds}
                                         </div>
                                         <div className="label-stat">REB</div>
                                     </div>

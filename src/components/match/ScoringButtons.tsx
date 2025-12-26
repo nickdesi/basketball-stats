@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Player } from '../../store/gameStore';
 
 interface ScoringButtonsProps {
@@ -12,7 +13,7 @@ const SHOT_TYPES = [
     { val: 3 as const, label: '3 Points', short: '3 PTS', color: 'var(--color-neon-orange)' }
 ];
 
-const ScoringButtons = ({ playerLevel, isFouledOut, onScore }: ScoringButtonsProps) => {
+const ScoringButtons = memo(({ playerLevel, isFouledOut, onScore }: ScoringButtonsProps) => {
     const visibleShots = SHOT_TYPES.filter(shot => {
         // U11 Rule: No 3 Pointers
         if (playerLevel === 'U11' && shot.val === 3) return false;
@@ -53,6 +54,8 @@ const ScoringButtons = ({ playerLevel, isFouledOut, onScore }: ScoringButtonsPro
             ))}
         </div>
     );
-};
+});
+
+ScoringButtons.displayName = 'ScoringButtons';
 
 export default ScoringButtons;

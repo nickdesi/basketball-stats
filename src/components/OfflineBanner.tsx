@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { WifiOff } from 'lucide-react';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
@@ -5,7 +6,7 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus';
  * Displays a banner when the user is offline.
  * Auto-hides when connection is restored.
  */
-const OfflineBanner = () => {
+const OfflineBanner = memo(() => {
     const { isOnline } = useOnlineStatus();
 
     if (isOnline) return null;
@@ -16,6 +17,8 @@ const OfflineBanner = () => {
             <span>Mode hors-ligne – Données locales</span>
         </div>
     );
-};
+});
+
+OfflineBanner.displayName = 'OfflineBanner';
 
 export default OfflineBanner;

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useGameStore, type GameStats, type Player, type CompletedGame } from '../store/gameStore';
 import { useFirebaseSync } from './useFirebaseSync';
 
@@ -88,7 +88,7 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
     // Computed
     const activePlayer = players.find(p => p.id === activePlayerId);
     const isFouledOut = currentStats.fouls >= 5;
-    const totalPoints = (currentStats.points1 * 1) + (currentStats.points2 * 2) + (currentStats.points3 * 3);
+    const totalPoints = currentStats.points1 + (currentStats.points2 * 2) + (currentStats.points3 * 3);
 
     // Animation trigger
     const triggerAnimation = useCallback((e: React.MouseEvent | React.TouchEvent, text: string, color: string) => {
@@ -182,6 +182,33 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         startGame();
     }, [setupGame, startGame, selectedPlayer, opponentName]);
 
+    // Memoized state object
+    const state = useMemo<MatchRecorderState>(() => ({
+        viewMode,
+        animations,
+        selectedPlayer,
+        opponentName,
+        showFoulConfirm,
+        showEndMatchConfirm,
+        showResetConfirm,
+    }), [viewMode, animations, selectedPlayer, opponentName, showFoulConfirm, showEndMatchConfirm, showResetConfirm]);
+
+    // Memoized actions object
+    const actions = useMemo<MatchRecorderActions>(() => ({
+        setViewMode,
+        setSelectedPlayer,
+        setOpponentName,
+        handleScore,
+        handleStat,
+        confirmFoulOut,
+        handleConfirmFinish,
+        handleReset,
+        setShowFoulConfirm,
+        setShowEndMatchConfirm,
+        setShowResetConfirm,
+        startMatch,
+    }), [handleScore, handleStat, confirmFoulOut, handleConfirmFinish, handleReset, startMatch]);
+
     return {
         // Store state
         currentStats,
@@ -194,34 +221,14 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         decrementStat,
 
         // Local state
-        state: {
-            viewMode,
-            animations,
-            selectedPlayer,
-            opponentName,
-            showFoulConfirm,
-            showEndMatchConfirm,
-            showResetConfirm,
-        },
+        state,
 
         // Computed
         totalPoints,
         isFouledOut,
 
         // Actions
-        actions: {
-            setViewMode,
-            setSelectedPlayer,
-            setOpponentName,
-            handleScore,
-            handleStat,
-            confirmFoulOut,
-            handleConfirmFinish,
-            handleReset,
-            setShowFoulConfirm,
-            setShowEndMatchConfirm,
-            setShowResetConfirm,
-            startMatch,
-        },
+        actions,
     };
 }
+

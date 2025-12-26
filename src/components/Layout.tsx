@@ -1,7 +1,8 @@
-import { LayoutDashboard, Play, Users, Moon, Sun, WifiOff, LogOut } from 'lucide-react';
+import { LayoutDashboard, Play, Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import OfflineBanner from './OfflineBanner';
 
 interface LayoutProps {
     // children removed as it handles view switching internally now/or we revert to external control?
@@ -28,12 +29,7 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
     return (
         <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-sans selection:bg-[var(--color-neon-blue)] selection:text-black pb-20 md:pb-0 transition-colors duration-300">
             {/* Offline Banner */}
-            {!isOnline && (
-                <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-black py-2 px-4 flex items-center justify-center gap-2 text-sm font-bold animate-in slide-in-from-top duration-300">
-                    <WifiOff size={16} />
-                    <span>Mode hors-ligne – Données locales</span>
-                </div>
-            )}
+            <OfflineBanner />
 
             {/* Header - Hidden on Mobile Match View to save space */}
             <header className={`fixed ${bannerOffset || 'top-0'} left-0 w-full z-50 glass-panel border-b border-[var(--color-glass-border)] px-6 py-4 flex items-center justify-between transition-all duration-300 ${isMobileMatch ? '-translate-y-full md:translate-y-0' : 'translate-y-0'}`}>
@@ -122,8 +118,8 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                 <button
                     onClick={() => onNavigate('match')}
                     className={`relative -mt-8 flex items-center justify-center w-16 h-16 rounded-full transition-all ${currentView === 'match'
-                            ? 'bg-[var(--color-neon-purple)] text-white shadow-[var(--glow-purple)]'
-                            : 'bg-[var(--color-neon-purple)]/80 text-white animate-pulse-glow'
+                        ? 'bg-[var(--color-neon-purple)] text-white shadow-[var(--glow-purple)]'
+                        : 'bg-[var(--color-neon-purple)]/80 text-white animate-pulse-glow'
                         }`}
                     aria-label="Nouveau Match"
                 >

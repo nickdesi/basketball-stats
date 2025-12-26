@@ -3,6 +3,8 @@ import { Trash2, Share2, Download, Image } from 'lucide-react';
 import type { CompletedGame, GameStats, Player } from '../store/gameStore';
 import SessionStats from './SessionStats';
 import ShareableStats from './ShareableStats';
+import BadgeList from './badges/BadgeList';
+import { calculateBadges } from './badges/badgeUtils';
 
 interface GameDetailModalProps {
     game: CompletedGame;
@@ -55,8 +57,8 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate }: Ga
     }, []);
 
     const handleShareGame = async () => {
-        const pts = (game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3);
-        const reb = game.stats.offensiveRebounds + game.stats.defensiveRebounds || game.stats.rebounds;
+        const pts = game.stats.points1 + (game.stats.points2 * 2) + (game.stats.points3 * 3);
+        const reb = (game.stats.offensiveRebounds + game.stats.defensiveRebounds) || game.stats.rebounds;
         const player = players.find(p => p.id === game.playerId);
 
         const text = `🏀 MATCH HISTORY\n\n👤 ${player?.name || 'Joueur'}\n🆚 ${game.opponent || 'Adversaire'}\n📅 ${new Date(game.date).toLocaleDateString()}\n\n📊 STATS:\n- Points: ${pts}\n- Rebonds: ${reb}\n- Passes: ${game.stats.assists}\n- Interceptions: ${game.stats.steals}\n- Contres: ${game.stats.blocks}\n\n#HoopStats`;
@@ -225,10 +227,15 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate }: Ga
                                 </div>
                                 <div className="text-center">
                                     <div className="text-4xl font-black font-mono text-[var(--color-text)]">
-                                        {(game.stats.points1 * 1) + (game.stats.points2 * 2) + (game.stats.points3 * 3)}
+                                        {game.stats.points1 + (game.stats.points2 * 2) + (game.stats.points3 * 3)}
                                     </div>
                                     <div className="text-[10px] text-[var(--color-text-dim)] font-bold uppercase">Points Totaux</div>
                                 </div>
+                            </div>
+
+                            {/* Badges Section */}
+                            <div className="mb-2">
+                                <BadgeList badges={calculateBadges(game.stats)} />
                             </div>
 
                             <SessionStats stats={game.stats} playerLevel={player?.level} />

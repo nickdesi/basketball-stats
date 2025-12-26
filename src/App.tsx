@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, useEffect } from 'react';
 import Layout from './components/Layout';
+import LoadingSpinner from './components/LoadingSpinner';
 import { useThemeStore } from './store/themeStore';
 import { useAuthStore } from './store/authStore';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
@@ -25,13 +26,6 @@ function AuthenticatedApp({
   // Handle one-time migration from local storage to Firebase
   const { isMigrating } = useMigration();
 
-  // Loading spinner component
-  const LoadingFallback = () => (
-    <div className="flex items-center justify-center h-full w-full min-h-[50vh]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-neon-blue)]"></div>
-    </div>
-  );
-
   // Show migration progress
   if (isMigrating) {
     return (
@@ -47,7 +41,7 @@ function AuthenticatedApp({
 
   return (
     <Layout currentView={view} onNavigate={setView}>
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={<LoadingSpinner />}>
         {view === 'dashboard' ? (
           <Dashboard />
         ) : view === 'players' ? (
@@ -77,21 +71,11 @@ function App() {
     document.documentElement.classList.add(theme);
   }, [theme]);
 
-  // Loading spinner component
-  const LoadingFallback = () => (
-    <div className="flex items-center justify-center h-full w-full min-h-[50vh]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-neon-blue)]"></div>
-    </div>
-  );
-
   // Show loading while initializing auth
   if (!initialized || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--color-neon-blue)] mx-auto mb-4"></div>
-          <p className="text-[var(--color-text-dim)]">Chargement...</p>
-        </div>
+        <LoadingSpinner size="lg" message="Chargement..." />
       </div>
     );
   }
@@ -99,7 +83,7 @@ function App() {
   // Show login page if not authenticated
   if (!user) {
     return (
-      <Suspense fallback={<LoadingFallback />}>
+      <Suspense fallback={<LoadingSpinner />}>
         <LoginPage onLoginSuccess={() => setView('dashboard')} />
       </Suspense>
     );
@@ -110,5 +94,3 @@ function App() {
 }
 
 export default App;
-
-
