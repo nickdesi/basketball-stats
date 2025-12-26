@@ -91,9 +91,9 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                     <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-purple-500/20 blur-3xl"></div>
 
                     {/* Content */}
-                    <div className="relative z-10 h-full flex flex-col p-6">
+                    <div className="relative z-10 h-full flex flex-col justify-between p-6">
                         {/* Header */}
-                        <div className="text-center mb-4">
+                        <div className="text-center mb-2">
                             <div className="text-cyan-400 text-xs font-bold tracking-[0.3em] uppercase mb-1">Match Statistics</div>
                             <div className="text-white/60 text-sm">
                                 {new Date(game.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -101,7 +101,7 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                         </div>
 
                         {/* Player Info */}
-                        <div className="text-center mb-6">
+                        <div className="text-center mb-4">
                             <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-5 py-2">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center font-bold text-lg">
                                     {player?.number || '#'}
@@ -114,12 +114,12 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                         </div>
 
                         {/* Opponent */}
-                        <div className="text-center text-white/40 text-sm mb-4">
+                        <div className="text-center text-white/40 text-sm mb-2">
                             vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span>
                         </div>
 
                         {/* Main Stats - Dual Display */}
-                        <div className="flex-1 flex items-center justify-center gap-6">
+                        <div className="flex items-center justify-center gap-6 my-2">
                             {/* Points */}
                             <div className="text-center">
                                 <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 leading-none">
