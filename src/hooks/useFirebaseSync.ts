@@ -128,16 +128,27 @@ export function useFirebaseSync() {
         });
     }, [user, getGamesPath]);
 
-    const updateGameInFirestore = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string) => {
+    const updateGameInFirestore = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string, opponent?: string) => {
         if (!user) throw new Error('User not authenticated');
         const gameRef = doc(db, getGamesPath(user.uid), gameId);
-        const updates: Partial<CompletedGame> = { stats: updatedStats };
+        const updates: Partial<CompletedGame & { opponent?: string }> = { stats: updatedStats };
         if (date) updates.date = date;
         if (playerId) updates.playerId = playerId;
+        if (opponent !== undefined) updates.opponent = opponent;
         await setDoc(gameRef, updates, { merge: true });
     }, [user, getGamesPath]);
 
-    const deleteGameFromFirestore = useCallback(async (id: string) => {
+    const softDeleteGameFromFirestore = useCallback(async (id: string) => {
+        if (!user) throw new Error('User not authenticated');
+        await setDoc(doc(db, getGamesPath(user.uid), id), { deletedAt: new Date().toISOString() }, { merge: true });
+    }, [user, getGamesPath]);
+
+    const restoreGameFromFirestore = useCallback(async (id: string) => {
+        if (!user) throw new Error('User not authenticated');
+        await setDoc(doc(db, getGamesPath(user.uid), id), { deletedAt: null }, { merge: true });
+    }, [user, getGamesPath]);
+
+    const hardDeleteGameFromFirestore = useCallback(async (id: string) => {
         if (!user) throw new Error('User not authenticated');
         await deleteDoc(doc(db, getGamesPath(user.uid), id));
     }, [user, getGamesPath]);
@@ -179,7 +190,9 @@ export function useFirebaseSync() {
         deletePlayerFromFirestore,
         saveGameToFirestore,
         updateGameInFirestore,
-        deleteGameFromFirestore,
+        softDeleteGameFromFirestore,
+        restoreGameFromFirestore,
+        hardDeleteGameFromFirestore,
         migrateLocalDataToFirestore,
     };
 }

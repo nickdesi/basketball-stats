@@ -11,7 +11,7 @@ interface GameDetailModalProps {
     players: Player[];
     onClose: () => void;
     onDelete: (id: string) => void;
-    onUpdate: (gameId: string, stats: GameStats, date?: string, playerId?: string) => void;
+    onUpdate: (gameId: string, stats: GameStats, date?: string, playerId?: string, opponent?: string) => void;
     initialIsEditing?: boolean;
 }
 
@@ -20,6 +20,7 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, init
     const [editStats, setEditStats] = useState<GameStats | null>(null);
     const [editDate, setEditDate] = useState<string>('');
     const [editPlayerId, setEditPlayerId] = useState<string>('');
+    const [editOpponent, setEditOpponent] = useState<string>('');
     const [showShareCard, setShowShareCard] = useState(false);
 
     const startEditing = useCallback(() => {
@@ -28,6 +29,7 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, init
         const localISOTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
         setEditDate(localISOTime);
         setEditPlayerId(game.playerId);
+        setEditOpponent(game.opponent || '');
         setIsEditing(true);
     }, [game]);
 
@@ -36,19 +38,23 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, init
         setEditStats(null);
         setEditDate('');
         setEditPlayerId('');
+        setEditOpponent('');
     };
 
     const saveEditing = useCallback(() => {
-        if (editStats && editDate) {
-            const isoDate = new Date(editDate).toISOString();
+        if (editStats) {
+            // Date is optional - only update if changed
+            const newDate = editDate ? new Date(editDate).toISOString() : undefined;
             const newPlayerId = editPlayerId !== game.playerId ? editPlayerId : undefined;
-            onUpdate(game.id, editStats, isoDate, newPlayerId);
+            const newOpponent = editOpponent !== game.opponent ? editOpponent : undefined;
+            onUpdate(game.id, editStats, newDate, newPlayerId, newOpponent);
             setIsEditing(false);
             setEditStats(null);
             setEditDate('');
             setEditPlayerId('');
+            setEditOpponent('');
         }
-    }, [editStats, editDate, editPlayerId, game.id, game.playerId, onUpdate]);
+    }, [editStats, editDate, editPlayerId, editOpponent, game.id, game.playerId, game.opponent, onUpdate]);
 
     const handleEditStatChange = useCallback((stat: string, value: number) => {
         setEditStats((prev) => {
@@ -166,7 +172,18 @@ const GameDetailModal = memo(({ game, players, onClose, onDelete, onUpdate, init
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Date et Heure</label>
+                                <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Adversaire</label>
+                                <input
+                                    type="text"
+                                    value={editOpponent}
+                                    onChange={(e) => setEditOpponent(e.target.value)}
+                                    placeholder="Nom de l'équipe adverse"
+                                    className="bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-glass-border)] rounded-lg p-3 focus:outline-none focus:border-[var(--color-neon-blue)]"
+                                />
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs text-[var(--color-text-dim)] uppercase font-bold">Date et Heure <span className="text-[var(--color-text-dim)]/50">(optionnel)</span></label>
                                 <input
                                     type="datetime-local"
                                     value={editDate}

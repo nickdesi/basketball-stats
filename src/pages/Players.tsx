@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import EmptyState from '../components/EmptyState';
 import { useGameStore, type Player } from '../store/gameStore';
 import { useFirebaseSync } from '../hooks/useFirebaseSync';
 import { UserPlus, Trash2, Users } from 'lucide-react';
@@ -252,9 +253,11 @@ const Players = () => {
             <h3 className="text-xl font-bold mt-8">Effectif Actuel</h3>
             <div className="grid gap-4">
                 {players.length === 0 ? (
-                    <div className="text-center py-10 text-[var(--color-text-dim)] glass-card rounded-2xl">
-                        Aucun joueur dans l'équipe.
-                    </div>
+                    <EmptyState
+                        title="Aucun joueur"
+                        message="Votre équipe est vide. Ajoutez des joueurs pour commencer à suivre leurs stats."
+                        icon="player"
+                    />
                 ) : (
                     players.map((player) => (
                         <div key={player.id} className="glass-card p-4 rounded-2xl flex justify-between items-center group">

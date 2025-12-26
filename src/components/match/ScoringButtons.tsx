@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import type { Player } from '../../store/gameStore';
+import { useHaptics } from '../../hooks/useHaptics';
 
 interface ScoringButtonsProps {
     playerLevel?: Player['level'];
@@ -14,6 +15,8 @@ const SHOT_TYPES = [
 ];
 
 const ScoringButtons = memo(({ playerLevel, isFouledOut, onScore }: ScoringButtonsProps) => {
+    const { successHaptic, mediumHaptic } = useHaptics();
+
     const visibleShots = SHOT_TYPES.filter(shot => {
         // U11 Rule: No 3 Pointers
         if (playerLevel === 'U11' && shot.val === 3) return false;
@@ -26,7 +29,12 @@ const ScoringButtons = memo(({ playerLevel, isFouledOut, onScore }: ScoringButto
                 <div key={shot.val} className="flex gap-2 h-full">
                     {/* SCORED BUTTON */}
                     <button
-                        onClick={(e) => !isFouledOut && onScore('make', shot.val, e)}
+                        onClick={(e) => {
+                            if (!isFouledOut) {
+                                successHaptic();
+                                onScore('make', shot.val, e);
+                            }
+                        }}
                         disabled={isFouledOut}
                         className="flex-[2] rounded-xl flex items-center justify-between px-4 relative overflow-hidden active:scale-[0.98] transition-all border border-[var(--color-glass-border)] disabled:opacity-50"
                         style={{
@@ -43,7 +51,12 @@ const ScoringButtons = memo(({ playerLevel, isFouledOut, onScore }: ScoringButto
 
                     {/* MISSED BUTTON */}
                     <button
-                        onClick={(e) => !isFouledOut && onScore('miss', shot.val, e)}
+                        onClick={(e) => {
+                            if (!isFouledOut) {
+                                mediumHaptic();
+                                onScore('miss', shot.val, e);
+                            }
+                        }}
                         disabled={isFouledOut}
                         className="flex-1 rounded-xl flex flex-col items-center justify-center bg-red-500/10 border border-red-500/20 active:scale-[0.98] transition-all hover:bg-red-500/20 disabled:opacity-50"
                     >

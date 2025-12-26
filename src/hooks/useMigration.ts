@@ -63,7 +63,7 @@ export function useMigration() {
 
             if (playersSnapshot.size > 0 || gamesSnapshot.size > 0) {
                 // Firestore already has data, skip migration
-                console.log('Firestore already has data, skipping migration');
+
                 localStorage.setItem(MIGRATION_KEY, 'true');
                 setMigrationComplete(true);
                 return;
@@ -71,7 +71,7 @@ export function useMigration() {
 
             // Perform migration
             setIsMigrating(true);
-            console.log(`Migrating ${localPlayers.length} players and ${localGames.length} games to Firebase...`);
+
 
             await migrateLocalDataToFirestore(localPlayers, localGames);
 

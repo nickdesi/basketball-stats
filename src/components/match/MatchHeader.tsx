@@ -32,7 +32,7 @@ const MatchHeader = memo(({ totalPoints, activePlayer, viewMode, onViewModeChang
 
                 {/* Evaluation Badge */}
                 {evaluation !== undefined && (
-                    <div className="flex items-center gap-2 border-l border-white/10 pl-4">
+                    <div className="flex items-center gap-2 border-l border-[var(--color-glass-border)] pl-4">
                         <div className="font-stats text-3xl text-[var(--color-neon-orange)] leading-none">
                             {evaluation}
                         </div>
@@ -47,13 +47,13 @@ const MatchHeader = memo(({ totalPoints, activePlayer, viewMode, onViewModeChang
             <div className="flex bg-[var(--color-card)] rounded-full p-1.5 border border-[var(--color-glass-border)] gap-1">
                 <button
                     onClick={() => onViewModeChange('input')}
-                    className={`p-2 rounded-full transition-all ${viewMode === 'input' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-white/5'}`}
+                    className={`p-2 rounded-full transition-all ${viewMode === 'input' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-elevated)]'}`}
                 >
                     <GripHorizontal size={18} />
                 </button>
                 <button
                     onClick={() => onViewModeChange('stats')}
-                    className={`p-2 rounded-full transition-all ${viewMode === 'stats' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-white/5'}`}
+                    className={`p-2 rounded-full transition-all ${viewMode === 'stats' ? 'bg-[var(--color-text)] text-[var(--color-bg)] shadow-sm' : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-elevated)]'}`}
                 >
                     <BarChart3 size={18} />
                 </button>

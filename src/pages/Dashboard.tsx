@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
 import { useFirebaseSync } from '../hooks/useFirebaseSync';
+import { useToast } from '../contexts/ToastContext';
 import { useThemeStore } from '../store/themeStore';
 import { Trophy, Activity, Download } from 'lucide-react';
 import {
@@ -41,7 +42,7 @@ interface DashboardProps {
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
     const { history, players } = useGameStore();
-    const { deleteGameFromFirestore, updateGameInFirestore, saveGameToFirestore } = useFirebaseSync();
+    const { softDeleteGameFromFirestore, restoreGameFromFirestore, hardDeleteGameFromFirestore, updateGameInFirestore, saveGameToFirestore } = useFirebaseSync();
     const theme = useThemeStore((state) => state.theme);
 
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('all');
@@ -53,11 +54,12 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         setSelectedGame(game);
     }, []);
 
-    // --- FILTER ---
+    // --- FILTER (excludes soft-deleted games) ---
     const filteredHistory = useMemo(() => {
+        const visibleGames = history.filter(game => !(game as { deletedAt?: string }).deletedAt);
         return selectedPlayerId === 'all'
-            ? history
-            : history.filter(game => game.playerId === selectedPlayerId);
+            ? visibleGames
+            : visibleGames.filter(game => game.playerId === selectedPlayerId);
     }, [history, selectedPlayerId]);
 
     // --- STATS CALCULATION ---
@@ -295,16 +297,17 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         e.target.value = '';
     };
 
-    const handleUpdateGame = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string) => {
+    const handleUpdateGame = useCallback(async (gameId: string, updatedStats: GameStats, date?: string, playerId?: string, opponent?: string) => {
         try {
-            await updateGameInFirestore(gameId, updatedStats, date, playerId);
+            await updateGameInFirestore(gameId, updatedStats, date, playerId, opponent);
             // Update local state to reflect changes immediately
             if (selectedGame && selectedGame.id === gameId) {
                 setSelectedGame({
                     ...selectedGame,
                     stats: { ...updatedStats },
                     ...(date ? { date } : {}),
-                    ...(playerId ? { playerId } : {})
+                    ...(playerId ? { playerId } : {}),
+                    ...(opponent !== undefined ? { opponent } : {})
                 });
             }
         } catch (error) {
@@ -312,14 +315,54 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
         }
     }, [updateGameInFirestore, selectedGame]);
 
+    const { showToast } = useToast();
+
     const handleDeleteGame = useCallback(async (gameId: string) => {
+        const gameToDelete = filteredHistory.find(g => g.id === gameId);
+        if (!gameToDelete) return;
+
+        // Close modal immediately for snappy UX
+        setSelectedGame(null);
+
+        let undoClicked = false;
+
         try {
-            await deleteGameFromFirestore(gameId);
-            setSelectedGame(null);
+            // Soft-delete: mark as deleted (still visible until hard delete)
+            await softDeleteGameFromFirestore(gameId);
+
+            showToast('Match supprimé', {
+                type: 'success',
+                duration: 5000,
+                action: {
+                    label: 'Annuler',
+                    onClick: async () => {
+                        undoClicked = true;
+                        try {
+                            await restoreGameFromFirestore(gameId);
+                            showToast('Suppression annulée', { type: 'info' });
+                        } catch {
+                            showToast('Impossible d\'annuler', { type: 'error' });
+                        }
+                    }
+                }
+            });
+
+            // Schedule permanent deletion after 5 seconds
+            setTimeout(async () => {
+                if (!undoClicked) {
+                    try {
+                        await hardDeleteGameFromFirestore(gameId);
+                    } catch (err) {
+                        console.error('Failed to permanently delete:', err);
+                    }
+                }
+            }, 5200);
+
         } catch (error) {
             console.error('Error deleting game:', error);
+            showToast('Erreur lors de la suppression', { type: 'error' });
         }
-    }, [deleteGameFromFirestore]);
+    }, [softDeleteGameFromFirestore, restoreGameFromFirestore, hardDeleteGameFromFirestore, filteredHistory, showToast]);
 
     return (
         <div className="space-y-6 pb-24 relative">

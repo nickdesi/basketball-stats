@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Undo2 } from 'lucide-react';
 import type { GameStats } from '../../store/gameStore';
 import CounterInput from '../CounterInput';
+import { useHaptics } from '../../hooks/useHaptics';
 
 interface StatGridProps {
     currentStats: GameStats;
@@ -23,6 +24,8 @@ const STAT_CONFIG = [
 ];
 
 const StatGrid = memo(({ currentStats, onStat, onDecrement, onUndo, canUndo }: StatGridProps) => {
+    const { mediumHaptic } = useHaptics();
+
     return (
         <div className="grid grid-cols-4 gap-2 flex-1 min-h-0 content-start">
             {STAT_CONFIG.map((stat) => (
@@ -39,9 +42,9 @@ const StatGrid = memo(({ currentStats, onStat, onDecrement, onUndo, canUndo }: S
 
             {/* Undo Button */}
             <button
-                onClick={() => { onUndo(); if (navigator.vibrate) navigator.vibrate(50); }}
+                onClick={() => { onUndo(); mediumHaptic(); }}
                 disabled={!canUndo}
-                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${canUndo ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-white/5 opacity-30 cursor-not-allowed'}`}
+                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${canUndo ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-[var(--color-glass-border)] opacity-30 cursor-not-allowed'}`}
             >
                 <Undo2 size={24} />
                 <span className="text-[9px] font-bold uppercase mt-1">UNDO</span>

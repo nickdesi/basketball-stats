@@ -7,6 +7,7 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 interface Toast {
     id: string;
     message: string;
+    type: 'info' | 'success' | 'error';
     action?: {
         label: string;
         onClick: () => void;
@@ -17,6 +18,7 @@ interface Toast {
 interface ToastContextType {
     toasts: Toast[];
     showToast: (message: string, options?: {
+        type?: 'info' | 'success' | 'error';
         action?: { label: string; onClick: () => void };
         duration?: number;
     }) => string;
@@ -53,15 +55,19 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
     }, []);
 
     const showToast = useCallback((message: string, options?: {
+        type?: 'info' | 'success' | 'error';
         action?: { label: string; onClick: () => void };
         duration?: number;
     }) => {
         const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const duration = options?.duration ?? 4000;
+        const type = options?.type ?? 'info';
+
 
         const newToast: Toast = {
             id,
             message,
+            type,
             action: options?.action,
             duration,
         };

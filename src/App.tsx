@@ -5,6 +5,7 @@ import { useThemeStore } from './store/themeStore';
 import { useAuthStore } from './store/authStore';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { useMigration } from './hooks/useMigration';
+import { ToastProvider } from './contexts/ToastContext';
 
 // Lazy load pages for code splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -95,23 +96,31 @@ function App() {
   // Show Landing Page if not authenticated and user hasn't clicked start
   if (!user && showLanding) {
     return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <LandingPage onStart={() => setShowLanding(false)} />
-      </Suspense>
+      <ToastProvider>
+        <Suspense fallback={<LoadingSpinner />}>
+          <LandingPage onStart={() => setShowLanding(false)} />
+        </Suspense>
+      </ToastProvider>
     );
   }
 
   // Show login page if not authenticated and landing passed
   if (!user) {
     return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <LoginPage onLoginSuccess={() => setView('dashboard')} />
-      </Suspense>
+      <ToastProvider>
+        <Suspense fallback={<LoadingSpinner />}>
+          <LoginPage onLoginSuccess={() => setView('dashboard')} />
+        </Suspense>
+      </ToastProvider>
     );
   }
 
   // Render authenticated app with Firebase sync
-  return <AuthenticatedApp view={view} setView={setView} />;
+  return (
+    <ToastProvider>
+      <AuthenticatedApp view={view} setView={setView} />
+    </ToastProvider>
+  );
 }
 
 export default App;
