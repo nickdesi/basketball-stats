@@ -1,27 +1,26 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type Theme = 'dark' | 'light';
-type ContrastMode = 'normal' | 'high';
+export type Theme = 'dark' | 'light' | 'system' | 'high-contrast';
 
 interface ThemeState {
     theme: Theme;
-    contrastMode: ContrastMode;
-    toggleTheme: () => void;
     setTheme: (theme: Theme) => void;
-    toggleContrastMode: () => void;
-    setContrastMode: (mode: ContrastMode) => void;
+    cycleTheme: () => void;
 }
+
+const themeOrder: Theme[] = ['dark', 'light', 'system', 'high-contrast'];
 
 export const useThemeStore = create<ThemeState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             theme: 'dark', // Default to dark
-            contrastMode: 'normal', // Default to normal
-            toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
             setTheme: (theme) => set({ theme }),
-            toggleContrastMode: () => set((state) => ({ contrastMode: state.contrastMode === 'normal' ? 'high' : 'normal' })),
-            setContrastMode: (contrastMode) => set({ contrastMode }),
+            cycleTheme: () => {
+                const currentIndex = themeOrder.indexOf(get().theme);
+                const nextIndex = (currentIndex + 1) % themeOrder.length;
+                set({ theme: themeOrder[nextIndex] });
+            },
         }),
         {
             name: 'hoop-stats-theme',

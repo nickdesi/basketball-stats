@@ -58,7 +58,7 @@ function AuthenticatedApp({
 function App() {
   const [view, setView] = useState<'dashboard' | 'match' | 'players'>('dashboard');
   const [showLanding, setShowLanding] = useState(true);
-  const { theme, contrastMode } = useThemeStore();
+  const { theme } = useThemeStore();
   const { user, loading, initialized, initAuth } = useAuthStore();
 
   // Initialize Firebase auth listener
@@ -67,14 +67,21 @@ function App() {
     return () => unsubscribe();
   }, [initAuth]);
 
-  // Apply theme and contrast mode
+  // Apply theme with system preference support
   useEffect(() => {
-    document.documentElement.classList.remove('light', 'dark', 'high-contrast');
-    document.documentElement.classList.add(theme);
-    if (contrastMode === 'high') {
-      document.documentElement.classList.add('high-contrast');
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark', 'high-contrast');
+
+    if (theme === 'system') {
+      // Detect system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.classList.add(prefersDark ? 'dark' : 'light');
+    } else if (theme === 'high-contrast') {
+      root.classList.add('dark', 'high-contrast');
+    } else {
+      root.classList.add(theme);
     }
-  }, [theme, contrastMode]);
+  }, [theme]);
 
   // Show loading while initializing auth
   if (!initialized || loading) {

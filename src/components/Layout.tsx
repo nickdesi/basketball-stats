@@ -1,30 +1,33 @@
-import { LayoutDashboard, Play, Users, Moon, Sun, LogOut, Eye } from 'lucide-react';
-import { useThemeStore } from '../store/themeStore';
+import { LayoutDashboard, Play, Users, Moon, Sun, LogOut, Monitor, Eye } from 'lucide-react';
+import { useThemeStore, type Theme } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import OfflineBanner from './OfflineBanner';
 
 interface LayoutProps {
-    // children removed as it handles view switching internally now/or we revert to external control?
-    // The previous error showed App.tsx trying to pass `currentView` and `onNavigate`.
-    // BUT the Layout.tsx code I wrote *internally* manages state.
-    // I should probably revert Layout to be a "dumb" wrapper if App.tsx is controlling it, OR update App.tsx to just use Layout.
-    // Looking at App.tsx, it tries to control state.
-    // Let's make Layout Controlled again to match App.tsx expectation OR change App.tsx.
-    // Actually, simpler: App.tsx wraps everything. Layout should receive currentView and onNavigate.
     currentView: 'dashboard' | 'match' | 'players';
     onNavigate: (view: 'dashboard' | 'match' | 'players') => void;
     children: React.ReactNode;
 }
 
+// Theme configuration for display
+const themeConfig: Record<Theme, { icon: typeof Sun; label: string; activeClass: string }> = {
+    dark: { icon: Moon, label: 'Sombre', activeClass: 'text-[var(--color-neon-purple)]' },
+    light: { icon: Sun, label: 'Clair', activeClass: 'text-yellow-400' },
+    system: { icon: Monitor, label: 'Auto', activeClass: 'text-[var(--color-neon-blue)]' },
+    'high-contrast': { icon: Eye, label: 'Contraste', activeClass: 'text-yellow-400 bg-yellow-500/10' },
+};
+
 const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
-    const { theme, toggleTheme, contrastMode, toggleContrastMode } = useThemeStore();
+    const { theme, cycleTheme } = useThemeStore();
     const { logout } = useAuthStore();
     const { isOnline } = useOnlineStatus();
     const isMobileMatch = currentView === 'match';
 
     // Banner height for offsetting fixed elements
     const bannerOffset = isOnline ? '' : 'top-10';
+
+    const CurrentIcon = themeConfig[theme].icon;
 
     return (
         <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-sans selection:bg-[var(--color-neon-blue)] selection:text-black pb-20 md:pb-0 transition-colors duration-300">
@@ -62,20 +65,12 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                     </button>
 
                     <button
-                        onClick={toggleTheme}
-                        className="p-2 rounded-lg text-[var(--color-nav-text)] hover:text-[var(--color-nav-text-hover)] hover:bg-[var(--color-nav-bg-hover)] transition-all"
+                        onClick={cycleTheme}
+                        className={`p-2 rounded-lg transition-all hover:bg-[var(--color-nav-bg-hover)] ${themeConfig[theme].activeClass}`}
                         aria-label="Changer de thème"
+                        title={`Thème: ${themeConfig[theme].label}`}
                     >
-                        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                    </button>
-
-                    <button
-                        onClick={toggleContrastMode}
-                        className={`p-2 rounded-lg transition-all ${contrastMode === 'high' ? 'bg-yellow-500/20 text-yellow-400' : 'text-[var(--color-nav-text)] hover:text-[var(--color-nav-text-hover)] hover:bg-[var(--color-nav-bg-hover)]'}`}
-                        aria-label="Mode contraste élevé"
-                        title="Mode contraste élevé (extérieur)"
-                    >
-                        <Eye size={20} />
+                        <CurrentIcon size={20} />
                     </button>
 
                     <button
@@ -88,13 +83,13 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
                     </button>
                 </nav>
 
-                {/* Mobile Theme Toggle (Absolute Top Right if Header hidden?) or in Nav? */}
-                {/* Let's put it in the header for mobile too, since header is only hidden in Match view */}
+                {/* Mobile Theme Toggle in Header */}
                 <button
-                    onClick={toggleTheme}
-                    className="md:hidden p-2 text-[var(--color-nav-text)] hover:text-[var(--color-nav-text-hover)]"
+                    onClick={cycleTheme}
+                    className={`md:hidden p-2 rounded-lg ${themeConfig[theme].activeClass}`}
+                    title={`Thème: ${themeConfig[theme].label}`}
                 >
-                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                    <CurrentIcon size={20} />
                 </button>
             </header>
 
@@ -137,21 +132,12 @@ const Layout = ({ currentView, onNavigate, children }: LayoutProps) => {
 
                 {/* Right Navigation Items */}
                 <button
-                    onClick={toggleContrastMode}
-                    className={`flex flex-col items-center gap-0.5 p-3 rounded-full transition-all active:scale-90 ${contrastMode === 'high' ? 'text-yellow-400 bg-yellow-500/10' : 'text-[var(--color-nav-text)]'}`}
-                    aria-label="Contraste"
-                >
-                    <Eye size={22} />
-                    <span className="text-[10px] font-medium">Contraste</span>
-                </button>
-
-                <button
-                    onClick={toggleTheme}
-                    className="flex flex-col items-center gap-0.5 p-3 rounded-full transition-all text-[var(--color-nav-text)] active:scale-90"
+                    onClick={cycleTheme}
+                    className={`flex flex-col items-center gap-0.5 p-3 rounded-full transition-all active:scale-90 ${themeConfig[theme].activeClass}`}
                     aria-label="Thème"
                 >
-                    {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
-                    <span className="text-[10px] font-medium">Thème</span>
+                    <CurrentIcon size={22} />
+                    <span className="text-[10px] font-medium">{themeConfig[theme].label}</span>
                 </button>
 
                 <button
