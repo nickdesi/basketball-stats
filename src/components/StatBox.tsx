@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import { HelpCircle } from 'lucide-react';
 
 interface StatBoxProps {
@@ -12,9 +12,30 @@ interface StatBoxProps {
 
 const StatBox = memo(({ label, value, subLabel, color, isPercent = false, tooltip }: StatBoxProps) => {
     const [showTooltip, setShowTooltip] = useState(false);
+    const boxRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!showTooltip) return;
+
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
+                setShowTooltip(false);
+            }
+        };
+
+        // Use mousedown and touchstart for better mobile responsiveness
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [showTooltip]);
 
     return (
         <div
+            ref={boxRef}
             className="flex flex-col items-center justify-center p-3 relative group"
             onClick={tooltip ? () => setShowTooltip(!showTooltip) : undefined}
         >
@@ -30,7 +51,7 @@ const StatBox = memo(({ label, value, subLabel, color, isPercent = false, toolti
 
             {/* Tooltip */}
             {tooltip && showTooltip && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg shadow-xl z-50 text-xs text-[var(--color-text)] text-center animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-[var(--color-card)] border border-[var(--color-glass-border)] rounded-lg shadow-xl z-50 text-xs text-[var(--color-text)] text-center animate-in fade-in zoom-in-95 duration-150 pointer-events-none">
                     {tooltip}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--color-glass-border)]" />
                 </div>
