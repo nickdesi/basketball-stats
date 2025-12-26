@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const MatchRecorder = lazy(() => import('./pages/MatchRecorder'));
 const Players = lazy(() => import('./pages/Players'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 // Component that handles Firebase sync after authentication
 function AuthenticatedApp({
@@ -56,6 +57,7 @@ function AuthenticatedApp({
 
 function App() {
   const [view, setView] = useState<'dashboard' | 'match' | 'players'>('dashboard');
+  const [showLanding, setShowLanding] = useState(true);
   const { theme } = useThemeStore();
   const { user, loading, initialized, initAuth } = useAuthStore();
 
@@ -80,7 +82,16 @@ function App() {
     );
   }
 
-  // Show login page if not authenticated
+  // Show Landing Page if not authenticated and user hasn't clicked start
+  if (!user && showLanding) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <LandingPage onStart={() => setShowLanding(false)} />
+      </Suspense>
+    );
+  }
+
+  // Show login page if not authenticated and landing passed
   if (!user) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
