@@ -81,7 +81,7 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                 {/* The Shareable Card */}
                 <div
                     ref={cardRef}
-                    className="w-full aspect-square rounded-3xl overflow-hidden relative"
+                    className="w-full aspect-[4/5] rounded-3xl overflow-hidden relative"
                     style={{
                         background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
                     }}
