@@ -114,6 +114,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                             <button
                                 onClick={handleShareClick}
                                 className="p-2 text-[var(--color-text-dim)] hover:text-[var(--color-neon-blue)] hover:bg-[var(--color-bg-elevated)] rounded-full transition-colors"
+                                aria-label="Partager les stats"
                             >
                                 <Share2 size={18} />
                             </button>
@@ -121,6 +122,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                                 <button
                                     onClick={toggleMenu}
                                     className="p-2 text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-elevated)] rounded-full transition-colors"
+                                    aria-label="Ouvrir le menu"
                                 >
                                     <MoreVertical size={18} />
                                 </button>

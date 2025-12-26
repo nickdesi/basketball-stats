@@ -142,6 +142,49 @@ select,
   transition-timing-function: ease-out;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Focus Visible (WCAG 2.4.7 / RGAA 10.7)
+   ═══════════════════════════════════════════════════════════════════════════*/
+
+/* Global focus indicator for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-neon-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default focus ring when using mouse/touch */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for buttons and interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-neon-blue);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 243, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Reduced Motion (WCAG 2.3.3)
+   ═══════════════════════════════════════════════════════════════════════════*/
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* 
   MOBILE OPTIMIZATION:
   Force 16px font size on inputs to prevent iOS Safari from zooming in on focus.
