@@ -1,5 +1,6 @@
 import { useMemo, memo } from 'react';
 import type { GameStats } from '../store/gameStore';
+import { getAdvancedStats } from '../store/gameStore';
 import StatBox from './StatBox';
 
 interface SessionStatsProps {
@@ -27,22 +28,12 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
         const ftAttempts = stats.points1 + stats.missedPoints1;
         const ftPercent = ftAttempts > 0 ? Math.round((ftMakes / ftAttempts) * 100) : 0;
 
-        // 4. TS% (True Shooting Percentage)
+        // Use centralized advanced stats for consistency
+        const advancedStats = getAdvancedStats(stats);
+        const { trueShooting: tsPercent, effectiveFg: efgPercent, evaluation } = advancedStats;
+
         const totalPoints = stats.points1 + (stats.points2 * 2) + (stats.points3 * 3);
-        const tsDenominator = 2 * (fgAttempts + (0.44 * ftAttempts));
-        const tsPercent = tsDenominator > 0 ? Math.round((totalPoints / tsDenominator) * 100) : 0;
-
-        // 5. eFG% (Effective Field Goal Percentage)
-        const efgPercent = fgAttempts > 0 ? Math.round(((fgMakes + 0.5 * p3Makes) / fgAttempts) * 100) : 0;
-
-        // 6. Game Score / Evaluation
         const totalReb = (stats.offensiveRebounds + stats.defensiveRebounds) || stats.rebounds;
-        const evaluation = totalPoints
-            + totalReb
-            + stats.assists + stats.steals + stats.blocks
-            - fgMisses - stats.missedPoints1 - stats.turnovers;
-
-
 
         return {
             fgMakes, fgAttempts, fgPercent,
