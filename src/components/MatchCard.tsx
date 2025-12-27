@@ -193,12 +193,12 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                 {isExpanded && (
                     <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
                         <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                            <div className="text-lg font-bold font-stats text-white">{tsPercent}%</div>
+                            <div className="text-lg font-bold font-stats text-[var(--color-text)]">{tsPercent}<span className="text-xs opacity-60">%</span></div>
                             <div className="text-[10px] text-[var(--color-text-dim)] font-bold">TS%</div>
                         </div>
                         {player?.level !== 'U11' && (
                             <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                                <div className="text-lg font-bold font-stats text-white">{efgPercent}%</div>
+                                <div className="text-lg font-bold font-stats text-[var(--color-text)]">{efgPercent}<span className="text-xs opacity-60">%</span></div>
                                 <div className="text-[10px] text-[var(--color-text-dim)] font-bold">eFG%</div>
                             </div>
                         )}
