@@ -117,7 +117,8 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
             </div>
 
             {/* FOOTER ACTIONS */}
-            <div className="flex gap-2 mt-2 shrink-0">
+            {/* ACTION BUTTONS - Added pb-4 for bottom nav spacing */}
+            <div className="flex gap-2 mt-2 pb-4 shrink-0">
                 <button
                     onClick={() => actions.setShowResetConfirm(true)}
                     className="px-4 py-3 rounded-xl bg-[var(--color-card)] border border-[var(--color-glass-border)] text-xs font-bold text-[var(--color-text-dim)] hover:bg-[var(--color-bg)] transition-colors"

@@ -189,7 +189,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                         : '-';
 
                     return (
-                        <div className="p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                        <div className="p-3 grid grid-cols-3 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
                             {/* Time Played */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
