@@ -58,7 +58,7 @@ const ScoringButtons = memo(({ playerLevel, isFouledOut, onScore }: ScoringButto
                             }
                         }}
                         disabled={isFouledOut}
-                        className="flex-1 rounded-xl flex flex-col items-center justify-center bg-red-500/10 border border-red-500/20 active:scale-[0.98] transition-all hover:bg-red-500/20 disabled:opacity-50"
+                        className="flex-1 rounded-xl flex flex-col items-center justify-center bg-red-900/40 border border-red-500/20 active:scale-[0.98] transition-all hover:bg-red-500/20 disabled:opacity-50"
                     >
                         <span className="text-xl font-bold text-red-500">MISS</span>
                         <span className="text-[9px] uppercase text-red-400/60 font-medium">Manqué</span>

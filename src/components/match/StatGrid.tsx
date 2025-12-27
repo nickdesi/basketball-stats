@@ -44,7 +44,10 @@ const StatGrid = memo(({ currentStats, onStat, onDecrement, onUndo, canUndo }: S
             <button
                 onClick={() => { onUndo(); mediumHaptic(); }}
                 disabled={!canUndo}
-                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${canUndo ? 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10' : 'border-[var(--color-glass-border)] opacity-30 cursor-not-allowed'}`}
+                className={`flex flex-col items-center justify-center rounded-xl border active:scale-95 transition-all ${canUndo
+                        ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/10 hover:bg-yellow-500/20'
+                        : 'border-[var(--color-glass-border)] text-[var(--color-text-dim)] bg-[var(--color-bg-elevated)] opacity-40 cursor-not-allowed'
+                    }`}
             >
                 <Undo2 size={24} />
                 <span className="text-[9px] font-bold uppercase mt-1">UNDO</span>

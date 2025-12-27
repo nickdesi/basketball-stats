@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useGameStore, type GameStats, type Player, type CompletedGame } from '../store/gameStore';
 import { useFirebaseSync } from './useFirebaseSync';
 
@@ -47,6 +47,11 @@ export interface UseMatchRecorderReturn {
     undoLastAction: () => void;
     decrementStat: (stat: keyof GameStats) => void;
 
+    // Timer state
+    isTimerRunning: boolean;
+    gameDuration: number;
+    toggleTimer: () => void;
+
     // Local state
     state: MatchRecorderState;
 
@@ -65,13 +70,17 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         players,
         activePlayerId,
         activeOpponent,
+        isTimerRunning,
+        gameDuration,
         setupGame,
         startGame,
         incrementStat,
         decrementStat,
         undoLastAction,
         canUndo,
-        resetGame
+        resetGame,
+        toggleTimer,
+        tickTimer
     } = useGameStore();
 
     const { saveGameToFirestore } = useFirebaseSync();
@@ -84,6 +93,17 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
     const [showFoulConfirm, setShowFoulConfirm] = useState(false);
     const [showEndMatchConfirm, setShowEndMatchConfirm] = useState(false);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+    // Timer Effect
+    useEffect(() => {
+        let interval: ReturnType<typeof setInterval>;
+        if (isTimerRunning && isGameActive) {
+            interval = setInterval(() => {
+                tickTimer();
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isTimerRunning, isGameActive, tickTimer]);
 
     // Computed
     const activePlayer = players.find(p => p.id === activePlayerId);
@@ -147,7 +167,10 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
             date: new Date().toISOString(),
             playerId: activePlayerId,
             opponent: activeOpponent || opponentName || 'Opponent',
-            stats: { ...currentStats },
+            stats: {
+                ...currentStats,
+                minutesPlayed: Math.round(gameDuration / 60)
+            },
         };
 
         // Save to Firebase (Firestore will update local state via listener)
@@ -164,7 +187,7 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         if (onNavigate) {
             onNavigate('dashboard');
         }
-    }, [activePlayerId, activeOpponent, opponentName, currentStats, saveGameToFirestore, resetGame, onNavigate]);
+    }, [activePlayerId, activeOpponent, opponentName, currentStats, gameDuration, saveGameToFirestore, resetGame, onNavigate]);
 
     const confirmFoulOut = useCallback(() => {
         incrementStat('fouls');
@@ -216,9 +239,12 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         players,
         activePlayerId,
         activePlayer,
+        isTimerRunning,
+        gameDuration,
         canUndo,
         undoLastAction,
         decrementStat,
+        toggleTimer,
 
         // Local state
         state,
@@ -231,4 +257,3 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
         actions,
     };
 }
-

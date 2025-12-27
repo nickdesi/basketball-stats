@@ -24,6 +24,9 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
         totalPoints,
         isFouledOut,
         actions,
+        gameDuration,
+        isTimerRunning,
+        toggleTimer,
     } = useMatchRecorder(onNavigate);
 
     // --- RENDER: Setup Screen ---
@@ -80,6 +83,9 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
                 viewMode={state.viewMode}
                 onViewModeChange={actions.setViewMode}
                 evaluation={getAdvancedStats(currentStats).evaluation}
+                gameDuration={gameDuration}
+                isTimerRunning={isTimerRunning}
+                onToggleTimer={toggleTimer}
             />
 
             {/* CONTENT */}

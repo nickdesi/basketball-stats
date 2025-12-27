@@ -25,6 +25,7 @@ export type GameStats = {
     turnovers: number;
     fouls: number;
     missedFreeThrows: number; // Redundant if we have missedPoints1 but explicit is nice. Actually missedPoints1 covers it. I will stick to missedPoints1.
+    minutesPlayed: number;
 };
 
 // Action log entry for undo functionality
@@ -54,6 +55,10 @@ export type GameState = {
     isGameActive: boolean;
     currentStats: GameStats;
 
+    // Timer State
+    isTimerRunning: boolean;
+    gameDuration: number; // in seconds
+
     // Undo Stack (last 50 actions)
     actionStack: StatAction[];
 
@@ -67,6 +72,12 @@ export type GameState = {
 
     setupGame: (playerId: string, opponent: string) => void;
     startGame: () => void;
+
+    // Timer Actions
+    toggleTimer: () => void;
+    tickTimer: () => void;
+    setGameDuration: (seconds: number) => void;
+
     incrementStat: (stat: keyof GameStats) => void;
     decrementStat: (stat: keyof GameStats) => void;
     undoLastAction: () => void;
@@ -98,6 +109,7 @@ const initialStats: GameStats = {
     turnovers: 0,
     fouls: 0,
     missedFreeThrows: 0,
+    minutesPlayed: 0,
 };
 
 export const useGameStore = create<GameState>()(
@@ -108,6 +120,8 @@ export const useGameStore = create<GameState>()(
             activeOpponent: '',
             isGameActive: false,
             currentStats: { ...initialStats },
+            isTimerRunning: false,
+            gameDuration: 0,
             actionStack: [],
             history: [],
 
@@ -132,8 +146,18 @@ export const useGameStore = create<GameState>()(
             startGame: () => set({
                 isGameActive: true,
                 currentStats: { ...initialStats },
+                isTimerRunning: true, // Auto-start timer
+                gameDuration: 0,
                 actionStack: []
             }),
+
+            toggleTimer: () => set((state) => ({ isTimerRunning: !state.isTimerRunning })),
+
+            tickTimer: () => set((state) => ({
+                gameDuration: state.isTimerRunning ? state.gameDuration + 1 : state.gameDuration
+            })),
+
+            setGameDuration: (seconds) => set({ gameDuration: seconds }),
 
             incrementStat: (stat) => set((state) => ({
                 currentStats: {
@@ -182,6 +206,8 @@ export const useGameStore = create<GameState>()(
             resetGame: () => set({
                 isGameActive: false,
                 currentStats: { ...initialStats },
+                isTimerRunning: false,
+                gameDuration: 0,
                 actionStack: []
             }),
 
@@ -193,7 +219,10 @@ export const useGameStore = create<GameState>()(
                     date: new Date().toISOString(),
                     playerId: state.activePlayerId,
                     opponent: state.activeOpponent,
-                    stats: { ...state.currentStats },
+                    stats: {
+                        ...state.currentStats,
+                        minutesPlayed: Math.round(state.gameDuration / 60) // Save approximate minutes
+                    },
                 };
                 return {
                     history: [newGame, ...state.history],
@@ -201,6 +230,8 @@ export const useGameStore = create<GameState>()(
                     activePlayerId: null,
                     activeOpponent: '',
                     currentStats: { ...initialStats },
+                    isTimerRunning: false,
+                    gameDuration: 0,
                     actionStack: [],
                 };
             }),
