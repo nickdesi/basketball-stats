@@ -65,8 +65,8 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
     const {
         fgMakes, fgAttempts, fgPercent,
         p3Makes, p3Attempts, p3Percent,
-        ftPercent,
-        totalPoints, tsPercent, efgPercent,
+        ftMakes, ftAttempts,
+        tsPercent, efgPercent,
         evaluation, totalReb, playTimeFormatted, pirPerMin
     } = computedStats;
 
@@ -91,7 +91,7 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
 
                 {/* Row 2: FT & Rebounds */}
                 <div className="grid grid-cols-4 divide-x divide-[var(--color-glass-border)] border-b border-[var(--color-glass-border)]">
-                    <StatBox label="FT%" value={ftPercent} isPercent tooltip="% Réussite aux Lancers-Francs" />
+                    <StatBox label="LF" value={`${ftMakes}/${ftAttempts}`} tooltip="Lancers-Francs réussis / tentés" />
                     <StatBox label="RB OFF" value={stats.offensiveRebounds} />
                     <StatBox label="RB DEF" value={stats.defensiveRebounds} />
                     <StatBox label="RB TOT" value={totalReb} color="var(--color-neon-purple)" />
@@ -112,13 +112,12 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
                     Statistiques avancées
                 </h4>
                 <div className="bg-[var(--color-card)] rounded-2xl border border-[var(--color-glass-border)] shadow-sm">
-                    <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-3' : 'grid-cols-4'} divide-x divide-[var(--color-glass-border)]`}>
-                        <StatBox label="POINTS" value={totalPoints} color="var(--color-neon-blue)" />
+                    <div className={`grid ${playerLevel === 'U11' ? 'grid-cols-2' : 'grid-cols-3'} divide-x divide-[var(--color-glass-border)]`}>
                         {playerLevel !== 'U11' && (
                             <StatBox label="eFG%" value={efgPercent} isPercent tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !" />
                         )}
-                        <StatBox label="TS%" value={tsPercent} isPercent tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%." />
-                        <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="Évaluation globale du match (formule FIBA). Inclut points, rebonds, passes, moins les erreurs. Plus c'est haut, meilleur est le match !" />
+                        <StatBox label="TS%" value={tsPercent} isPercent color={tsPercent >= 50 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="True Shooting : efficacité réelle aux tirs. Un bon score est au-dessus de 50%." />
+                        <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="Évaluation globale du match (formule FIBA). Plus c'est haut, meilleur est le match !" />
                     </div>
                     {/* PIR/min row if we have minutes */}
                     {pirPerMin && (
