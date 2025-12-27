@@ -1,6 +1,7 @@
 import { useState, memo, useRef, useEffect } from 'react';
 import { CalendarDays, ChevronDown, ChevronUp, Share2, MoreVertical, Edit, Trash2, Eye } from 'lucide-react';
 import type { CompletedGame, Player } from '../store/gameStore';
+import { getAdvancedStats } from '../store/gameStore';
 import { calculateBadges } from './badges/badgeUtils';
 import BadgeList from './badges/BadgeList';
 import ShareableStats from './ShareableStats';
@@ -34,24 +35,9 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
     const totalRebounds = (game.stats.offensiveRebounds + game.stats.defensiveRebounds) || game.stats.rebounds;
     const totalAssists = game.stats.assists;
 
-    // Evaluation (PIR) - Basic Formula: (Points + Reb + Ast + Stl + Blk) - (Missed FG + Missed FT + TO)
-    // Needs accurate missed shots. Assuming attempts = makes for now if tracking misses isn't fully granular, 
-    // but we do have `missedPoints1` etc in the store if used. 
-    // Let's use the standard Eval calculation if available or a simplified one.
-    // Based on SessionStats, we have misses.
-    const fgMisses = (game.stats.missedPoints2 || 0) + (game.stats.missedPoints3 || 0);
-    const ftMisses = (game.stats.missedPoints1 || 0);
-    const evaluation = totalPoints + totalRebounds + totalAssists + game.stats.steals + game.stats.blocks - fgMisses - ftMisses - game.stats.turnovers;
-
-    // Advanced Stats (Calculated on the fly for expanded view)
-    const fga = (game.stats.points2 + (game.stats.missedPoints2 || 0)) + (game.stats.points3 + (game.stats.missedPoints3 || 0));
-    const fgMakes = game.stats.points2 + game.stats.points3;
-    const fgPercent = fga > 0 ? Math.round((fgMakes / fga) * 100) : 0;
-
-    const fta = game.stats.points1 + (game.stats.missedPoints1 || 0);
-    const tsa = fga + 0.44 * fta;
-    const tsPercent = tsa > 0 ? ((totalPoints / (2 * tsa)) * 100).toFixed(1) : '0.0';
-    const efgPercent = fga > 0 ? (((game.stats.points2 + game.stats.points3) + 0.5 * game.stats.points3) / fga * 100).toFixed(1) : '0.0';
+    // Use centralized advanced stats calculation for consistency
+    const advancedStats = getAdvancedStats(game.stats);
+    const { evaluation, trueShooting: tsPercent, effectiveFg: efgPercent, fieldGoalPercentage: fgPercent } = advancedStats;
 
     const badges = calculateBadges(game.stats);
 
