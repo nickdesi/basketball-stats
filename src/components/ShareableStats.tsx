@@ -113,38 +113,53 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                             </div>
                         </div>
 
-                        {/* Opponent & Minutes */}
-                        <div className="text-center text-white/40 text-sm mb-2 flex items-center justify-center gap-4">
-                            <span>vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span></span>
-                            {game.stats.minutesPlayed ? (
-                                <span className="text-cyan-400 font-bold">{game.stats.minutesPlayed} MIN</span>
-                            ) : null}
-                        </div>
+                        {/* Opponent & Time */}
+                        {(() => {
+                            const formatTime = (secs: number) => {
+                                const mins = Math.floor(secs / 60);
+                                const remaining = secs % 60;
+                                return `${mins}:${remaining.toString().padStart(2, '0')}`;
+                            };
+                            const playTime = game.stats.playTimeSeconds ? formatTime(game.stats.playTimeSeconds) : null;
+                            const minutesPlayed = (game.stats.playTimeSeconds || 0) / 60;
+                            const pirPerMin = minutesPlayed > 0.5 ? (advancedStats.evaluation / minutesPlayed).toFixed(1) : null;
 
-                        {/* Main Stats - Dual Display */}
-                        <div className="flex items-center justify-center gap-6 my-2">
-                            {/* Points */}
-                            <div className="text-center">
-                                <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 leading-none">
-                                    {totalPoints}
-                                </div>
-                                <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">Points</div>
-                            </div>
-
-                            {/* Evaluation Badge */}
-                            <div className="text-center border-l border-white/20 pl-6">
-                                <div className="text-5xl font-black text-orange-400 leading-none">
-                                    {advancedStats.evaluation}
-                                </div>
-                                <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">EVAL</div>
-                                {/* PIR/min if available */}
-                                {game.stats.minutesPlayed && game.stats.minutesPlayed > 0 && (
-                                    <div className="text-orange-300/60 text-[10px] font-bold mt-0.5">
-                                        ({(advancedStats.evaluation / game.stats.minutesPlayed).toFixed(1)}/min)
+                            return (
+                                <>
+                                    <div className="text-center text-white/40 text-sm mb-2 flex items-center justify-center gap-4">
+                                        <span>vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span></span>
+                                        {playTime && (
+                                            <span className="text-cyan-400 font-bold">{playTime}</span>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        </div>
+
+                                    {/* Main Stats - Dual Display */}
+                                    <div className="flex items-center justify-center gap-6 my-2">
+                                        {/* Points */}
+                                        <div className="text-center">
+                                            <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 leading-none">
+                                                {totalPoints}
+                                            </div>
+                                            <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">Points</div>
+                                        </div>
+
+                                        {/* Evaluation Badge */}
+                                        <div className="text-center border-l border-white/20 pl-6">
+                                            <div className="text-5xl font-black text-orange-400 leading-none">
+                                                {advancedStats.evaluation}
+                                            </div>
+                                            <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">EVAL</div>
+                                            {/* PIR/min if available */}
+                                            {pirPerMin && (
+                                                <div className="text-orange-300/60 text-[10px] font-bold mt-0.5">
+                                                    ({pirPerMin}/min)
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
 
                         {/* Stats Grid */}
                         <div className="grid grid-cols-5 gap-2 mt-4">

@@ -177,52 +177,64 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                 </div>
 
                 {/* 3. Expanded View (Advanced Stats) */}
-                {isExpanded && (
-                    <div className="p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
-                        {/* Minutes Played */}
-                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                            <StatBox
-                                label="MIN"
-                                value={game.stats.minutesPlayed || '-'}
-                                tooltip="Minutes jouées sur le terrain."
-                            />
-                        </div>
-                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                            <StatBox
-                                label="TS%"
-                                value={tsPercent}
-                                isPercent
-                                tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%."
-                            />
-                        </div>
-                        {player?.level !== 'U11' && (
+                {isExpanded && (() => {
+                    // Helper to format seconds as MM:SS
+                    const formatTime = (secs: number) => {
+                        const mins = Math.floor(secs / 60);
+                        const remaining = secs % 60;
+                        return `${mins}:${remaining.toString().padStart(2, '0')}`;
+                    };
+                    const playTime = game.stats.playTimeSeconds
+                        ? formatTime(game.stats.playTimeSeconds)
+                        : '-';
+
+                    return (
+                        <div className="p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                            {/* Time Played */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
-                                    label="eFG%"
-                                    value={efgPercent}
-                                    isPercent
-                                    tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !"
+                                    label="TEMPS"
+                                    value={playTime}
+                                    tooltip="Temps de jeu sur le terrain (MM:SS)."
                                 />
                             </div>
-                        )}
-                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                            <StatBox
-                                label="BP"
-                                value={game.stats.turnovers}
-                                color="var(--color-error)"
-                                tooltip="Balles Perdues : nombre de fois où le ballon a été perdu (passe interceptée, sortie, etc.)."
-                            />
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="TS%"
+                                    value={tsPercent}
+                                    isPercent
+                                    tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%."
+                                />
+                            </div>
+                            {player?.level !== 'U11' && (
+                                <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                    <StatBox
+                                        label="eFG%"
+                                        value={efgPercent}
+                                        isPercent
+                                        tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !"
+                                    />
+                                </div>
+                            )}
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="BP"
+                                    value={game.stats.turnovers}
+                                    color="var(--color-error)"
+                                    tooltip="Balles Perdues : nombre de fois où le ballon a été perdu (passe interceptée, sortie, etc.)."
+                                />
+                            </div>
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="F"
+                                    value={game.stats.fouls}
+                                    color="#facc15"
+                                    tooltip="Fautes personnelles commises. 5 fautes = exclusion du match."
+                                />
+                            </div>
                         </div>
-                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                            <StatBox
-                                label="F"
-                                value={game.stats.fouls}
-                                color="#facc15"
-                                tooltip="Fautes personnelles commises. 5 fautes = exclusion du match."
-                            />
-                        </div>
-                    </div>
-                )}
+                    );
+                })()}
             </div>
 
             {showShareModal && (

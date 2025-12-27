@@ -169,7 +169,7 @@ export function useMatchRecorder(onNavigate?: (view: 'dashboard' | 'match' | 'pl
             opponent: activeOpponent || opponentName || 'Opponent',
             stats: {
                 ...currentStats,
-                minutesPlayed: Math.round(gameDuration / 60)
+                playTimeSeconds: gameDuration
             },
         };
 

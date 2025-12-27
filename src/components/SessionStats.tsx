@@ -36,20 +36,29 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
         const totalPoints = stats.points1 + (stats.points2 * 2) + (stats.points3 * 3);
         const totalReb = (stats.offensiveRebounds + stats.defensiveRebounds) || stats.rebounds;
 
-        // Minutes: use live duration if provided, otherwise use saved minutesPlayed
-        const minutes = liveDuration !== undefined
-            ? Math.floor(liveDuration / 60)
-            : (stats.minutesPlayed || 0);
+        // Seconds: use live duration if provided, otherwise use saved playTimeSeconds
+        const totalSeconds = liveDuration !== undefined
+            ? liveDuration
+            : (stats.playTimeSeconds || 0);
 
-        // PIR per minute (FIBA standard normalization)
-        const pirPerMin = minutes > 0 ? (evaluation / minutes).toFixed(1) : null;
+        // Format as MM:SS
+        const formatTime = (secs: number) => {
+            const mins = Math.floor(secs / 60);
+            const remaining = secs % 60;
+            return `${mins}:${remaining.toString().padStart(2, '0')}`;
+        };
+        const playTimeFormatted = totalSeconds > 0 ? formatTime(totalSeconds) : '-';
+
+        // PIR per minute (FIBA standard normalization) - convert seconds to minutes
+        const minutesPlayed = totalSeconds / 60;
+        const pirPerMin = minutesPlayed > 0.5 ? (evaluation / minutesPlayed).toFixed(1) : null; // Only show if > 30s
 
         return {
             fgMakes, fgAttempts, fgPercent,
             p3Makes, p3Attempts, p3Percent,
             ftMakes, ftAttempts, ftPercent,
             totalPoints, tsPercent, efgPercent,
-            evaluation, totalReb, minutes, pirPerMin
+            evaluation, totalReb, playTimeFormatted, pirPerMin
         };
     }, [stats, liveDuration]);
 
@@ -58,7 +67,7 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
         p3Makes, p3Attempts, p3Percent,
         ftPercent,
         totalPoints, tsPercent, efgPercent,
-        evaluation, totalReb, minutes, pirPerMin
+        evaluation, totalReb, playTimeFormatted, pirPerMin
     } = computedStats;
 
 
@@ -93,7 +102,7 @@ const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsPro
                     <StatBox label="PD" value={stats.assists} color="var(--color-neon-blue)" tooltip="Passes Décisives" />
                     <StatBox label="CTR" value={stats.blocks} tooltip="Contres" />
                     <StatBox label="INT" value={stats.steals} tooltip="Interceptions" />
-                    <StatBox label="MIN" value={minutes > 0 ? minutes : '-'} tooltip="Minutes jouées sur le terrain" />
+                    <StatBox label="TEMPS" value={playTimeFormatted} tooltip="Temps de jeu sur le terrain (MM:SS)" />
                 </div>
             </div>
 

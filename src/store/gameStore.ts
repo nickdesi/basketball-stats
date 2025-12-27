@@ -25,7 +25,7 @@ export type GameStats = {
     turnovers: number;
     fouls: number;
     missedFreeThrows: number; // Redundant if we have missedPoints1 but explicit is nice. Actually missedPoints1 covers it. I will stick to missedPoints1.
-    minutesPlayed: number;
+    playTimeSeconds: number; // Game time in seconds (display as MM:SS)
 };
 
 // Action log entry for undo functionality
@@ -109,7 +109,7 @@ const initialStats: GameStats = {
     turnovers: 0,
     fouls: 0,
     missedFreeThrows: 0,
-    minutesPlayed: 0,
+    playTimeSeconds: 0,
 };
 
 export const useGameStore = create<GameState>()(
@@ -221,7 +221,7 @@ export const useGameStore = create<GameState>()(
                     opponent: state.activeOpponent,
                     stats: {
                         ...state.currentStats,
-                        minutesPlayed: Math.round(state.gameDuration / 60) // Save approximate minutes
+                        playTimeSeconds: state.gameDuration // Save raw seconds
                     },
                 };
                 return {
