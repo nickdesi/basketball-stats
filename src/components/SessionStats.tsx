@@ -6,9 +6,10 @@ import StatBox from './StatBox';
 interface SessionStatsProps {
     stats: GameStats;
     playerLevel?: 'U11' | 'U13' | 'U15' | 'U18';
+    liveDuration?: number; // Live game duration in seconds (for MatchRecorder)
 }
 
-const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
+const SessionStats = memo(({ stats, playerLevel, liveDuration }: SessionStatsProps) => {
 
     // --- CALCULATIONS ---
     const computedStats = useMemo(() => {
@@ -35,21 +36,29 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
         const totalPoints = stats.points1 + (stats.points2 * 2) + (stats.points3 * 3);
         const totalReb = (stats.offensiveRebounds + stats.defensiveRebounds) || stats.rebounds;
 
+        // Minutes: use live duration if provided, otherwise use saved minutesPlayed
+        const minutes = liveDuration !== undefined
+            ? Math.floor(liveDuration / 60)
+            : (stats.minutesPlayed || 0);
+
+        // PIR per minute (FIBA standard normalization)
+        const pirPerMin = minutes > 0 ? (evaluation / minutes).toFixed(1) : null;
+
         return {
             fgMakes, fgAttempts, fgPercent,
             p3Makes, p3Attempts, p3Percent,
             ftMakes, ftAttempts, ftPercent,
             totalPoints, tsPercent, efgPercent,
-            evaluation, totalReb
+            evaluation, totalReb, minutes, pirPerMin
         };
-    }, [stats]);
+    }, [stats, liveDuration]);
 
     const {
         fgMakes, fgAttempts, fgPercent,
         p3Makes, p3Attempts, p3Percent,
         ftPercent,
         totalPoints, tsPercent, efgPercent,
-        evaluation, totalReb
+        evaluation, totalReb, minutes, pirPerMin
     } = computedStats;
 
 
@@ -84,7 +93,7 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
                     <StatBox label="PD" value={stats.assists} color="var(--color-neon-blue)" tooltip="Passes Décisives" />
                     <StatBox label="CTR" value={stats.blocks} tooltip="Contres" />
                     <StatBox label="INT" value={stats.steals} tooltip="Interceptions" />
-                    <StatBox label="MIN" value="-" />
+                    <StatBox label="MIN" value={minutes > 0 ? minutes : '-'} tooltip="Minutes jouées sur le terrain" />
                 </div>
             </div>
 
@@ -102,6 +111,15 @@ const SessionStats = memo(({ stats, playerLevel }: SessionStatsProps) => {
                         <StatBox label="TS%" value={tsPercent} isPercent tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%." />
                         <StatBox label="EVAL" value={evaluation} color={evaluation > 15 ? 'var(--color-neon-green)' : 'var(--color-text)'} tooltip="Évaluation globale du match (formule FIBA). Inclut points, rebonds, passes, moins les erreurs. Plus c'est haut, meilleur est le match !" />
                     </div>
+                    {/* PIR/min row if we have minutes */}
+                    {pirPerMin && (
+                        <div className="border-t border-[var(--color-glass-border)] p-3 flex justify-center">
+                            <div className="text-center">
+                                <div className="text-xl font-stats text-[var(--color-neon-orange)]">{pirPerMin}</div>
+                                <div className="text-[10px] text-[var(--color-text-dim)] font-bold">EVAL/MIN</div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

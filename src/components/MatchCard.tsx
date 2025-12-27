@@ -178,7 +178,15 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
 
                 {/* 3. Expanded View (Advanced Stats) */}
                 {isExpanded && (
-                    <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                    <div className="p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                        {/* Minutes Played */}
+                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                            <StatBox
+                                label="MIN"
+                                value={game.stats.minutesPlayed || '-'}
+                                tooltip="Minutes jouées sur le terrain."
+                            />
+                        </div>
                         <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                             <StatBox
                                 label="TS%"

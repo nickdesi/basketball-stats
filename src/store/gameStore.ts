@@ -146,7 +146,7 @@ export const useGameStore = create<GameState>()(
             startGame: () => set({
                 isGameActive: true,
                 currentStats: { ...initialStats },
-                isTimerRunning: true, // Auto-start timer
+                isTimerRunning: false, // Don't auto-start - player may not be on court yet
                 gameDuration: 0,
                 actionStack: []
             }),

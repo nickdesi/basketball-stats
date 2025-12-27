@@ -113,9 +113,12 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                             </div>
                         </div>
 
-                        {/* Opponent */}
-                        <div className="text-center text-white/40 text-sm mb-2">
-                            vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span>
+                        {/* Opponent & Minutes */}
+                        <div className="text-center text-white/40 text-sm mb-2 flex items-center justify-center gap-4">
+                            <span>vs <span className="text-white font-medium">{game.opponent || 'Adversaire'}</span></span>
+                            {game.stats.minutesPlayed ? (
+                                <span className="text-cyan-400 font-bold">{game.stats.minutesPlayed} MIN</span>
+                            ) : null}
                         </div>
 
                         {/* Main Stats - Dual Display */}
@@ -134,6 +137,12 @@ const ShareableStats = ({ game, player, onClose }: ShareableStatsProps) => {
                                     {advancedStats.evaluation}
                                 </div>
                                 <div className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase mt-1">EVAL</div>
+                                {/* PIR/min if available */}
+                                {game.stats.minutesPlayed && game.stats.minutesPlayed > 0 && (
+                                    <div className="text-orange-300/60 text-[10px] font-bold mt-0.5">
+                                        ({(advancedStats.evaluation / game.stats.minutesPlayed).toFixed(1)}/min)
+                                    </div>
+                                )}
                             </div>
                         </div>
 

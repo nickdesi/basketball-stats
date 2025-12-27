@@ -92,7 +92,7 @@ const MatchRecorder = ({ onNavigate }: MatchRecorderProps) => {
             <div className="flex-1 min-h-0 flex flex-col">
                 {state.viewMode === 'stats' ? (
                     <div className="overflow-y-auto p-2">
-                        <SessionStats stats={currentStats} playerLevel={activePlayer?.level} />
+                        <SessionStats stats={currentStats} playerLevel={activePlayer?.level} liveDuration={gameDuration} />
                     </div>
                 ) : (
                     <div className="flex flex-col h-full p-2 gap-4">
