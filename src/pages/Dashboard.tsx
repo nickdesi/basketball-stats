@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useGameStore, type CompletedGame, type GameStats } from '../store/gameStore';
 import { useFirebaseSync } from '../hooks/useFirebaseSync';
 import { useToast } from '../contexts/ToastContext';
@@ -21,7 +21,10 @@ import {
 // Import extracted components
 import DashboardCharts from '../components/DashboardCharts';
 import HistoryList from '../components/HistoryList';
-import GameDetailModal from '../components/GameDetailModal';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+// Lazy load heavy modal component
+const GameDetailModal = lazy(() => import('../components/GameDetailModal'));
 
 ChartJS.register(
     CategoryScale,
@@ -369,14 +372,16 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
 
             {/* MATCH DETAILS MODAL */}
             {selectedGame && (
-                <GameDetailModal
-                    game={selectedGame}
-                    players={players}
-                    onClose={() => { setSelectedGame(null); setInitialModalEditMode(false); }}
-                    onDelete={handleDeleteGame}
-                    onUpdate={handleUpdateGame}
-                    initialIsEditing={initialModalEditMode}
-                />
+                <Suspense fallback={<LoadingSpinner />}>
+                    <GameDetailModal
+                        game={selectedGame}
+                        players={players}
+                        onClose={() => { setSelectedGame(null); setInitialModalEditMode(false); }}
+                        onDelete={handleDeleteGame}
+                        onUpdate={handleUpdateGame}
+                        initialIsEditing={initialModalEditMode}
+                    />
+                </Suspense>
             )}
 
             {/* Header & Filters */}

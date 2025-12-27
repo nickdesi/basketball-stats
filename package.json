@@ -14,7 +14,7 @@
     "source-map": "^0.7.4"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=22.12.0"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
@@ -37,7 +37,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.22",
     "eslint": "^9.15.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^16.0.0",
     "postcss": "^8.5.6",
