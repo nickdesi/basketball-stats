@@ -38,7 +38,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
 
     // Use centralized advanced stats calculation for consistency
     const advancedStats = getAdvancedStats(game.stats);
-    const { evaluation, trueShooting: tsPercent, fieldGoalPercentage: fgPercent, freeThrowPercentage: ftPercent } = advancedStats;
+    const { evaluation, trueShooting: tsPercent, fieldGoalPercentage: fgPercent } = advancedStats;
 
     const badges = calculateBadges(game.stats);
 
@@ -192,7 +192,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                     const ftAttempted = game.stats.points1 + game.stats.missedPoints1;
 
                     return (
-                        <div className="p-3 grid grid-cols-3 sm:grid-cols-6 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                        <div className="p-3 grid grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
                             {/* Time Played */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
@@ -209,38 +209,32 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                                     tooltip="Lancers-Francs réussis / tentés."
                                 />
                             </div>
-                            {/* FT% */}
-                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                                <StatBox
-                                    label="LF%"
-                                    value={ftPercent}
-                                    isPercent
-                                    color={ftPercent >= 70 ? 'var(--color-neon-green)' : 'var(--color-text)'}
-                                    tooltip="% Réussite aux Lancers-Francs. Un bon score est au-dessus de 70%."
-                                />
-                            </div>
+                            {/* TS% */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
                                     label="TS%"
                                     value={tsPercent}
                                     isPercent
-                                    tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%."
+                                    color={tsPercent >= 50 ? 'var(--color-neon-green)' : 'var(--color-text)'}
+                                    tooltip="True Shooting : efficacité réelle aux tirs. Un bon score est au-dessus de 50%."
                                 />
                             </div>
+                            {/* BP */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
                                     label="BP"
                                     value={game.stats.turnovers}
                                     color="var(--color-error)"
-                                    tooltip="Balles Perdues : nombre de fois où le ballon a été perdu (passe interceptée, sortie, etc.)."
+                                    tooltip="Balles Perdues : pertes de balle (passe interceptée, sortie, etc.)."
                                 />
                             </div>
+                            {/* Fouls */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
                                     label="F"
                                     value={game.stats.fouls}
                                     color="#facc15"
-                                    tooltip="Fautes personnelles commises. 5 fautes = exclusion du match."
+                                    tooltip="Fautes personnelles. 5 fautes = exclusion."
                                 />
                             </div>
                         </div>
