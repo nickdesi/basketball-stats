@@ -38,7 +38,7 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
 
     // Use centralized advanced stats calculation for consistency
     const advancedStats = getAdvancedStats(game.stats);
-    const { evaluation, trueShooting: tsPercent, effectiveFg: efgPercent, fieldGoalPercentage: fgPercent } = advancedStats;
+    const { evaluation, trueShooting: tsPercent, fieldGoalPercentage: fgPercent, freeThrowPercentage: ftPercent } = advancedStats;
 
     const badges = calculateBadges(game.stats);
 
@@ -187,15 +187,36 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                     const playTime = game.stats.playTimeSeconds
                         ? formatTime(game.stats.playTimeSeconds)
                         : '-';
+                    // Calculate FT stats
+                    const ftMade = game.stats.points1;
+                    const ftAttempted = game.stats.points1 + game.stats.missedPoints1;
 
                     return (
-                        <div className="p-3 grid grid-cols-3 sm:grid-cols-5 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                        <div className="p-3 grid grid-cols-3 sm:grid-cols-6 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
                             {/* Time Played */}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
                                     label="TEMPS"
                                     value={playTime}
                                     tooltip="Temps de jeu sur le terrain (MM:SS)."
+                                />
+                            </div>
+                            {/* Free Throws XX/XX */}
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="LF"
+                                    value={`${ftMade}/${ftAttempted}`}
+                                    tooltip="Lancers-Francs réussis / tentés."
+                                />
+                            </div>
+                            {/* FT% */}
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="LF%"
+                                    value={ftPercent}
+                                    isPercent
+                                    color={ftPercent >= 70 ? 'var(--color-neon-green)' : 'var(--color-text)'}
+                                    tooltip="% Réussite aux Lancers-Francs. Un bon score est au-dessus de 70%."
                                 />
                             </div>
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
@@ -206,16 +227,6 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
                                     tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%."
                                 />
                             </div>
-                            {player?.level !== 'U11' && (
-                                <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
-                                    <StatBox
-                                        label="eFG%"
-                                        value={efgPercent}
-                                        isPercent
-                                        tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !"
-                                    />
-                                </div>
-                            )}
                             <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
                                 <StatBox
                                     label="BP"
