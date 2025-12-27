@@ -5,6 +5,7 @@ import { getAdvancedStats } from '../store/gameStore';
 import { calculateBadges } from './badges/badgeUtils';
 import BadgeList from './badges/BadgeList';
 import ShareableStats from './ShareableStats';
+import StatBox from './StatBox';
 
 interface MatchCardProps {
     game: CompletedGame;
@@ -177,24 +178,40 @@ const MatchCard = memo(({ game, player, onOpenDetails, onDelete }: MatchCardProp
 
                 {/* 3. Expanded View (Advanced Stats) */}
                 {isExpanded && (
-                    <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
-                        <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                            <div className="text-lg font-bold font-stats text-[var(--color-text)]">{tsPercent}<span className="text-xs opacity-60">%</span></div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">TS%</div>
+                    <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[var(--color-bg)]/50 border-t border-[var(--color-glass-border)] animate-in slide-in-from-top-2 duration-200">
+                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                            <StatBox
+                                label="TS%"
+                                value={tsPercent}
+                                isPercent
+                                tooltip="True Shooting : efficacité réelle aux tirs incluant les lancers-francs. Un bon score est au-dessus de 50%."
+                            />
                         </div>
                         {player?.level !== 'U11' && (
-                            <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                                <div className="text-lg font-bold font-stats text-[var(--color-text)]">{efgPercent}<span className="text-xs opacity-60">%</span></div>
-                                <div className="text-[10px] text-[var(--color-text-dim)] font-bold">eFG%</div>
+                            <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                                <StatBox
+                                    label="eFG%"
+                                    value={efgPercent}
+                                    isPercent
+                                    tooltip="Efficacité aux tirs : mesure la précision en valorisant les tirs à 3 points. Plus c'est haut, mieux c'est !"
+                                />
                             </div>
                         )}
-                        <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                            <div className="text-lg font-bold font-stats text-red-400">{game.stats.turnovers}</div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">BP</div>
+                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                            <StatBox
+                                label="BP"
+                                value={game.stats.turnovers}
+                                color="var(--color-error)"
+                                tooltip="Balles Perdues : nombre de fois où le ballon a été perdu (passe interceptée, sortie, etc.)."
+                            />
                         </div>
-                        <div className="p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)] text-center">
-                            <div className="text-lg font-bold font-stats text-yellow-400">{game.stats.fouls}</div>
-                            <div className="text-[10px] text-[var(--color-text-dim)] font-bold">F</div>
+                        <div className="rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-glass-border)]">
+                            <StatBox
+                                label="F"
+                                value={game.stats.fouls}
+                                color="#facc15"
+                                tooltip="Fautes personnelles commises. 5 fautes = exclusion du match."
+                            />
                         </div>
                     </div>
                 )}
