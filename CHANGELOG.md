@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.9.0] - 2026-01-03
+
+### 🔧 Code Quality & Best Practices
+
+- **Zustand Auto-Selectors** : Nouveau pattern `useGameStore.use.property()` pour réduire les re-renders inutiles.
+- **useShallow Export** : Disponible depuis `gameStore` pour les sélections groupées.
+- **Composant StatCard** : Extraction d'un composant réutilisable pour les cartes métriques.
+- **Dashboard Optimisé** : Réduction de ~40 lignes de code dupliqué.
+
+### 🎨 Design System (Tailwind CSS v4)
+
+- **Tokens @theme** : Nouveaux tokens sémantiques (easings, shadows, spacing).
+- **Animations** : `--ease-fluid`, `--ease-snappy`, `--ease-bounce`.
+- **Shadows** : `--shadow-glow-sm/md/lg`, `--shadow-float`, `--shadow-card`.
+
+### ♿ Accessibilité
+
+- **Skip-to-main-content** : Lien WCAG 2.4.1 visible au focus (Tab).
+- **Main Landmark** : `id="main-content"` sur l'élément principal.
+
+---
+
 ## [1.8.1] - 2025-12-26
 
 ### ✨ Nouvelles Fonctionnalités

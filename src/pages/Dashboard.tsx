@@ -22,6 +22,7 @@ import {
 import DashboardCharts from '../components/DashboardCharts';
 import HistoryList from '../components/HistoryList';
 import LoadingSpinner from '../components/LoadingSpinner';
+import StatCard from '../components/StatCard';
 
 // Lazy load heavy modal component
 const GameDetailModal = lazy(() => import('../components/GameDetailModal'));
@@ -431,42 +432,10 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
             {/* Main Stats Cards - Only show when a specific player is selected */}
             {selectedPlayerId !== 'all' && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
-                            <Trophy size={24} />
-                        </div>
-                        <div>
-                            <div className="font-stats text-2xl text-[var(--color-text)]">{totalGames}</div>
-                            <div className="label-stat">Matchs</div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-[var(--color-neon-blue)]/10 text-[var(--color-neon-blue)]">
-                            <Activity size={24} />
-                        </div>
-                        <div>
-                            <div className="font-stats text-2xl text-[var(--color-neon-blue)]">{avgPoints}</div>
-                            <div className="label-stat">PTS / M</div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-[var(--color-neon-green)]/10 text-[var(--color-neon-green)]">
-                            <Activity size={24} />
-                        </div>
-                        <div>
-                            <div className="font-stats text-2xl text-[var(--color-neon-green)]">{avgRebounds}</div>
-                            <div className="label-stat">REB / M</div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-4 rounded-2xl flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-[var(--color-neon-purple)]/10 text-[var(--color-neon-purple)]">
-                            <Activity size={24} />
-                        </div>
-                        <div>
-                            <div className="font-stats text-2xl text-[var(--color-neon-purple)]">{avgAssists}</div>
-                            <div className="label-stat">PAS / M</div>
-                        </div>
-                    </div>
+                    <StatCard icon={Trophy} value={totalGames} label="Matchs" color="blue" />
+                    <StatCard icon={Activity} value={avgPoints} label="PTS / M" color="neon-blue" />
+                    <StatCard icon={Activity} value={avgRebounds} label="REB / M" color="neon-green" />
+                    <StatCard icon={Activity} value={avgAssists} label="PAS / M" color="neon-purple" />
                 </div>
             )}
 

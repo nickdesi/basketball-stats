@@ -1,5 +1,26 @@
-import { create } from 'zustand';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useShallow } from 'zustand/react/shallow';
+
+// Re-export useShallow for convenience in consuming components
+export { useShallow };
+
+// Auto-generated selectors helper (Context7 Zustand best practice)
+type WithSelectors<S> = S extends { getState: () => infer T }
+    ? S & { use: { [K in keyof T]: () => T[K] } }
+    : never;
+
+const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
+    _store: S
+) => {
+    const store = _store as WithSelectors<typeof _store>;
+    store.use = {} as Record<string, () => unknown>;
+    for (const k of Object.keys(store.getState())) {
+        (store.use as Record<string, () => unknown>)[k] = () =>
+            store((s) => s[k as keyof typeof s]);
+    }
+    return store;
+};
 
 export type Player = {
     id: string;
@@ -112,7 +133,7 @@ const initialStats: GameStats = {
     playTimeSeconds: 0,
 };
 
-export const useGameStore = create<GameState>()(
+const useGameStoreBase = create<GameState>()(
     persist(
         (set, get) => ({
             players: [],
@@ -261,6 +282,10 @@ export const useGameStore = create<GameState>()(
         }
     )
 );
+
+// Wrap with auto-generated selectors for atomic property access
+// Usage: useGameStore.use.history() instead of useGameStore((s) => s.history)
+export const useGameStore = createSelectors(useGameStoreBase);
 
 // Selector for Advanced Stats
 export const getAdvancedStats = (stats: GameStats) => {

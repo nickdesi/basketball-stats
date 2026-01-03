@@ -390,10 +390,28 @@ select:focus-visible,
    ═══════════════════════════════════════════════════════════════════════════*/
 
 @theme {
+  /* Neon Accent Colors */
   --color-neon-blue: #00f3ff;
   --color-neon-purple: #bc13fe;
   --color-neon-green: #0aff68;
   --color-neon-orange: #ff8c00;
   --color-neon-red: #ff3344;
   --color-glass-bg: rgba(15, 15, 20, 0.5);
+
+  /* Animation Easings - Semantic tokens for consistent motion */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Semantic Shadows */
+  --shadow-glow-sm: 0 0 10px rgba(0, 243, 255, 0.3);
+  --shadow-glow-md: 0 0 20px rgba(188, 19, 254, 0.4);
+  --shadow-glow-lg: 0 0 30px rgba(10, 255, 104, 0.5);
+  --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.2);
+  
+  /* Semantic Spacing */
+  --spacing-card: 1.5rem;
+  --spacing-section: 2rem;
+  --spacing-modal: 1rem;
 }

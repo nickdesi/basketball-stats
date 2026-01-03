@@ -45,6 +45,13 @@ Une application web moderne et futuriste pour suivre les statistiques de matchs 
 - **Empty States** : Illustrations animées sur les pages vides (Dashboard, Joueurs).
 - **WCAG 2.2 / RGAA 4** : Focus visible, `prefers-reduced-motion`, contrastes validés, `aria-label` sur les icônes.
 
+### 🔧 Code Quality (V1.9 - Nouveau !)
+
+- **Zustand Auto-Selectors** : Pattern `useGameStore.use.property()` pour des re-renders optimisés.
+- **Tailwind CSS v4 Tokens** : `@theme` enrichi avec easings, shadows et spacing sémantiques.
+- **Skip-to-main-content** : Lien d'accessibilité WCAG 2.4.1 pour navigation clavier.
+- **Composant StatCard** : Extraction et réutilisation des cartes métriques.
+
 ### 🎨 Interface "Quantum Court" (V1.4)
 
 - **Design Premium** : Fond noir profond (`#030303`) avec effet "flottant dans le vide".
